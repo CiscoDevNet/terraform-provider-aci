@@ -31,7 +31,7 @@ Data source for ACI FEX Profile
 ```hcl
 
 data "aci_fex_profile" "example" {
-  name = "test_name"
+  name = "fex_profile"
 }
 
 ```

@@ -30,9 +30,9 @@ Data source for ACI Application EPG
 
 ```hcl
 
-data "aci_application_epg" "example_application_profile" {
+data "aci_application_epg" "example" {
   parent_dn = aci_application_profile.example.id
-  name      = "test_name"
+  name      = "application_epg"
 }
 
 ```
@@ -94,10 +94,10 @@ data "aci_application_epg" "example_application_profile" {
     * `mode` (mode) - (string) The mode of the Relation From Application EPG To Attachable Access Entity Profile object.
     * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.
     * `attachable_access_entity_profile_name` (tnInfraAttEntityPName) - (string) The name of the Attachable Access Entity Profile object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_bridge_domain` - (map) A map of Relation To Bridge Domain (ACI object [fvRsBd](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBd/overview)) pointing to Bridge Domain (ACI Object [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)).
@@ -138,7 +138,6 @@ data "aci_application_epg" "example_application_profile" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-      
 * `relation_to_domains` - (list) A list of Relation To Domains (ACI object [fvRsDomAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDomAtt/overview)). This relation can point to multiple ACI objects:
     - [vmmDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmDomP/overview).
     - [physDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/physDomP/overview).
@@ -178,10 +177,10 @@ data "aci_application_epg" "example_application_profile" {
         * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
         * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
         * `standby_uplinks` (standby) - (string) The passive uplink IDs of the Uplink Order Container object.
-        * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
             * `value` (value) - (string) The value of the property.
-        * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
             * `value` (value) - (string) The value of the property.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -202,7 +201,7 @@ data "aci_application_epg" "example_application_profile" {
 * `relation_to_fibre_channel_paths` - (list) A list of Relation To Fibre Channel Paths (ACI object [fvRsFcPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsFcPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)). This attribute is supported in ACI versions: 2.0(1m) and later.
     * `annotation` (annotation) - (string) The annotation of the Relation To Fibre Channel Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `description` (descr) - (string) The description of the Relation To Fibre Channel Path object.
-    * `target_dn` (tDn) - (string) The distinguished name of the target.
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
     * `vsan` (vsan) - (string) The virtual storage area network (VSAN) of the Relation To Fibre Channel Path object.
     * `vsan_mode` (vsanMode) - (string) The virtual storage area network (VSAN) mode of the Relation To Fibre Channel Path object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -220,13 +219,13 @@ data "aci_application_epg" "example_application_profile" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_static_leafs` - (list) A list of Relation To Static Leafs (ACI object [fvRsNodeAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsNodeAtt/overview)) pointing to  (ACI Object [fabricNode](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricNode/overview)).
+* `relation_to_static_leafs` - (list) A list of Relation To Static Leafs (ACI object [fvRsNodeAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsNodeAtt/overview)) pointing to Fabric Node (ACI Object [fabricNode](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricNode/overview)).
     * `annotation` (annotation) - (string) The annotation of the Relation To Static Leaf object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `description` (descr) - (string) The description of the Relation To Static Leaf object. This attribute is supported in ACI versions: 1.0(4g) and later.
     * `encapsulation` (encap) - (string) The VLAN encapsulation of the Relation To Static Leaf object.
     * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Static Leaf object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
     * `mode` (mode) - (string) The static association mode with the path of the Relation To Static Leaf object.
-    * `target_dn` (tDn) - (string) The distinguished name of the target of this static binding.
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
@@ -240,7 +239,7 @@ data "aci_application_epg" "example_application_profile" {
     * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Static Path object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
     * `mode` (mode) - (string) The static association mode of the Relation To Static Path object.
     * `primary_encapsulation` (primaryEncap) - (string) The primary VLAN encapsulation of the Relation To Static Path object. This attribute is supported in ACI versions: 1.2(2g) and later.
-    * `target_dn` (tDn) - (string) null.
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
@@ -267,9 +266,12 @@ data "aci_application_epg" "example_application_profile" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to . This attribute is supported in ACI versions: 2.3(1e) and later.
+* `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)). This attribute is supported in ACI versions: 2.3(1e) and later. This relation can point to multiple ACI objects:
+    - [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview).
+    - [fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview).
+    - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview).
     * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object. This attribute is supported in ACI versions: 3.2(1l) and later.
-    * `target_dn` (tDn) - (string) The distinguished name of the target.
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.

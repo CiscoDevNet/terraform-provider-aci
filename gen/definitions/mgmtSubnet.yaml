@@ -1,0 +1,16 @@
+documentation:
+  dn_formats:
+  - uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]
+  sub_category: Node Management
+  ui_locations:
+  - Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets
+properties:
+  ip:
+    test_config:
+      create:
+      - config_value: 192.0.2.0/24
+      datasource_missing:
+      - config_value: 198.51.100.0/24
+      update:
+      - config_value: 2001:db8::/32
+resource_name: external_management_network_subnet

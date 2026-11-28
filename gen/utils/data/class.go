@@ -1,0 +1,2980 @@
+package data
+
+import (
+	"encoding/json"
+	"fmt"
+	"maps"
+	"os"
+	"regexp"
+	"slices"
+	"strings"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
+)
+
+// ExampleParentDnModeEnum identifies how parent_dn is represented in a public example.
+type ExampleParentDnModeEnum int
+
+const (
+	// ParentDnFromTestValues uses the property's normalized test scenario.
+	ParentDnFromTestValues ExampleParentDnModeEnum = iota
+	// ParentDnFromSchemaDefault omits parent_dn so the schema default is used.
+	ParentDnFromSchemaDefault
+	// ParentDnFromReference uses the selected parent resource reference.
+	ParentDnFromReference
+)
+
+// ExampleContext identifies the single parent placement represented in public examples.
+type ExampleContext struct {
+	ParentClass  *ClassName
+	ParentValue  ExampleValue
+	Platform     PlatformTypeEnum
+	ParentDnMode ExampleParentDnModeEnum
+}
+
+type Class struct {
+	// This is used to prevent the deletion of the class if it is not allowed on APIC.
+	AllowDelete bool
+	// Available top-level artifact kinds for this class. Current public-example,
+	// class-documentation, and datasource-implementation jobs honor the selection;
+	// a class's base model is generated for every loaded class. Resource
+	// implementation jobs will honor it when that template is migrated. Datasource
+	// registration is generated with each implementation, while resource
+	// registration remains in the legacy implementations.
+	// Resolved from ClassDefinition.Artifacts
+	// with the following semantics:
+	//   - YAML field omitted entirely (nil slice in ClassDefinition): auto-derive
+	//     from IdentifiedBy. Classes with non-empty IdentifiedBy get both
+	//     ResourceArtifact and DatasourceArtifact; classes with empty IdentifiedBy
+	//     get nothing (the legacy generation default).
+	//   - YAML field present but empty (`artifacts: []`): explicit opt-out;
+	//     Artifacts stays empty and no resource/datasource-scoped jobs are built.
+	//   - YAML field present and non-empty: override; the listed artifacts are
+	//     the exact set made available to class-scoped renderers.
+	// Iteration order is the YAML declaration order (when overridden) or
+	// [ResourceArtifact, DatasourceArtifact] (when auto-derived).
+	Artifacts []ArtifactEnum
+	// List of all child classes which are included inside the resource.
+	// When looping over maps in golang the order of the returned elements is random, thus list is used for order consistency.
+	Children []*ClassName
+	// Custom class definition to override class meta properties
+	ClassDefinition ClassDefinition
+	// Default parent-DN placement synthesised from meta for classes that
+	// declare ClassDefinition.ParentDnVariants. nil for every class that
+	// has a single canonical parent placement (the common case). Always
+	// equal to ParentDnVariants[0] when non-nil.
+	DefaultParentDn *ParentDnVariant
+	// Resolved parent-DN variants for classes that have more than one valid
+	// placement. Element 0 is DefaultParentDn (synthesised from meta);
+	// elements 1.. are the YAML-declared variants in source order. nil for
+	// every class with a single canonical placement.
+	ParentDnVariants []ParentDnVariant
+	// Deprecated resources include a warning the resource and datasource schemas.
+	// Driven by the meta `isDeprecated` flag with an optional definition override (logical OR).
+	Deprecated bool
+	// The deprecated APIC versions for the class.
+	// Used to indicate versions where the class is deprecated but still functional.
+	// Driven by the meta `deprecatedSince` value with an optional definition override.
+	DeprecatedVersions *Versions
+	// The representative parent placement and platform used by generated examples.
+	ExampleContext ExampleContext
+	// Fully resolved minimum and all-attributes examples for the resource artifact.
+	ResourceExamples ResourceExamples
+	// Fully resolved lookup example for the datasource artifact.
+	DataSourceExample Example
+	// Documentation specific information for the class.
+	Documentation ClassDocumentation
+	// Hidden indicates that the class is no longer accepted by the APIC API.
+	// Driven by the meta `isHidden` flag with an optional definition override (logical OR).
+	Hidden bool
+	// The hidden APIC versions for the class.
+	// Driven by the meta `hiddenSince` value with an optional definition override.
+	HiddenVersions *Versions
+	// List of all identifying properties of the class.
+	// These are properties that are part of the relative name (RN) format, ex 'tn-{name}' where name is the identifying property.
+	IdentifiedBy []string
+	// Resolved per-version state upgrade definitions, copied verbatim from
+	// ClassDefinition.StateUpgrades after validation against the resolved
+	// Properties / Children sets. Each entry is direct-to-current per the
+	// Terraform plugin framework contract.
+	StateUpgrades    map[int]StateUpgradeDefinition
+	SchemaVersion    int
+	MigrationSchemas []MigrationSchema
+	LegacyAttributes []MigrationAttribute
+	// Compatibility properties belonging to the class when reused inside other models.
+	NestedLegacyAttributes []MigrationAttribute
+	HasNestedLegacyChanges bool
+	// Indicates that when the class is included in a resource as a child it can only be configured once.
+	// This is used to determine the type of the nested attribute to be a map or list.
+	IsSingleNestedWhenDefinedAsChild bool
+	// The full content from the meta file.
+	// Storing the content proactively in case we need to access the data at a later stage.
+	MetaFileContent map[string]any
+	// The class name with all its representations.
+	Name *ClassName
+	// List of all possible parent classes.
+	Parents []*ClassName
+	// The platform type is used to indicate on which APIC platform the class is available.
+	PlatformType PlatformTypeEnum
+	// A map containing all the properties of the class.
+	Properties map[string]*Property
+	// Each property is categorised in all, required, optional, or read-only.
+	// When looping over maps in golang the order of the returned elements is random, thus lists are used for order consistency.
+	PropertiesAll      []string
+	PropertiesOptional []string
+	PropertiesReadOnly []string
+	PropertiesRequired []string
+	// The relationship information of the class.
+	// If the class is a relationship class, it will contain the information about the relationship.
+	Relation Relation
+	// Indicates if the class is required when defined as a child in a parent resource.
+	RequiredAsChild bool
+	// The resource name is the name of the resource in the provider, ex "aci_tenant".
+	ResourceName string
+	// The nested attribute name when part of a parent resource.
+	// ex. "relation_from_bridge_domain_to_netflow_monitor_policy" would translate to "relation_to_netflow_monitor_policy".
+	ResourceNameNested string
+	// The relative name (RN) format of the class, ex "tn-{name}".
+	RnFormat string
+	// The supported APIC versions for the class.
+	// Parsed from the "versions" field in the meta file (e.g., "1.0(1e)-", "4.2(7f)-4.2(7w),5.2(1g)-").
+	SupportedVersions *Versions
+	// Test dependencies resolved from explicit definitions first (allowing overrides),
+	// then auto-filled from Parents and Relation for any remaining references.
+	// A slice is used instead of a map to preserve declaration order, which is required for deterministic HCL output
+	// (dependencies must appear before the resources that reference them).
+	TestDependencies []*TestDependency
+	// Test children resolved from child classes' TestValues with optional manual override.
+	// A slice is used instead of a map to preserve declaration order for deterministic HCL output.
+	TestChildren []*TestChild
+	// Resolved test-bucket suppression settings for the class. Populated by
+	// setTestConfig as a one-line passthrough from ClassDefinition.TestConfig.
+	TestConfig ClassTestConfig
+}
+
+// ClassTestConfig groups resolved per-class acceptance-test gates.
+// Model and public-example templates do not consume them.
+type ClassTestConfig struct {
+	// Prefix controls generation of the token shared by this class's test fixture.
+	Prefix TestPrefixDefinition
+	// RunSerially keeps tests that change shared APIC settings outside the parallel group.
+	RunSerially bool
+	// PostTestDelaySeconds keeps the test active while shared APIC settings settle after cleanup.
+	PostTestDelaySeconds int
+	// IgnoreTests lists the test buckets acceptance-test renderers should skip.
+	// Distinct from Class.Artifacts, which selects generated artifact kinds.
+	// nil/empty means no skips.
+	IgnoreTests []IgnoreTestEnum
+	// IgnoreImportStateVerify tells the resource-test renderer to omit the
+	// ImportStateVerify equality assertion while retaining the import smoke test.
+	IgnoreImportStateVerify bool
+	// DataSourceExpectNonEmptyPlan allows a known parent/standalone-child state
+	// ownership conflict to retain a plan after the read step.
+	DataSourceExpectNonEmptyPlan bool
+}
+
+type Relation struct {
+	// The class from which the relationship is defined.
+	FromClass *ClassName
+	// Indicates if _from_ should be included in the resource name.
+	//  ex. "fvRsBdToOut" would be "data_source_aci_relation_from_bridge_domain_to_l3_outside".
+	IncludeFrom bool
+	// Indicates if the class is a relational class.
+	RelationalClass bool
+	// The list of concrete target classes the relationship points to.
+	// Seeded from the meta `relationInfo.toMo` (single element) and replaced by the
+	// `relation_to_classes` definition override when present. A length greater than 1
+	// indicates a multi-target (plural) relation, in which case the class definition
+	// must provide an explicit `resource_name`.
+	ToClasses []*ClassName
+	// The type of the relationship.
+	Type RelationshipTypeEnum
+}
+
+// TestDependency describes a prerequisite resource needed for tests (parent or target).
+// Dependencies are recursive: a dependency can itself require other resources to exist.
+type TestDependency struct {
+	// PrefixEnabled overrides prefixing only for this dependency instance.
+	PrefixEnabled *bool
+	// The class of the dependency resource.
+	Class *ClassName
+	// SourceReference retains the definition or auto-resolution identity used to
+	// deduplicate dependencies while Reference carries the canonical test address.
+	// It is never rendered.
+	SourceReference string
+	// The reference value: either a static DN string or a Terraform resource/datasource attribute path.
+	Reference string
+	// TestInstance is the one-based occurrence of this Terraform object type and
+	// role in the owning class's test configuration.
+	TestInstance int
+	// How to interpret the Reference field.
+	ReferenceType ReferenceTypeEnum
+	// The role of this dependency relative to the resource-under-test.
+	// Only meaningful on TOP-LEVEL entries in Class.TestDependencies.
+	// Nested entries (inside Dependencies) are pure prerequisites — Role is UndefinedRole.
+	Role TestDependencyRoleEnum
+	// TargetClasses associates a parent dependency with the compatible targets of a
+	// polymorphic relation. It is empty for target and ordinary parent dependencies.
+	TargetClasses []*ClassName
+	// Recursive dependencies: resources that THIS dependency needs to exist first.
+	// These are order-only prerequisites — they have no Role (always UndefinedRole).
+	Dependencies []*TestDependency
+	// OrderOnly renders this prerequisite as an explicit Terraform depends_on
+	// edge rather than consuming an unknown value during planning.
+	OrderOnly bool
+	// Attributes owned by standalone resources; rendered only in dependency lifecycle blocks.
+	IgnoreChanges []string
+	// Optional property overrides for the dependency resource's HCL configuration.
+	// Loaded framework classes otherwise use their required TestValues.Default entries.
+	// Definition-only legacy classes require this map to contain their complete HCL input.
+	ConfigOverrides map[string]string
+	// Optional child block overrides for the dependency resource's HCL nested blocks.
+	// Dependencies remain minimal when this map is empty; populated entries are the
+	// only child blocks rendered for that dependency.
+	Children map[string]*TestChild
+	// Generated names may change when a dependency is imported into another fixture;
+	// explicit definition overrides must retain their authored values.
+	nameGenerated bool
+}
+
+// TestChildInstance holds the property values and nested children for a single child instance.
+type TestChildInstance struct {
+	// The property values for this child instance, keyed by attribute name. A scenario
+	// retains every member of set-valued properties and explicit empty-set semantics.
+	Properties map[string]TestValueScenario
+	// Children nested inside this specific instance block.
+	// Per-instance because in HCL, each block owns its own nested blocks.
+	Children []*TestChild
+}
+
+// TestChild represents a child class's test data with one or more instances.
+type TestChild struct {
+	// The child class.
+	Class *ClassName
+	// The instances to render in test HCL.
+	Instances []TestChildInstance
+}
+
+func NewClass(className string, ds *DataStore) (*Class, error) {
+	genLogger.Tracef("Creating new class struct with class name: %s.", className)
+
+	name, err := NewClassName(className)
+	if err != nil {
+		return nil, err
+	}
+
+	class := Class{
+		ClassDefinition: ds.ClassDefinitions[className],
+		Name:            name,
+		Properties:      make(map[string]*Property),
+	}
+
+	genLogger.Tracef("Successfully created new class struct with class name: %s.", className)
+
+	err = class.loadMetaFile()
+	if err != nil {
+		return nil, err
+	}
+
+	err = class.setClassData(ds)
+	if err != nil {
+		return nil, err
+	}
+
+	return &class, nil
+}
+
+func (c *Class) loadMetaFile() error {
+	genLogger.Debugf("Loading meta file for class '%s'.", c.Name)
+
+	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s.json", constMetaPath, c.Name))
+	if err != nil {
+		return fmt.Errorf("failed to load meta file for class '%s': %s", c.Name, err.Error())
+	}
+
+	genLogger.Tracef("Parsing meta file for class '%s'.", c.Name)
+	// For now, the file content is unmarshalled into a map[string]any and then set the class data.
+	// This is done because we add logic on top of the file content to set the class data.
+	// ENHANCEMENT: investigate if we can unmarshal the file content directly into a class struct specific for meta.
+	var metaFileContent map[string]any
+	err = json.Unmarshal(fileContent, &metaFileContent)
+	if err != nil {
+		return fmt.Errorf("failed to parse meta file for class '%s': %s", c.Name, err.Error())
+	}
+
+	c.MetaFileContent = metaFileContent[c.Name.MetaStyle()].(map[string]any)
+
+	genLogger.Debugf("Successfully loaded meta file for class '%s'.", c.Name)
+
+	return nil
+}
+
+func (c *Class) setClassData(ds *DataStore) error {
+	genLogger.Debugf("Setting class data for class '%s'.", c.Name)
+
+	var err error
+
+	c.setAllowDelete()
+
+	err = c.setChildren(ds)
+	if err != nil {
+		return err
+	}
+
+	c.setDeprecated()
+
+	err = c.setDeprecatedVersions()
+	if err != nil {
+		return err
+	}
+
+	c.setHidden()
+
+	err = c.setHiddenVersions()
+	if err != nil {
+		return err
+	}
+
+	c.setIdentifiedBy()
+
+	c.setArtifacts()
+
+	c.setIsSingleNestedWhenDefinedAsChild()
+
+	err = c.setParents(ds)
+	if err != nil {
+		return err
+	}
+
+	c.setPlatformType()
+
+	err = c.setProperties(ds)
+	if err != nil {
+		return err
+	}
+
+	c.setStateUpgrades(ds)
+
+	c.setPropertyStateUpgradeValues()
+
+	err = c.setRelation()
+	if err != nil {
+		return err
+	}
+
+	c.setRequiredAsChild()
+
+	err = c.setResourceName(ds)
+	if err != nil {
+		return err
+	}
+
+	err = c.setRnFormat()
+	if err != nil {
+		return err
+	}
+
+	err = c.setParentDnVariants()
+	if err != nil {
+		return err
+	}
+
+	c.setTestConfig()
+
+	err = c.setSupportedVersions()
+	if err != nil {
+		return err
+	}
+	c.setPropertySupportedVersions()
+
+	genLogger.Debugf("Successfully set class data for class '%s'.", c.Name)
+	return nil
+}
+
+func (c *Class) setAllowDelete() {
+	// Determine if the class can be deleted.
+	genLogger.Debugf("Setting AllowDelete for class '%s'.", c.Name)
+	if c.ClassDefinition.AllowDelete == "" {
+		isCreatableDeletable, ok := c.MetaFileContent["isCreatableDeletable"]
+		if ok && isCreatableDeletable.(string) != "never" {
+			c.AllowDelete = true
+		}
+	} else if c.ClassDefinition.AllowDelete != "never" {
+		c.AllowDelete = true
+	}
+	genLogger.Debugf("The AllowDelete property was successfully set to '%t' for the class '%s'.", c.AllowDelete, c.Name)
+}
+
+func (c *Class) setChildren(ds *DataStore) error {
+	// Determine the child classes for the class.
+	genLogger.Debugf("Setting Children for class '%s'.", c.Name)
+
+	// Warn if a class is defined in both IncludeChildren and ExcludeChildren.
+	for _, includedChild := range c.ClassDefinition.IncludeChildren {
+		if slices.Contains(c.ClassDefinition.ExcludeChildren, includedChild) {
+			genLogger.Warnf("Child class '%s' is defined in both IncludeChildren and ExcludeChildren for class '%s'. IncludeChildren takes precedence.", includedChild, c.Name)
+		}
+	}
+
+	// Initialize with children from ClassDefinition.IncludeChildren (as strings first).
+	childClassNames := c.ClassDefinition.IncludeChildren
+
+	// Retrieve the rnMap from MetaFileContent which holds the rnFormat as key and class name as value.
+	// The class name is in the format "{ClassNamePackage}:{ClassName}".
+	if rnMap, ok := c.MetaFileContent["rnMap"].(map[string]any); ok {
+		for rn, classNameInterface := range rnMap {
+			// Remove the colon separator from the class name (e.g., "fv:Tenant" -> "fvTenant").
+			classNameStr, err := sanitizeClassName(classNameInterface.(string))
+			if err != nil {
+				return err
+			}
+
+			if shouldIncludeChild(rn, classNameStr, c.ClassDefinition.ExcludeChildren, ds.GlobalMetaDefinition.AlwaysIncludeAsChild) {
+				childClassNames = append(childClassNames, classNameStr)
+			}
+		}
+	}
+
+	// Sort, deduplicate, and convert to ClassName pointers.
+	children, err := sortAndConvertToClassNames(childClassNames)
+	if err != nil {
+		return err
+	}
+	c.Children = children
+
+	genLogger.Debugf("Successfully set Children for class '%s'. Found %d children.", c.Name, len(c.Children))
+	return nil
+}
+
+func (c *Class) setDeprecated() {
+	genLogger.Debugf("Setting Deprecated for class '%s'.", c.Name)
+
+	if c.ClassDefinition.Deprecated {
+		c.Deprecated = true
+	} else if metaDeprecated, ok := c.MetaFileContent["isDeprecated"].(bool); ok {
+		c.Deprecated = metaDeprecated
+	}
+
+	genLogger.Debugf("Successfully set Deprecated for class '%s'. Deprecated: %t", c.Name, c.Deprecated)
+}
+
+func (c *Class) setDeprecatedVersions() error {
+	// Determine the deprecated APIC versions for the class from the definition file (override) or meta `deprecatedSince`.
+	genLogger.Debugf("Setting DeprecatedVersions for class '%s'.", c.Name)
+
+	deprecatedVersions := c.ClassDefinition.DeprecatedVersions
+	if deprecatedVersions == "" {
+		deprecatedVersions, _ = c.MetaFileContent["deprecatedSince"].(string)
+	}
+	if deprecatedVersions == "" {
+		genLogger.Debugf("No DeprecatedVersions specified for class '%s'.", c.Name)
+		return nil
+	}
+
+	parsedVersions, err := NewVersions(deprecatedVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse deprecated versions for class '%s': %w", c.Name, err)
+	}
+	c.DeprecatedVersions = parsedVersions
+
+	genLogger.Debugf("Successfully set DeprecatedVersions for class '%s'. Versions: '%s'", c.Name, c.DeprecatedVersions)
+	return nil
+}
+
+func (c *Class) setHidden() {
+	genLogger.Debugf("Setting Hidden for class '%s'.", c.Name)
+
+	if c.ClassDefinition.Hidden {
+		c.Hidden = true
+	} else if metaHidden, ok := c.MetaFileContent["isHidden"].(bool); ok {
+		c.Hidden = metaHidden
+	}
+
+	genLogger.Debugf("Successfully set Hidden for class '%s'. Hidden: %t", c.Name, c.Hidden)
+}
+
+func (c *Class) setHiddenVersions() error {
+	// Determine the hidden APIC versions for the class from the definition file (override) or meta `hiddenSince`.
+	genLogger.Debugf("Setting HiddenVersions for class '%s'.", c.Name)
+
+	hiddenVersions := c.ClassDefinition.HiddenVersions
+	if hiddenVersions == "" {
+		hiddenVersions, _ = c.MetaFileContent["hiddenSince"].(string)
+	}
+	if hiddenVersions == "" {
+		genLogger.Debugf("No HiddenVersions specified for class '%s'.", c.Name)
+		return nil
+	}
+
+	parsedVersions, err := NewVersions(hiddenVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse hidden versions for class '%s': %w", c.Name, err)
+	}
+	c.HiddenVersions = parsedVersions
+
+	genLogger.Debugf("Successfully set HiddenVersions for class '%s'. Versions: '%s'", c.Name, c.HiddenVersions)
+	return nil
+}
+
+func (c *Class) setIdentifiedBy() {
+	// Determine the identifying properties of the class.
+	genLogger.Debugf("Setting IdentifiedBy for class '%s'.", c.Name)
+
+	// Use ClassDefinition override if specified, otherwise read from meta file.
+	if len(c.ClassDefinition.IdentifiedBy) > 0 {
+		c.IdentifiedBy = c.ClassDefinition.IdentifiedBy
+	} else if identifiedBy, ok := c.MetaFileContent["identifiedBy"].([]any); ok {
+		for _, identifier := range identifiedBy {
+			if identifierString, ok := identifier.(string); ok && !slices.Contains(c.IdentifiedBy, identifierString) {
+				c.IdentifiedBy = append(c.IdentifiedBy, identifierString)
+			}
+		}
+	}
+
+	slices.Sort(c.IdentifiedBy)
+
+	genLogger.Debugf("Successfully set IdentifiedBy for class '%s'. IdentifiedBy: %v", c.Name, c.IdentifiedBy)
+}
+
+// IsIdentifyingProperty reports whether a property participates in the
+// class's APIC identity. Data-source documentation uses this distinction to
+// separate lookup inputs from attributes populated by Read.
+func (c *Class) IsIdentifyingProperty(propertyName string) bool {
+	return slices.Contains(c.IdentifiedBy, propertyName)
+}
+
+func (c *Class) setIsSingleNestedWhenDefinedAsChild() {
+	// Determine if the class can only be configured once when used as a nested attribute in a parent resource.
+	genLogger.Debugf("Setting IsSingleNestedWhenDefinedAsChild for class '%s'.", c.Name)
+
+	c.IsSingleNestedWhenDefinedAsChild = c.ClassDefinition.IsSingleNestedWhenDefinedAsChild || len(c.IdentifiedBy) == 0
+
+	genLogger.Debugf("Successfully set IsSingleNestedWhenDefinedAsChild for class '%s'. IsSingleNestedWhenDefinedAsChild: %t", c.Name, c.IsSingleNestedWhenDefinedAsChild)
+}
+
+// setArtifacts resolves Class.Artifacts from ClassDefinition.Artifacts with the
+// three-way nil/empty/non-empty semantics documented on the field. Must run
+// after setIdentifiedBy because the auto-derive branch reads IdentifiedBy.
+func (c *Class) setArtifacts() {
+	genLogger.Debugf("Setting Artifacts for class '%s'.", c.Name)
+
+	if c.ClassDefinition.Artifacts == nil {
+		// YAML field omitted: auto-derive from IdentifiedBy.
+		if len(c.IdentifiedBy) > 0 {
+			c.Artifacts = []ArtifactEnum{ResourceArtifact, DatasourceArtifact}
+		} else {
+			c.Artifacts = []ArtifactEnum{}
+		}
+	} else {
+		// YAML field present: caller chose (empty = opt-out, non-empty = override).
+		c.Artifacts = c.ClassDefinition.Artifacts
+	}
+
+	genLogger.Debugf("Successfully set Artifacts for class '%s'. Artifacts: %v", c.Name, c.Artifacts)
+}
+
+func (c *Class) HasResourceArtifact() bool {
+	return slices.Contains(c.Artifacts, ResourceArtifact)
+}
+
+func (c *Class) HasDatasourceArtifact() bool {
+	return slices.Contains(c.Artifacts, DatasourceArtifact)
+}
+
+// SubtreeClassNames returns every descendant class that must be included in an
+// APIC subtree request. The runtime filters the generated list for the connected
+// APIC version.
+func (c *Class) SubtreeClassNames(ds *DataStore) []string {
+	childClassNames := make([]string, 0)
+	visited := map[string]bool{c.Name.String(): true}
+
+	var collect func(Class)
+	collect = func(class Class) {
+		for _, childClassName := range class.Children {
+			name := childClassName.String()
+			if visited[name] {
+				continue
+			}
+
+			visited[name] = true
+			childClassNames = append(childClassNames, name)
+			collect(ds.Classes[name])
+		}
+	}
+
+	collect(*c)
+	slices.Sort(childClassNames)
+	return childClassNames
+}
+
+// ModelProperties returns the ordered schema-backed APIC properties owned by
+// the reusable class model. parentDn belongs to top-level wrappers and is not
+// an APIC payload property.
+func (c Class) ModelProperties() []*Property {
+	properties := make([]*Property, 0, len(c.PropertiesAll))
+	for _, propertyName := range c.PropertiesAll {
+		if propertyName == "parentDn" {
+			continue
+		}
+		properties = append(properties, c.Properties[propertyName])
+	}
+	return properties
+}
+
+// PayloadProperties returns the ordered APIC properties that can be written
+// through create and update payloads.
+func (c Class) PayloadProperties() []*Property {
+	properties := make([]*Property, 0, len(c.PropertiesAll))
+	for _, property := range c.ModelProperties() {
+		if property.ReadOnly {
+			continue
+		}
+		properties = append(properties, property)
+	}
+	return properties
+}
+
+// ParentDnProperty returns the synthetic top-level parent_dn property when
+// the class has one.
+func (c Class) ParentDnProperty() *Property {
+	return c.Properties["parentDn"]
+}
+
+// ParentDnHasSchemaDefault reports whether omitting parent_dn selects the
+// documented schema default.
+func (c Class) ParentDnHasSchemaDefault() bool {
+	// A functioning legacy alias prevents the default from being applied because
+	// either the new or legacy attribute must be supplied instead (for example vmmDomP).
+	parentDn := c.ParentDnProperty()
+	if parentDn == nil {
+		return false
+	}
+
+	hasDefault := false
+	for _, defaultValue := range parentDn.Documentation.DefaultValues {
+		if defaultValue.Value != "" {
+			hasDefault = true
+			break
+		}
+	}
+	if !hasDefault {
+		return false
+	}
+
+	for _, stateUpgrade := range parentDn.StateUpgradeValues {
+		if stateUpgrade.Status != Removed && stateUpgrade.AttributeName != "" && stateUpgrade.AttributeName != parentDn.AttributeName {
+			return false
+		}
+	}
+	return true
+}
+
+// FixedParentDn returns the static root DN for a class that does not expose
+// parent_dn. RnFormat already contains any remaining fixed path added through
+// rn_prepend, so both direct polUni children and policies below containers such
+// as uni/infra only need the first segment of their metadata DN format.
+func (c Class) FixedParentDn() string {
+	rawFormats, _ := c.MetaFileContent["dnFormats"].([]any)
+	for _, rawFormat := range rawFormats {
+		dnFormat, ok := rawFormat.(string)
+		if !ok {
+			continue
+		}
+		if parentDn, _, found := strings.Cut(dnFormat, "/"); found {
+			return parentDn
+		}
+		return dnFormat
+	}
+	return ""
+}
+
+// DnFormatPatterns converts the class's meta dnFormats into anchored regular
+// expressions. An ordinary identifier matches one DN path segment; a
+// bracketed identifier can contain slashes up to its closing bracket. Model
+// generation uses the parent class's patterns to identify dynamic parent-DN
+// variants without duplicating DN formats in class definitions.
+func (c Class) DnFormatPatterns() []string {
+	rawFormats, _ := c.MetaFileContent["dnFormats"].([]any)
+	patterns := make([]string, 0, len(rawFormats))
+	for _, rawFormat := range rawFormats {
+		dnFormat, ok := rawFormat.(string)
+		if !ok {
+			continue
+		}
+		patterns = append(patterns, dnFormatPattern(dnFormat))
+	}
+	return patterns
+}
+
+func dnFormatPattern(dnFormat string) string {
+	var pattern strings.Builder
+	pattern.WriteByte('^')
+
+	for len(dnFormat) > 0 {
+		placeholderStart := strings.IndexByte(dnFormat, '{')
+		if placeholderStart == -1 {
+			pattern.WriteString(regexp.QuoteMeta(dnFormat))
+			break
+		}
+
+		literalPrefix := dnFormat[:placeholderStart]
+		pattern.WriteString(regexp.QuoteMeta(literalPrefix))
+		placeholderEnd := strings.IndexByte(dnFormat[placeholderStart:], '}')
+		if placeholderEnd == -1 {
+			pattern.WriteString(regexp.QuoteMeta(dnFormat[placeholderStart:]))
+			break
+		}
+
+		remainingFormat := dnFormat[placeholderStart+placeholderEnd+1:]
+		if isBracketedDnPlaceholder(literalPrefix, remainingFormat) {
+			pattern.WriteString(`[^]]+`)
+		} else {
+			pattern.WriteString(`[^/]+`)
+		}
+		dnFormat = remainingFormat
+	}
+
+	pattern.WriteByte('$')
+	return pattern.String()
+}
+
+func isBracketedDnPlaceholder(literalPrefix, remainingFormat string) bool {
+	segmentStart := strings.LastIndexByte(literalPrefix, '/') + 1
+	segmentPrefix := literalPrefix[segmentStart:]
+	if strings.LastIndexByte(segmentPrefix, '[') <= strings.LastIndexByte(segmentPrefix, ']') {
+		return false
+	}
+
+	closingBracket := strings.IndexByte(remainingFormat, ']')
+	if closingBracket == -1 {
+		return false
+	}
+	nextSegment := strings.IndexByte(remainingFormat, '/')
+	return nextSegment == -1 || closingBracket < nextSegment
+}
+
+// HasCustomModelTypes reports whether the class's properties or historical
+// compatibility fields require the customtypes package in its generated model file.
+func (c Class) HasCustomModelTypes() bool {
+	for _, property := range c.ModelProperties() {
+		if property.UsesCustomModelType() {
+			return true
+		}
+	}
+	for _, attribute := range c.LegacyAttributes {
+		if attribute.ModelCustomStringType() != "" {
+			return true
+		}
+	}
+	for _, attribute := range c.NestedLegacyAttributes {
+		if strings.Contains(attribute.ModelValueType(), "customtypes.") || strings.Contains(attribute.ModelAttributeType(), "customtypes.") {
+			return true
+		}
+	}
+	for _, schema := range c.MigrationSchemas {
+		for _, attribute := range schema.Attributes {
+			if strings.Contains(attribute.ModelValueType(), "customtypes.") || strings.Contains(attribute.ModelAttributeType(), "customtypes.") {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// NestedModelValueType returns the Terraform value type used when this class
+// is embedded in a parent model.
+func (c Class) NestedModelValueType() string {
+	if c.IsSingleNestedWhenDefinedAsChild {
+		return "types.Object"
+	}
+	return "types.Set"
+}
+
+// setTestConfig copies the test-render gates
+// from ClassDefinition.TestConfig onto the resolved Class.TestConfig. Templates
+// read the resolved struct so they never reach into ClassDefinition directly.
+func (c *Class) setTestConfig() {
+	genLogger.Debugf("Setting TestConfig gates for class '%s'.", c.Name)
+
+	c.TestConfig.IgnoreTests = c.ClassDefinition.TestConfig.IgnoreTests
+	c.TestConfig.Prefix = c.ClassDefinition.TestConfig.Prefix
+	c.TestConfig.RunSerially = c.ClassDefinition.TestConfig.RunSerially
+	c.TestConfig.PostTestDelaySeconds = c.ClassDefinition.TestConfig.PostTestDelaySeconds
+	c.TestConfig.IgnoreImportStateVerify = c.ClassDefinition.TestConfig.IgnoreImportStateVerify
+	c.TestConfig.DataSourceExpectNonEmptyPlan = c.ClassDefinition.TestConfig.DataSourceExpectNonEmptyPlan
+
+	genLogger.Debugf("Successfully set TestConfig gates for class '%s'. IgnoreTests: %v, IgnoreImportStateVerify: %t, RunSerially: %t, PostTestDelaySeconds: %d", c.Name, c.TestConfig.IgnoreTests, c.TestConfig.IgnoreImportStateVerify, c.TestConfig.RunSerially, c.TestConfig.PostTestDelaySeconds)
+}
+
+func (c *Class) setParents(ds *DataStore) error {
+	// Determine the parent classes for the class.
+	genLogger.Debugf("Setting Parents for class '%s'.", c.Name)
+
+	// Warn if a class is defined in both IncludeParents and ExcludeParents.
+	for _, included := range c.ClassDefinition.IncludeParents {
+		if slices.Contains(c.ClassDefinition.ExcludeParents, included) {
+			genLogger.Warnf("Parent class '%s' is defined in both IncludeParents and ExcludeParents for class '%s'. IncludeParents takes precedence.", included, c.Name)
+		}
+	}
+
+	// Initialize with parents from ClassDefinition.IncludeParents (as strings first).
+	parentClassNames := c.ClassDefinition.IncludeParents
+
+	// Retrieve the containedBy from MetaFileContent which holds the parent class names as keys.
+	if containedBy, ok := c.MetaFileContent["containedBy"].(map[string]any); ok {
+		for classNameWithColon := range containedBy {
+			// Remove the colon separator from the class name (e.g., "fv:AEPg" -> "fvAEPg").
+			classNameStr, err := sanitizeClassName(classNameWithColon)
+			if err != nil {
+				return err
+			}
+
+			// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeParents or global ExcludeParents.
+			if !slices.Contains(c.ClassDefinition.ExcludeParents, classNameStr) &&
+				!slices.Contains(ds.GlobalMetaDefinition.ExcludeParents, classNameStr) {
+				parentClassNames = append(parentClassNames, classNameStr)
+			}
+		}
+	}
+
+	// Sort, deduplicate, and convert to ClassName pointers.
+	parents, err := sortAndConvertToClassNames(parentClassNames)
+	if err != nil {
+		return err
+	}
+	c.Parents = parents
+
+	genLogger.Debugf("Successfully set Parents for class '%s'. Found %d parents.", c.Name, len(c.Parents))
+	return nil
+}
+
+func (c *Class) setPlatformType() {
+	// Determine the platform type of the class.
+	genLogger.Debugf("Setting PlatformType for class '%s'.", c.Name)
+
+	// Use ClassDefinition override if specified.
+	if c.ClassDefinition.PlatformType != "" {
+		switch c.ClassDefinition.PlatformType {
+		case "apic":
+			c.PlatformType = Apic
+		case "cloud":
+			c.PlatformType = Cloud
+		case "both":
+			c.PlatformType = Both
+		}
+		genLogger.Debugf("Successfully set PlatformType for class '%s' from definition: %s.", c.Name, c.PlatformType)
+		return
+	}
+
+	// Fall back to meta file platformFlavors.
+	if platformFlavors, ok := c.MetaFileContent["platformFlavors"].([]any); ok {
+		hasApic := false
+		hasCloud := false
+		for _, flavor := range platformFlavors {
+			if flavorStr, ok := flavor.(string); ok {
+				switch flavorStr {
+				case "apic":
+					hasApic = true
+				case "capic":
+					hasCloud = true
+				default:
+					genLogger.Warnf("Unknown platform flavor '%s' found for class '%s'.", flavorStr, c.Name)
+				}
+			}
+		}
+		if hasApic && hasCloud {
+			c.PlatformType = Both
+		} else if hasCloud {
+			c.PlatformType = Cloud
+		} else if hasApic {
+			c.PlatformType = Apic
+		}
+	}
+
+	genLogger.Debugf("Successfully set PlatformType for class '%s': %s.", c.Name, c.PlatformType)
+}
+
+func (c *Class) setProperties(ds *DataStore) error {
+	genLogger.Debugf("Setting properties for class '%s'.", c.Name)
+
+	if properties, ok := c.MetaFileContent["properties"]; ok {
+		for name, propertyDetails := range properties.(map[string]any) {
+			details := propertyDetails.(map[string]any)
+
+			// Look up the property definition override from the class definition file.
+			propertyDefinition, hasClassDefinition := c.ClassDefinition.Properties[name]
+
+			// Skip the property entirely when the restriction is Exclude.
+			if propertyDefinition.Restriction == Exclude {
+				genLogger.Debugf("Property '%s' excluded via definition restriction for class '%s'.", name, c.Name)
+				continue
+			}
+
+			// Skip globally excluded properties unless the class definition explicitly defines the property.
+			if !hasClassDefinition && slices.Contains(ds.GlobalMetaDefinition.ExcludeProperties, name) {
+				genLogger.Debugf("Property '%s' excluded via global exclude for class '%s'.", name, c.Name)
+				continue
+			}
+
+			// Include configurable properties by default. An explicit definition
+			// restriction also opts a non-configurable property into the Terraform
+			// schema, for example an APIC read-only value used as a datasource
+			// lookup identifier.
+			if details["isConfigurable"] == true || propertyDefinition.Restriction != UndefinedRestriction {
+				property, err := NewProperty(name, details, propertyDefinition, ds.GlobalMetaDefinition)
+				if err != nil {
+					return err
+				}
+				c.Properties[name] = property
+				c.PropertiesAll = append(c.PropertiesAll, name)
+
+				if property.Required {
+					c.PropertiesRequired = append(c.PropertiesRequired, name)
+				} else if property.ReadOnly {
+					c.PropertiesReadOnly = append(c.PropertiesReadOnly, name)
+				} else if property.Optional {
+					c.PropertiesOptional = append(c.PropertiesOptional, name)
+				}
+			}
+		}
+	}
+
+	// Add synthetic parentDn property when the class has parents.
+	// parentDn is not in the meta file; it represents the parent DN in Terraform.
+	if len(c.Parents) > 0 {
+		parentDnDefinition := c.ClassDefinition.Properties["parentDn"]
+		property, err := NewProperty("parentDn", map[string]any{
+			"isConfigurable": true,
+			"isNaming":       true,
+		}, parentDnDefinition, ds.GlobalMetaDefinition)
+		if err != nil {
+			return err
+		}
+		property.AttributeName = "parent_dn"
+		property.Documentation.Description = "The distinguished name (DN) of the parent object."
+		c.Properties["parentDn"] = property
+		c.PropertiesAll = append(c.PropertiesAll, "parentDn")
+		c.PropertiesRequired = append(c.PropertiesRequired, "parentDn")
+	}
+
+	// Sort all property lists alphabetically to ensure deterministic output when iterating over properties in templates.
+	slices.Sort(c.PropertiesAll)
+	slices.Sort(c.PropertiesOptional)
+	slices.Sort(c.PropertiesReadOnly)
+	slices.Sort(c.PropertiesRequired)
+
+	genLogger.Debugf("Successfully set properties for class '%s'.", c.Name)
+	return nil
+}
+
+func (c *Class) validatePropertyDefinitions(ctx *Context) {
+	// Check raw metadata so overrides for excluded properties remain valid.
+	properties, _ := c.MetaFileContent["properties"].(map[string]any)
+	for _, name := range slices.Sorted(maps.Keys(c.ClassDefinition.Properties)) {
+		if _, exists := properties[name]; !exists && name != "parentDn" {
+			ctx.Diagnostics.AddError("Class '%s': unknown property override %q", c.Name, name)
+		}
+	}
+}
+
+func (c *Class) validateAttributeNames(ds *DataStore) {
+	// The reusable model and top-level wrapper share one Terraform field namespace.
+	names := map[string]string{}
+	add := func(name, source string) {
+		if previous, exists := names[name]; exists {
+			ds.ctx.Diagnostics.AddError("Class '%s': duplicate Terraform attribute name %q from %s and %s", c.Name, name, previous, source)
+			return
+		}
+		names[name] = source
+	}
+	for _, property := range c.ModelProperties() {
+		add(property.AttributeName, fmt.Sprintf("property %q", property.PropertyName))
+	}
+	for _, alias := range c.NestedLegacyAttributes {
+		add(alias.AttributeName, fmt.Sprintf("compatibility field %q", alias.AttributeName))
+	}
+	for _, name := range c.Children {
+		child := ds.Classes[name.String()]
+		add(child.ResourceNameNested, fmt.Sprintf("child %q", name))
+	}
+	if !c.HasResourceArtifact() && !c.HasDatasourceArtifact() {
+		return
+	}
+	add("id", "generated ID")
+	if parent := c.ParentDnProperty(); parent != nil {
+		add(parent.AttributeName, "generated parent DN")
+	}
+	for _, alias := range c.RootLegacyAttributes() {
+		if alias.Status != Removed {
+			add(alias.AttributeName, fmt.Sprintf("compatibility field %q", alias.AttributeName))
+		}
+	}
+}
+
+func (c *Class) setRelation() error {
+	// Determine if the class is a relational class.
+	genLogger.Debugf("Setting Relation details for class '%s'.", c.Name)
+
+	metaRelationInfo, _ := c.MetaFileContent["relationInfo"].(map[string]any)
+	defRelationInfo := c.ClassDefinition.RelationInfo
+
+	// Allow the definition file to opt out of relational handling entirely. This is mutually
+	// exclusive with supplying any other `relation_info` override; mixing them is almost
+	// always a YAML authoring mistake, so fail fast rather than silently ignoring fields.
+	if defRelationInfo.Disabled {
+		if defRelationInfo.Type != UndefinedRelationshipType || defRelationInfo.FromClass != "" || len(defRelationInfo.ToClasses) > 0 {
+			return fmt.Errorf("failed to set relation for class '%s': relation_info.disabled is mutually exclusive with type, from_class, and to_classes", c.Name)
+		}
+		genLogger.Debugf("Class '%s' has relation_info.disabled=true; skipping relational handling.", c.Name)
+		return nil
+	}
+
+	// Skip non-relational classes entirely. A class is relational when either the meta file
+	// declares a `relationInfo` block or the definition file supplies a `relation_info` override.
+	if metaRelationInfo == nil && defRelationInfo.Type == UndefinedRelationshipType && defRelationInfo.FromClass == "" && len(defRelationInfo.ToClasses) == 0 {
+		genLogger.Debugf("Class '%s' is not a relational class; no Relation details to set.", c.Name)
+		return nil
+	}
+	c.Relation.RelationalClass = true
+
+	// Resolve each relationInfo field with the definition taking precedence over meta.
+	// defRelationInfo.Type.String() returns "" for the UndefinedRelationshipType zero value,
+	// which lets the override-merge fall back to the meta value.
+	typeStr := utils.GetValueFromMapWithOverride(metaRelationInfo, "type", defRelationInfo.Type.String())
+	fromMo := utils.GetValueFromMapWithOverride(metaRelationInfo, "fromMo", defRelationInfo.FromClass)
+	metaToMo := utils.GetValueFromMapWithOverride(metaRelationInfo, "toMo", "")
+
+	// Validate all required relation_info fields together so the user sees every missing
+	// field in a single error rather than fix-rebuild-fix-rebuild.
+	var missing []string
+	if typeStr == "" {
+		missing = append(missing, "type")
+	}
+	if fromMo == "" {
+		missing = append(missing, "from_class")
+	}
+	if metaToMo == "" && len(defRelationInfo.ToClasses) == 0 {
+		missing = append(missing, "to_classes")
+	}
+	if len(missing) > 0 {
+		return fmt.Errorf("failed to set relation for class '%s': missing required relation_info fields: %s", c.Name, strings.Join(missing, ", "))
+	}
+
+	var relationType RelationshipTypeEnum
+	if err := relationType.UnmarshalText([]byte(typeStr)); err != nil {
+		return fmt.Errorf("failed to set relation for class '%s': %w", c.Name, err)
+	}
+	c.Relation.Type = relationType
+
+	fromClass, err := NewClassName(fromMo)
+	if err != nil {
+		return err
+	}
+	c.Relation.FromClass = fromClass
+
+	if strings.Contains(c.Name.String(), "To") {
+		c.Relation.IncludeFrom = true
+	}
+
+	// Resolve the target classes. The `relation_info.to_classes` definition override replaces
+	// the meta `toMo` entirely when present, supporting both a single concrete target and a list
+	// of concrete targets when the meta `toMo` is abstract.
+	toMos := defRelationInfo.ToClasses
+	if len(toMos) == 0 {
+		toMos = []string{metaToMo}
+	}
+	toClasses := make([]*ClassName, 0, len(toMos))
+	for _, target := range toMos {
+		toClass, err := NewClassName(target)
+		if err != nil {
+			return err
+		}
+		toClasses = append(toClasses, toClass)
+	}
+	// Sort and deduplicate by full class name. Pointer comparison is not meaningful here,
+	// so SortFunc/CompactFunc are used instead of Sort/Compact.
+	slices.SortFunc(toClasses, func(a, b *ClassName) int { return strings.Compare(a.String(), b.String()) })
+	c.Relation.ToClasses = slices.CompactFunc(toClasses, func(a, b *ClassName) bool { return a.String() == b.String() })
+
+	genLogger.Debugf("Successfully set Relation details for class '%s'.", c.Name)
+
+	return nil
+}
+
+func (c *Class) setRequiredAsChild() {
+	// Determine if the class is required when defined as a child in a parent resource.
+	genLogger.Debugf("Setting RequiredAsChild for class '%s'.", c.Name)
+
+	c.RequiredAsChild = c.ClassDefinition.RequiredAsChild
+
+	genLogger.Debugf("Successfully set RequiredAsChild for class '%s'. RequiredAsChild: %t", c.Name, c.RequiredAsChild)
+}
+
+func (c *Class) setResourceName(ds *DataStore) error {
+	genLogger.Debugf("Setting resource name for class '%s'.", c.Name)
+
+	// Get the resource name from definition, else construct the resource name from label, error when both not found.
+	if c.ClassDefinition.ResourceName != "" {
+		c.ResourceName = c.ClassDefinition.ResourceName
+	} else if label, ok := c.MetaFileContent["label"]; ok && label != "" {
+		c.ResourceName = utils.Underscore(label.(string))
+	} else {
+		return fmt.Errorf("failed to set resource name for class '%s': resource_name not defined and label not found", c.Name)
+	}
+	c.ResourceNameNested = c.ResourceName
+
+	// Determine if the class is relational and set the resource names based on
+	// the relation. An explicit resource_name remains authoritative; otherwise
+	// derive the top-level and nested names from the relation target.
+	if c.Relation.RelationalClass {
+		// When the relation has more than one target class, the meta `toMo` is abstract or
+		// has been overridden with a list of concrete targets via `relation_info.to_classes`.
+		// In that case no single target can drive auto-naming, so the class definition
+		// must provide an explicit `resource_name`.
+		if len(c.Relation.ToClasses) > 1 {
+			if c.ClassDefinition.ResourceName == "" {
+				return fmt.Errorf("failed to set resource name for class '%s': resource_name is required when relation_info.to_classes has more than one entry", c.Name)
+			}
+		} else if c.ClassDefinition.ResourceName == "" {
+			// Single-target relation: auto-generate `relation_to_<x>` (or
+			// `relation_from_<from>_to_<x>`) from the only target class.
+			toClass := ds.getResourceName(c.Relation.ToClasses[0].String())
+			if c.Relation.IncludeFrom {
+				c.ResourceName = fmt.Sprintf("relation_from_%s_to_%s", ds.getResourceName(c.Relation.FromClass.String()), toClass)
+			} else {
+				c.ResourceName = fmt.Sprintf("relation_to_%s", toClass)
+			}
+			c.ResourceNameNested = fmt.Sprintf("relation_to_%s", toClass)
+		}
+
+		// A top-level relation can include its source to remain unique while
+		// the same class, when embedded in that source, only needs the target.
+		// Normalize the explicit historical form without replacing its target
+		// wording with the target class's resource name.
+		if strings.HasPrefix(c.ResourceNameNested, "relation_from_") {
+			if _, target, found := strings.Cut(strings.TrimPrefix(c.ResourceNameNested, "relation_from_"), "_to_"); found {
+				c.ResourceNameNested = "relation_to_" + target
+			}
+		}
+	}
+
+	// Repeated children use a plural nested attribute name. A definition can
+	// force an identified class to remain singleton when embedded.
+	if len(c.IdentifiedBy) != 0 && !c.IsSingleNestedWhenDefinedAsChild {
+		c.ResourceNameNested = utils.Plural(c.ResourceNameNested)
+	}
+
+	if c.ClassDefinition.ResourceNameNested != "" {
+		c.ResourceNameNested = c.ClassDefinition.ResourceNameNested
+	}
+
+	genLogger.Debugf("Successfully set resource name '%s' for class '%s'.", c.ResourceName, c.Name)
+	return nil
+}
+
+func (c *Class) setRnFormat() error {
+	// Determine the relative name (RN) format of the class.
+	genLogger.Debugf("Setting RnFormat for class '%s'.", c.Name)
+
+	// Use ClassDefinition override if specified, otherwise read from meta file.
+	if c.ClassDefinition.RnFormat != "" {
+		c.RnFormat = c.ClassDefinition.RnFormat
+	} else if rnFormat, ok := c.MetaFileContent["rnFormat"].(string); ok {
+		c.RnFormat = rnFormat
+	}
+
+	// When rnFormat is not specified error to force users to add rnFormat.
+	if c.RnFormat == "" {
+		return fmt.Errorf("rnFormat not specified for class '%s': add rn_format to the class definition file", c.Name)
+	}
+
+	// Prepend the RN path prefix if specified in the definition.
+	if c.ClassDefinition.RnPrepend != "" {
+		c.RnFormat = fmt.Sprintf("%s/%s", c.ClassDefinition.RnPrepend, c.RnFormat)
+	}
+
+	genLogger.Debugf("Successfully set RnFormat '%s' for class '%s'.", c.RnFormat, c.Name)
+	return nil
+}
+
+// ParentDnVariant is the resolved counterpart of ParentDnVariantDefinition. It
+// pins one valid (parent_class, parent_dn, rn_prepend, wrapper_class,
+// test_platform) tuple for a class with more than one valid placement that
+// reaches APIC via a distinct request path per placement.
+type ParentDnVariant struct {
+	// User-facing parent class for this variant (e.g. fvTenant for the
+	// tenant-scoped pkiKeyRing placement, pkiEp for the system-scoped one).
+	ParentClass *ClassName
+	// Resolved DN prefix users supply as parent_dn for this variant. Derived
+	// from the matching meta dnFormat minus the class's identifying RN segment
+	// (e.g. "uni/userext/pkiext" for the system-scoped pkiKeyRing placement).
+	// Empty for variants whose parent DN is supplied at runtime (the typical
+	// tenant-scoped case).
+	ParentDn string
+	// Intermediate RN segment inserted between the matched parent DN and the
+	// class RN. Generated methods select the variant by matching parent_dn against
+	// patterns derived from ParentClass. Empty on the synthesised default variant.
+	RnPrepend string
+	// Implicit container the request nests the resource inside (e.g.
+	// cloudCertStore for a tenant-scoped pkiKeyRing). nil for variants that
+	// POST against a real, user-addressable parent.
+	WrapperClass *ClassName
+	// Platform profile that exercises this variant in tests.
+	TestPlatform PlatformTypeEnum
+}
+
+// setParentDnVariants resolves Class.ParentDnVariants from
+// ClassDefinition.ParentDnVariants. Classes with a single canonical placement
+// (the common case) leave both Class.ParentDnVariants and Class.DefaultParentDn
+// nil. When YAML variants are declared, the setter synthesises the default
+// placement from meta (the dnFormat that doesn't contain any YAML rn_prepend
+// segment) and prepends it to the resolved variant list so element 0 is
+// always the default. Must run after setRnFormat: the default ParentDn is
+// derived by stripping c.RnFormat (the identifying suffix) from the matching
+// meta dnFormat.
+func (c *Class) setParentDnVariants() error {
+	if len(c.ClassDefinition.ParentDnVariants) == 0 {
+		return nil
+	}
+
+	genLogger.Debugf("Setting ParentDnVariants for class '%s'.", c.Name)
+
+	rawFormats, _ := c.MetaFileContent["dnFormats"].([]any)
+	metaDnFormats := make([]string, 0, len(rawFormats))
+	for _, raw := range rawFormats {
+		if s, ok := raw.(string); ok {
+			metaDnFormats = append(metaDnFormats, s)
+		}
+	}
+	if len(metaDnFormats) == 0 {
+		return fmt.Errorf("failed to resolve ParentDnVariants for class '%s': meta has no dnFormats", c.Name)
+	}
+
+	// Identify the default dnFormat: the one not selected by any YAML
+	// rn_prepend segment.
+	isVariantFormat := func(dnFormat string) bool {
+		for _, v := range c.ClassDefinition.ParentDnVariants {
+			if v.RnPrepend != "" && strings.Contains(dnFormat, "/"+v.RnPrepend+"/") {
+				return true
+			}
+		}
+		return false
+	}
+	var defaultDnFormat string
+	for _, dnFormat := range metaDnFormats {
+		if !isVariantFormat(dnFormat) {
+			defaultDnFormat = dnFormat
+			break
+		}
+	}
+	if defaultDnFormat == "" {
+		return fmt.Errorf("failed to resolve default ParentDn for class '%s': no meta dnFormat is free of YAML rn_prepend segments (dnFormats: %v)", c.Name, metaDnFormats)
+	}
+
+	// Strip the identifying RN suffix to get the default parent_dn prefix.
+	defaultParentDn := strings.TrimSuffix(defaultDnFormat, "/"+c.RnFormat)
+
+	// Resolve the default's parent class from meta containedBy by excluding
+	// every meta parent that corresponds to a YAML variant's wrapper class.
+	// The YAML's `parent_class` is the *user-facing* parent (e.g. fvTenant)
+	// which typically does not appear in meta `containedBy`; the wrapper class
+	// (e.g. cloudCertStore) is the *direct* parent the request nests inside.
+	// Excluding wrapper classes leaves the meta entry that corresponds to the
+	// default placement (e.g. pkiEp for the system-scoped pkiKeyRing).
+	variantWrapperMetaNames := make(map[string]bool, len(c.ClassDefinition.ParentDnVariants))
+	for _, v := range c.ClassDefinition.ParentDnVariants {
+		if v.WrapperClass == "" {
+			continue
+		}
+		wrapper, err := NewClassName(v.WrapperClass)
+		if err != nil {
+			return fmt.Errorf("failed to parse parent_dn_variants wrapper_class '%s' for class '%s': %w", v.WrapperClass, c.Name, err)
+		}
+		variantWrapperMetaNames[wrapper.MetaStyle()] = true
+	}
+	var defaultParentMetaName string
+	if containedBy, ok := c.MetaFileContent["containedBy"].(map[string]any); ok {
+		candidates := make([]string, 0, len(containedBy))
+		for parentMeta := range containedBy {
+			if !variantWrapperMetaNames[parentMeta] {
+				candidates = append(candidates, parentMeta)
+			}
+		}
+		// Sort for determinism — meta containedBy is a Go map with random iteration order.
+		slices.Sort(candidates)
+		if len(candidates) > 0 {
+			defaultParentMetaName = candidates[0]
+		}
+	}
+	if defaultParentMetaName == "" {
+		return fmt.Errorf("failed to resolve default ParentDn parent_class for class '%s': meta containedBy has no entry outside the YAML variants' wrapper classes", c.Name)
+	}
+	defaultParentClass, err := NewClassName(defaultParentMetaName)
+	if err != nil {
+		return fmt.Errorf("failed to parse default ParentDn parent_class '%s' for class '%s': %w", defaultParentMetaName, c.Name, err)
+	}
+
+	resolved := make([]ParentDnVariant, 0, len(c.ClassDefinition.ParentDnVariants)+1)
+	resolved = append(resolved, ParentDnVariant{
+		ParentClass:  defaultParentClass,
+		ParentDn:     defaultParentDn,
+		TestPlatform: Apic,
+	})
+	for _, v := range c.ClassDefinition.ParentDnVariants {
+		parentClass, err := NewClassName(v.ParentClass)
+		if err != nil {
+			return fmt.Errorf("failed to parse parent_dn_variants parent_class '%s' for class '%s': %w", v.ParentClass, c.Name, err)
+		}
+		var wrapperClass *ClassName
+		if v.WrapperClass != "" {
+			wrapperClass, err = NewClassName(v.WrapperClass)
+			if err != nil {
+				return fmt.Errorf("failed to parse parent_dn_variants wrapper_class '%s' for class '%s': %w", v.WrapperClass, c.Name, err)
+			}
+		}
+		resolved = append(resolved, ParentDnVariant{
+			ParentClass:  parentClass,
+			RnPrepend:    v.RnPrepend,
+			WrapperClass: wrapperClass,
+			TestPlatform: v.TestPlatform,
+		})
+	}
+
+	c.ParentDnVariants = resolved
+	c.DefaultParentDn = &resolved[0]
+
+	genLogger.Debugf("Successfully set ParentDnVariants for class '%s'. Default parent_dn: '%s', total variants: %d", c.Name, defaultParentDn, len(c.ParentDnVariants))
+	return nil
+}
+
+func (c *Class) setSupportedVersions() error {
+	// Determine the supported APIC versions for the class.
+	// TODO: After the generator refactor, account for hidden-version boundaries in
+	// support and test version gates. deprecatedSince, isHidden, and hiddenSince already
+	// feed ClassDocumentation.setDeprecationWarning, but do not narrow this range.
+	// Deprecation alone does not end support.
+	genLogger.Debugf("Setting SupportedVersions for class '%s'.", c.Name)
+
+	// Initialize with versions from ClassDefinition, if not defined set the versions from meta file.
+	metaVersions := c.ClassDefinition.SupportedVersions
+	if metaVersions == "" {
+		metaVersions, _ = c.MetaFileContent["versions"].(string)
+	}
+
+	// When versions are not specified error to force users to add versions.
+	if metaVersions == "" {
+		return fmt.Errorf("versions not specified for class '%s': add versions to the class definition file", c.Name)
+	}
+
+	versions, err := NewVersions(metaVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse versions for class '%s': %w", c.Name, err)
+	}
+	c.SupportedVersions = versions
+
+	genLogger.Debugf("Successfully set SupportedVersions for class '%s'. Versions: '%s'", c.Name, c.SupportedVersions)
+	return nil
+}
+
+func (c *Class) setPropertySupportedVersions() {
+	// Finalize availability once, after both class and property metadata have been loaded.
+	for _, property := range c.Properties {
+		// Declared property ranges remain independent; enclosing class gates apply separately.
+		if property.SupportedVersions == nil {
+			property.SupportedVersions = c.SupportedVersions
+		}
+		if property.propertyDefinition.SupportedVersions == "" {
+			property.SupportedVersions = property.SupportedVersions.Exclude(property.HiddenVersions)
+		}
+	}
+}
+
+func shouldIncludeChild(rn, className string, excludeChildrenFromClassDef, alwaysIncludeFromGlobalDef []string) bool {
+	// Determines if a child class should be included, with a default behavior of excluding a child class.
+	// A child class is included if any of the following conditions are met (in order of precedence):
+	//  1. The className is NOT in the excludeChildrenFromClassDef list (if it is, the child is excluded regardless of other rules)
+	//  2. The className is in the alwaysIncludeFromGlobalDef list
+	//  3. The RN format starts with "rs" (relation source classes)
+	//  4. The RN format does NOT end with "-" (non-named classes without a specific identifier)
+	// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeChildren.
+	if slices.Contains(excludeChildrenFromClassDef, className) {
+		genLogger.Tracef("Child class '%s' excluded via excludeChildrenFromClassDef.", className)
+		return false
+	}
+
+	// Include if the class is in GlobalMetaDefinition.AlwaysIncludeAsChild.
+	if slices.Contains(alwaysIncludeFromGlobalDef, className) {
+		genLogger.Tracef("Child class '%s' included via alwaysIncludeFromGlobalDef.", className)
+		return true
+	}
+
+	// Include classes where the RN starts with "rs" (relation source).
+	if strings.HasPrefix(rn, "rs") {
+		genLogger.Tracef("Child class '%s' included because RN starts with 'rs'.", className)
+		return true
+	}
+
+	// Include classes where the RN does NOT end with "-" (non-named classes without a specific identifier).
+	if !strings.HasSuffix(rn, "-") {
+		genLogger.Tracef("Child class '%s' included because RN '%s' does not end with '-'.", className, rn)
+		return true
+	}
+
+	genLogger.Tracef("Child class '%s' excluded by default (RN ends with '-').", className)
+	return false
+}
+
+// sortAndConvertToClassNames sorts, deduplicates, and converts a slice of class name strings to ClassName pointers.
+func sortAndConvertToClassNames(classNameStrings []string) ([]*ClassName, error) {
+	slices.Sort(classNameStrings)
+	classNameStrings = slices.Compact(classNameStrings)
+
+	classNames := make([]*ClassName, 0, len(classNameStrings))
+	for _, classNameStr := range classNameStrings {
+		name, err := NewClassName(classNameStr)
+		if err != nil {
+			return nil, err
+		}
+		classNames = append(classNames, name)
+	}
+	return classNames, nil
+}
+
+func (c *Class) setTestDependencies(ds *DataStore) {
+	// Resolve the test dependencies for the class.
+	// By default, explicit definitions are processed first (allowing overrides with ConfigOverrides),
+	// then parent auto-resolution fills in missing references. A top-level explicit Target is
+	// authoritative and suppresses target inference from Relation.ToClasses.
+	// When ReplaceAutoResolved is true, only explicit dependencies are used.
+	genLogger.Debugf("Setting TestDependencies for class '%s'.", c.Name)
+
+	testDependencies := make(map[string]*TestDependency)
+
+	if c.ClassDefinition.TestConfig.ReplaceAutoResolved {
+		// Full replacement: skip auto-resolution entirely.
+		c.TestDependencies = c.getTestDependenciesFromDefinitions(c.ClassDefinition.TestConfig.Dependencies, ds, testDependencies, 0)
+	} else {
+		// Process explicit definitions first (allows overriding auto-resolved defaults).
+		if len(c.ClassDefinition.TestConfig.Dependencies) > 0 {
+			c.TestDependencies = c.getTestDependenciesFromDefinitions(c.ClassDefinition.TestConfig.Dependencies, ds, testDependencies, 0)
+		}
+
+		// Auto-resolve eligible parent and target dependencies. Target resolution
+		// returns nothing when an explicit top-level Target was defined above.
+		for _, resolvedTestDependency := range slices.Concat(c.resolveParentDependencies(ds, testDependencies), c.resolveTargetDependencies(ds, testDependencies)) {
+			if !slices.ContainsFunc(c.TestDependencies, func(td *TestDependency) bool {
+				return td.Reference == resolvedTestDependency.Reference
+			}) {
+				c.TestDependencies = append(c.TestDependencies, resolvedTestDependency)
+			}
+		}
+	}
+
+	// Resolve placeholders in ConfigOverrides against the full DAG.
+	c.resolveConfigOverridePlaceholders(testDependencies)
+	c.orderTestDependencies()
+	c.canonicalizeTestDependencies()
+	genLogger.Debugf("Successfully set TestDependencies for class '%s'. Top-level: %d, total in DAG: %d", c.Name, len(c.TestDependencies), len(testDependencies))
+}
+
+func (c *Class) orderTestDependencies() {
+	ordered := make([]*TestDependency, 0, len(c.TestDependencies))
+	added := make(map[*TestDependency]bool, len(c.TestDependencies))
+	appendMatching := func(role TestDependencyRoleEnum, className *ClassName) {
+		for _, dependency := range c.TestDependencies {
+			if added[dependency] || dependency.Role != role || className != nil && !dependency.Class.Equal(className) {
+				continue
+			}
+			ordered = append(ordered, dependency)
+			added[dependency] = true
+		}
+	}
+
+	for _, parent := range c.Parents {
+		appendMatching(Parent, parent)
+	}
+	appendMatching(Parent, nil)
+	for _, target := range c.Relation.ToClasses {
+		appendMatching(Target, target)
+	}
+	appendMatching(Target, nil)
+	for _, dependency := range c.TestDependencies {
+		if !added[dependency] {
+			ordered = append(ordered, dependency)
+		}
+	}
+	c.TestDependencies = ordered
+}
+
+func (c *Class) getTestDependenciesFromDefinitions(testDependencyDefinitions []TestDependencyDefinition, ds *DataStore, testDependencies map[string]*TestDependency, depth int) []*TestDependency {
+	// Convert YAML-driven TestDependencyDefinition entries to TestDependency structs.
+	// Validates Role at the given depth (required at depth 0, ignored at depth > 0).
+	// Returns a slice rather than assigning directly because this function is called recursively:
+	// at depth 0 the result is assigned to c.TestDependencies, at depth > 0 to td.Dependencies.
+	genLogger.Tracef("Converting %d test dependency definitions for class '%s' at depth %d.", len(testDependencyDefinitions), c.Name, depth)
+	result := make([]*TestDependency, 0, len(testDependencyDefinitions))
+
+	for _, testDependencyDefinition := range testDependencyDefinitions {
+		// Validate role based on depth.
+		if depth == 0 && testDependencyDefinition.Role == UndefinedRole {
+			ds.ctx.Diagnostics.AddError("Class '%s': top-level test dependency for '%s' is missing required 'role' field.", c.Name, testDependencyDefinition.ClassName)
+			continue
+		}
+		if depth > 0 && testDependencyDefinition.Role != UndefinedRole {
+			genLogger.Tracef("Class '%s': nested test dependency for '%s' has 'role' field set (role is ignored for nested dependencies).", c.Name, testDependencyDefinition.ClassName)
+		}
+
+		className, err := NewClassName(testDependencyDefinition.ClassName)
+		if err != nil {
+			ds.ctx.Diagnostics.AddError("Class '%s': failed to parse dependency class name '%s': %v", c.Name, testDependencyDefinition.ClassName, err)
+			continue
+		}
+		reference := testDependencyDefinition.Reference
+		referenceType := testDependencyDefinition.ReferenceType
+		if reference == "" && referenceType != StaticReference {
+			if dependencyClass, ok := ds.Classes[className.String()]; ok && dependencyClass.HasResourceArtifact() {
+				reference = fmt.Sprintf("aci_%s.test.id", dependencyClass.ResourceName)
+				referenceType = ResourceReference
+			}
+		}
+
+		// Dedup by reference: reuse existing node when the same reference appears more than once.
+		// At depth 0 we still validate the duplicate's Role to allow promoting an existing dep that
+		// was first introduced nested (Role=UndefinedRole) into a Parent/Target slot.
+		// Derivable empty references have already been normalized above, so identical implicit
+		// dependencies share a DAG node. An unresolved empty Reference is not a valid dedup key;
+		// registering it could fold a nested dependency into its parent and create a self-loop.
+		if reference != "" {
+			if existing, ok := testDependencies[reference]; ok {
+				if depth == 0 {
+					newRole := testDependencyDefinition.Role
+					switch {
+					case existing.Role == UndefinedRole && newRole != UndefinedRole:
+						existing.Role = newRole
+					case existing.Role != UndefinedRole && newRole != UndefinedRole && existing.Role != newRole:
+						ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' declares conflicting roles ('%s' vs '%s'); first declaration wins.", c.Name, testDependencyDefinition.ClassName, existing.Role, newRole)
+					}
+					if len(testDependencyDefinition.ConfigOverrides) > 0 {
+						ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' carries config_overrides; merge them into the first declaration.", c.Name, testDependencyDefinition.ClassName)
+					}
+					if len(testDependencyDefinition.Dependencies) > 0 {
+						ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' carries dependencies; merge them into the first declaration.", c.Name, testDependencyDefinition.ClassName)
+					}
+				} else {
+					genLogger.Tracef("Class '%s': nested duplicate reference '%s' reuses existing DAG node.", c.Name, reference)
+				}
+				result = append(result, existing)
+				continue
+			}
+		}
+
+		testDependency := &TestDependency{
+			PrefixEnabled:   testDependencyDefinition.Prefix.Enabled,
+			Class:           className,
+			SourceReference: reference,
+			Reference:       reference,
+			ReferenceType:   referenceType,
+			Role:            testDependencyDefinition.Role,
+			OrderOnly:       testDependencyDefinition.OrderOnly,
+			IgnoreChanges:   slices.Clone(testDependencyDefinition.IgnoreChanges),
+			ConfigOverrides: testDependencyDefinition.ConfigOverrides,
+		}
+		for _, targetClassName := range testDependencyDefinition.TargetClasses {
+			targetClass, err := NewClassName(targetClassName)
+			if err != nil {
+				ds.ctx.Diagnostics.AddError("Class '%s': dependency '%s' has invalid target class name '%s': %v", c.Name, testDependencyDefinition.ClassName, targetClassName, err)
+				continue
+			}
+			testDependency.TargetClasses = append(testDependency.TargetClasses, targetClass)
+		}
+
+		if reference != "" {
+			testDependencies[reference] = testDependency
+		}
+
+		// Recursively resolve nested dependencies.
+		if len(testDependencyDefinition.Dependencies) > 0 {
+			testDependency.Dependencies = c.getTestDependenciesFromDefinitions(testDependencyDefinition.Dependencies, ds, testDependencies, depth+1)
+		}
+
+		// Populate per-dependency child overrides (used when this dependency's resource block
+		// is rendered in tests). Keys are child class names; values are TestChild instances
+		// built from the override, with grandchildren preserved via merge.
+		if len(testDependencyDefinition.Children) > 0 {
+			testDependency.Children = make(map[string]*TestChild, len(testDependencyDefinition.Children))
+			for childClassStr, childOverride := range testDependencyDefinition.Children {
+				if len(childOverride.Instances) == 0 {
+					continue
+				}
+				childClassName, err := NewClassName(childClassStr)
+				if err != nil {
+					ds.ctx.Diagnostics.AddError("Class '%s': dependency '%s' has invalid child class name '%s': %v", c.Name, testDependencyDefinition.Reference, childClassStr, err)
+					continue
+				}
+				var grandChildClass *Class
+				if gc, ok := ds.Classes[childClassStr]; ok {
+					grandChildClass = &gc
+				}
+				testDependency.Children[childClassStr] = &TestChild{
+					Class:     childClassName,
+					Instances: buildOverrideInstances(ds, grandChildClass, childOverride.Instances, nil),
+				}
+			}
+		}
+
+		result = append(result, testDependency)
+	}
+
+	genLogger.Tracef("Successfully converted %d test dependency definitions for class '%s' at depth %d.", len(result), c.Name, depth)
+	return result
+}
+
+func (c *Class) resolveParentDependencies(ds *DataStore, testDependencies map[string]*TestDependency) []*TestDependency {
+	// Resolve parent test dependencies.
+	// First resolvable parent class gets 2 instances (for ForceNew testing),
+	// second resolvable parent class gets 1.
+	genLogger.Tracef("Resolving parent dependencies for class '%s'.", c.Name)
+	if c.ParentDnHasSchemaDefault() {
+		genLogger.Tracef("Class '%s': parent_dn has a schema default; skipping parent auto-resolution.", c.Name)
+		return nil
+	}
+	if slices.ContainsFunc(c.TestDependencies, func(dependency *TestDependency) bool {
+		return dependency.Role == Parent
+	}) {
+		genLogger.Tracef("Class '%s': explicit Parent dependencies are authoritative; skipping parent auto-resolution.", c.Name)
+		return nil
+	}
+	var result []*TestDependency
+
+	resolvedParentCount := 0
+	for _, parent := range c.Parents {
+		if resolvedParentCount >= 2 {
+			// Only auto-resolve the first 2 resolvable parent classes; remaining
+			// parents are available via explicit test_config.dependencies if needed.
+			genLogger.Tracef("Class '%s': has %d parents, auto-resolving first 2 only.", c.Name, len(c.Parents))
+			break
+		}
+
+		parentClass, ok := ds.Classes[parent.String()]
+		if !ok || !parentClass.HasResourceArtifact() {
+			genLogger.Tracef("Class '%s': parent '%s' has no resource artifact, skipping.", c.Name, parent)
+			continue
+		}
+		resourceName := parentClass.ResourceName
+
+		if resolvedParentCount == 0 {
+			// First parent: 2 instances for ForceNew testing.
+			result = append(result,
+				c.buildDependency(parent, fmt.Sprintf("aci_%s.test.id", resourceName), ResourceReference, Parent, ds, testDependencies),
+				c.buildDependency(parent, fmt.Sprintf("aci_%s.test_2.id", resourceName), ResourceReference, Parent, ds, testDependencies),
+			)
+		} else {
+			// Additional parent: 1 instance for compatibility testing.
+			result = append(result, c.buildDependency(parent, fmt.Sprintf("aci_%s.test.id", resourceName), ResourceReference, Parent, ds, testDependencies))
+		}
+		resolvedParentCount++
+	}
+
+	genLogger.Tracef("Successfully resolved %d parent dependencies for class '%s'.", len(result), c.Name)
+	return result
+}
+
+func (c *Class) resolveTargetDependencies(ds *DataStore, testDependencies map[string]*TestDependency) []*TestDependency {
+	// Resolve target test dependencies from Relation.ToClasses.
+	genLogger.Tracef("Resolving target dependencies for class '%s'.", c.Name)
+	if !c.Relation.RelationalClass || len(c.Relation.ToClasses) == 0 {
+		genLogger.Tracef("No target dependencies to resolve for class '%s'.", c.Name)
+		return nil
+	}
+	if slices.ContainsFunc(c.TestDependencies, func(td *TestDependency) bool {
+		return td.Role == Target
+	}) {
+		genLogger.Tracef("Class '%s': explicit Target dependencies are authoritative; skipping target auto-resolution.", c.Name)
+		return nil
+	}
+
+	// Multi-target: require explicit YAML.
+	if len(c.Relation.ToClasses) > 1 {
+		ds.ctx.Diagnostics.AddError("Class '%s': multi-target relation (%d targets) requires explicit test_config.dependencies with role 'target'.", c.Name, len(c.Relation.ToClasses))
+		return nil
+	}
+
+	// Single-target: 2 instances for toggling in update tests.
+	target := c.Relation.ToClasses[0]
+	targetClass, ok := ds.Classes[target.String()]
+	if !ok || !targetClass.HasResourceArtifact() {
+		ds.ctx.Diagnostics.AddError("Class '%s': target '%s' has no resource artifact. Provide explicit test_config.dependencies.", c.Name, target)
+		return nil
+	}
+	resourceName := targetClass.ResourceName
+
+	return []*TestDependency{
+		c.buildDependency(target, fmt.Sprintf("aci_%s.test.id", resourceName), ResourceReference, Target, ds, testDependencies),
+		c.buildDependency(target, fmt.Sprintf("aci_%s.test_2.id", resourceName), ResourceReference, Target, ds, testDependencies),
+	}
+}
+
+func (c *Class) buildDependency(className *ClassName, reference string, refType ReferenceTypeEnum, role TestDependencyRoleEnum, ds *DataStore, testDependencies map[string]*TestDependency) *TestDependency {
+	// Create a TestDependency node and recursively resolve its parent chain.
+	genLogger.Tracef("Building dependency '%s' for class '%s'.", reference, c.Name)
+	if existing, ok := testDependencies[reference]; ok {
+		genLogger.Tracef("Reusing existing dependency '%s' for class '%s'.", reference, c.Name)
+		return existing
+	}
+
+	testDependency := &TestDependency{
+		Class:           className,
+		SourceReference: reference,
+		Reference:       reference,
+		ReferenceType:   refType,
+		Role:            role,
+	}
+	testDependencies[reference] = testDependency
+
+	// Recursively resolve the dependency's own parents as prerequisites.
+	depClass, exists := ds.Classes[className.String()]
+	if exists {
+		for _, depParent := range depClass.Parents {
+			dependencyParentClass, ok := ds.Classes[depParent.String()]
+			if !ok || !dependencyParentClass.HasResourceArtifact() {
+				genLogger.Tracef("Class '%s': dependency parent '%s' has no resource artifact, skipping.", c.Name, depParent)
+				continue
+			}
+			dependencyResourceName := dependencyParentClass.ResourceName
+			testDependency.Dependencies = append(testDependency.Dependencies, c.buildDependency(depParent, fmt.Sprintf("aci_%s.test.id", dependencyResourceName), ResourceReference, UndefinedRole, ds, testDependencies))
+		}
+	}
+
+	genLogger.Tracef("Successfully built dependency '%s' for class '%s'.", reference, c.Name)
+	return testDependency
+}
+
+func (c *Class) resolveConfigOverridePlaceholders(testDependencies map[string]*TestDependency) {
+	// Resolve {{<reference>}} placeholders in ConfigOverrides values for THIS class's
+	// TestDependencies only. The testDependencies map is the per-class DAG keyed by
+	// dependency reference; it is not shared across classes. Cross-class resolution is not
+	// supported here.
+	// Unresolved placeholders are left as-is: resolution happens in multiple passes
+	// (dependencies → properties → children), so erroring immediately on an unresolved
+	// placeholder mid-resolution would be premature. validateTestCompleteness catches
+	// everything that is still unresolved after all passes complete.
+	genLogger.Tracef("Resolving ConfigOverride placeholders for class '%s'.", c.Name)
+	for _, testDependency := range testDependencies {
+		if len(testDependency.ConfigOverrides) == 0 {
+			continue
+		}
+		for key, value := range testDependency.ConfigOverrides {
+			reference, ok := parsePlaceholder(value)
+			if !ok {
+				continue
+			}
+			if resolved, ok := testDependencies[reference]; ok {
+				testDependency.ConfigOverrides[key] = resolved.Reference
+			}
+		}
+	}
+	genLogger.Tracef("Successfully resolved ConfigOverride placeholders for class '%s'.", c.Name)
+}
+
+func (c *Class) setPropertyTestValues(ds *DataStore) {
+	// Wire dependency-derived property values (tDn, parent_dn, tn<Cap>Name) and resolve placeholders in TestValues.
+	genLogger.Debugf("Resolving property test values for class '%s'.", c.Name)
+
+	// Auto-wire parent_dn from Parent dependencies.
+	c.setParentDn()
+
+	// Auto-wire target property for relational classes.
+	// Explicit relations expose `tDn` (full DN). Named relations expose `tn<TargetCap>Name`
+	// (target's name attribute). Other RelationalClass types are unsupported.
+	if c.Relation.RelationalClass {
+		switch c.Relation.Type {
+		case Explicit:
+			c.setTargetDn()
+		case Named:
+			c.setTargetNameProperty(ds)
+		default:
+			ds.ctx.Diagnostics.AddError("Class '%s': relational class has unsupported relationship type (expected named or explicit).", c.Name)
+		}
+	}
+
+	// Resolve placeholders in any explicitly-defined property TestValues.
+	c.resolvePlaceholdersInProperties()
+
+	// Derive Legacy test values from already-wired Create entries. Runs after
+	// parentDn/tDn wiring and placeholder resolution so cloned references are
+	// final. Iterated in PropertiesAll order for deterministic log output.
+	for _, propertyName := range c.PropertiesAll {
+		c.Properties[propertyName].setLegacyTestValues()
+	}
+
+	// Fill undefined Update/Default/ForceNew scenarios from Create as a final
+	// safety net. Targets two shapes:
+	//   - parentDn/tDn auto-wiring left some scenarios undefined because only one
+	//     parent/target dependency was available (setParentDn only fills
+	//     ForceNew when len(parents) > 1).
+	//   - An author-supplied test_config provided Create only (or Create +
+	//     one of Default/Update), leaving the rest undefined.
+	// In both cases mirroring Create keeps the test step well-formed: the
+	// renderer emits identical config across the lifecycle and the test
+	// exercises the schema. Authors can still override any scenario
+	// explicitly. Iterated in PropertiesAll order for stable logs.
+	for _, propertyName := range c.PropertiesAll {
+		c.Properties[propertyName].fillUndefinedTestValueScenarios()
+	}
+
+	genLogger.Debugf("Successfully resolved property test values for class '%s'.", c.Name)
+}
+
+func (c *Class) setParentDn() {
+	// Wire the parent_dn property's TestValues from Parent dependencies.
+	// parent_dn is a synthetic property that exists only when the class has resolvable parents.
+	// Create, Update, and Default use the SAME first parent reference (parent doesn't change).
+	// ForceNew uses the second parent reference to trigger destroy+recreate.
+	genLogger.Tracef("Setting parentDn test values for class '%s'.", c.Name)
+
+	// Find the parentDn property.
+	parentDn, exists := c.Properties["parentDn"]
+	if !exists {
+		return
+	}
+
+	// Only auto-wire if no explicit TestConfig was provided for this property.
+	if parentDn.hasLifecycleTestConfigDefinition() {
+		return
+	}
+
+	// Collect up to the first two Parent dependencies (mirrors resolveTargetDependencies).
+	var parents []*TestDependency
+	for _, testDependency := range c.TestDependencies {
+		if testDependency.Role != Parent {
+			continue
+		}
+		parents = append(parents, testDependency)
+		if len(parents) == 2 {
+			break
+		}
+	}
+	if len(parents) == 0 {
+		return
+	}
+
+	// Wire Create, Update, and Default from the first parent reference.
+	primaryEntry := testValueEntryForDependency(parents[0])
+	dataSourceMissing := TestValueScenario{}
+	if parentDn.TestValues != nil {
+		dataSourceMissing = parentDn.TestValues.DataSourceMissing
+	}
+	parentDn.TestValues = &TestValues{
+		Create:            newTestValueScenario([]TestValueEntry{primaryEntry}),
+		Update:            newTestValueScenario([]TestValueEntry{primaryEntry}),
+		Default:           newTestValueScenario([]TestValueEntry{primaryEntry}),
+		DataSourceMissing: dataSourceMissing,
+	}
+
+	// Wire ForceNew from the second parent reference (triggers destroy+recreate).
+	if len(parents) > 1 {
+		parentDn.TestValues.ForceNew = newTestValueScenario([]TestValueEntry{testValueEntryForDependency(parents[1])})
+	}
+	genLogger.Tracef("Successfully set parentDn test values for class '%s'.", c.Name)
+}
+
+func (c *Class) setTargetDn() {
+	// Wire the tDn property's TestValues from Target dependencies (Explicit relations).
+	// Caller (setPropertyTestValues) already gates on c.Relation.RelationalClass && Explicit.
+	genLogger.Tracef("Setting targetDn test values for class '%s'.", c.Name)
+
+	// Find the target dependencies. At least one is required to wire the tDn property.
+	var targets []*TestDependency
+	for _, testDependency := range c.TestDependencies {
+		if testDependency.Role == Target {
+			targets = append(targets, testDependency)
+		}
+	}
+	if len(targets) == 0 {
+		return
+	}
+
+	// Find the tDn property.
+	tDn, exists := c.Properties["tDn"]
+	if !exists {
+		return
+	}
+
+	// Only auto-wire if no explicit TestConfig was provided for this property.
+	if tDn.hasLifecycleTestConfigDefinition() {
+		return
+	}
+
+	// With a single target, every step (Create/Update/Default/ForceNew) uses the same reference.
+	// With two or more targets, Create uses the first and Update uses the second so plan diffs
+	// exercise both target references.
+	createTarget := targets[0]
+	updateTarget := targets[0]
+	if len(targets) > 1 {
+		updateTarget = targets[1]
+	} else {
+		genLogger.Tracef("Class '%s': only one Target dependency available; Update reuses Create target.", c.Name)
+	}
+
+	createEntry := testValueEntryForDependency(createTarget)
+	updateEntry := testValueEntryForDependency(updateTarget)
+	dataSourceMissing := TestValueScenario{}
+	if tDn.TestValues != nil {
+		dataSourceMissing = tDn.TestValues.DataSourceMissing
+	}
+	tDn.TestValues = &TestValues{
+		Create:            newTestValueScenario([]TestValueEntry{createEntry}),
+		DataSourceMissing: dataSourceMissing,
+		Update:            newTestValueScenario([]TestValueEntry{updateEntry}),
+		Default:           newTestValueScenario([]TestValueEntry{createEntry}),
+		ForceNew:          newTestValueScenario([]TestValueEntry{createEntry}),
+	}
+	genLogger.Tracef("Successfully set targetDn test values for class '%s'.", c.Name)
+}
+
+func testValueEntryForDependency(dependency *TestDependency) TestValueEntry {
+	return TestValueEntry{
+		ConfigValue:   dependency.Reference,
+		ConfigInclude: true,
+		AssertValue:   dependency.Reference,
+		ValueType:     referenceValueRenderType(dependency.ReferenceType),
+	}
+}
+
+func (c *Class) setTargetNameProperty(ds *DataStore) {
+	// Wire the tn<TargetCap>Name property's TestValues from Target dependencies (Named relations).
+	// The caller has already identified this as a named relation. Named relations must
+	// have exactly one target class, and the property holds that target's name.
+	genLogger.Tracef("Setting target-name test values for class '%s'.", c.Name)
+
+	if len(c.Relation.ToClasses) != 1 {
+		ds.ctx.Diagnostics.AddError("Class '%s': named relation must have exactly one target class.", c.Name)
+		return
+	}
+	targetClass := c.Relation.ToClasses[0]
+	propertyName := targetClass.namedRelationPropertyName()
+
+	property, exists := c.Properties[propertyName]
+	if !exists {
+		// Not every named-relation class exposes the canonical tn<Cap>Name property
+		// (some use property overrides). Caller should set TestValues explicitly via test_config.
+		genLogger.Tracef("Class '%s': named target property '%s' not found; skipping auto-wire.", c.Name, propertyName)
+		return
+	}
+
+	// Skip when an explicit TestConfig already drives the property.
+	if property.hasLifecycleTestConfigDefinition() {
+		return
+	}
+
+	// Find Target dependencies.
+	var targets []*TestDependency
+	for _, testDependency := range c.TestDependencies {
+		if testDependency.Role == Target {
+			targets = append(targets, testDependency)
+		}
+	}
+	if len(targets) == 0 {
+		return
+	}
+
+	// Static references resolve to literal DNs; they have no `.name` attribute to project.
+	// Diagnose and bail rather than emit a broken Terraform expression.
+	for _, target := range targets {
+		if target.ReferenceType == StaticReference {
+			ds.ctx.Diagnostics.AddError("Class '%s': named relation target '%s' uses a static reference; property '%s' needs a resource or data_source target (or an explicit test_config).", c.Name, target.Reference, propertyName)
+			return
+		}
+	}
+
+	createTarget := targets[0]
+	updateTarget := targets[0]
+	if len(targets) > 1 {
+		updateTarget = targets[1]
+	} else {
+		genLogger.Tracef("Class '%s': only one Target dependency available for named relation; Update reuses Create target.", c.Name)
+	}
+
+	createEntry := testValueEntryForDependency(createTarget)
+	createEntry.ConfigValue = targetReferenceToName(createEntry.ConfigValue)
+	createEntry.AssertValue = targetReferenceToName(createEntry.AssertValue)
+	updateEntry := testValueEntryForDependency(updateTarget)
+	updateEntry.ConfigValue = targetReferenceToName(updateEntry.ConfigValue)
+	updateEntry.AssertValue = targetReferenceToName(updateEntry.AssertValue)
+
+	dataSourceMissing := TestValueScenario{}
+	if property.TestValues != nil {
+		dataSourceMissing = property.TestValues.DataSourceMissing
+	}
+	property.TestValues = &TestValues{
+		Create:            newTestValueScenario([]TestValueEntry{createEntry}),
+		DataSourceMissing: dataSourceMissing,
+		Update:            newTestValueScenario([]TestValueEntry{updateEntry}),
+		Default:           newTestValueScenario([]TestValueEntry{createEntry}),
+		ForceNew:          newTestValueScenario([]TestValueEntry{createEntry}),
+	}
+	genLogger.Tracef("Successfully set target-name test values for class '%s'.", c.Name)
+}
+func (c *Class) setPropertyReferenceAttributeNames(ds *DataStore) {
+	// Normalize a named relation's canonical tn<Class>Name property into the
+	// same semantic reference model used by definition-authored references.
+	if c.Relation.RelationalClass && c.Relation.Type == Named && len(c.Relation.ToClasses) == 1 {
+		referenceClass := c.Relation.ToClasses[0]
+		if property, ok := c.Properties[referenceClass.namedRelationPropertyName()]; ok {
+			property.Reference = &PropertyReference{
+				Classes:              []*ClassName{referenceClass},
+				ExampleClass:         referenceClass,
+				ExampleAttributeName: "name",
+			}
+			property.setNamedReferenceAttributeName(ds, referenceClass)
+		}
+	}
+
+	// A semantic name reference following APIC's tn<Class>Name convention uses
+	// the same Terraform attribute name as a primary named-relation target.
+	for _, propertyName := range c.PropertiesAll {
+		property := c.Properties[propertyName]
+		if property.Reference == nil {
+			continue
+		}
+		for _, referenceClass := range property.Reference.Classes {
+			if property.PropertyName == referenceClass.namedRelationPropertyName() {
+				property.Reference.ExampleAttributeName = "name"
+				property.setNamedReferenceAttributeName(ds, referenceClass)
+				break
+			}
+		}
+	}
+}
+
+func targetReferenceToName(ref string) string {
+	// Rewrite a target-resource reference from its `.id` form to its `.name` form so the
+	// named-relation property points at the target's name attribute rather than its DN.
+	if strings.HasSuffix(ref, ".id") {
+		return strings.TrimSuffix(ref, ".id") + ".name"
+	}
+	return ref
+}
+
+func (c *Class) resolvePlaceholdersInProperties() {
+	// Resolve {{<reference>}} placeholders in property TestValues against the class's TestDependencies.
+	genLogger.Tracef("Resolving placeholders in property TestValues for class '%s'.", c.Name)
+	for _, property := range c.Properties {
+		if property.TestValues == nil {
+			continue
+		}
+		c.resolvePlaceholdersInEntries(property.TestValues.Create.Entries)
+		c.resolvePlaceholdersInEntries(property.TestValues.Update.Entries)
+		c.resolvePlaceholdersInEntries(property.TestValues.Default.Entries)
+		c.resolvePlaceholdersInEntries(property.TestValues.ForceNew.Entries)
+	}
+	genLogger.Tracef("Successfully resolved placeholders in property TestValues for class '%s'.", c.Name)
+}
+
+func (c *Class) resolvePlaceholdersInEntries(entries []TestValueEntry) {
+	// Resolve placeholders in a slice of TestValueEntry.
+	// Unresolved placeholders are left as-is (see resolveConfigOverridePlaceholders for rationale).
+	genLogger.Tracef("Resolving placeholders in %d test value entries.", len(entries))
+	for i := range entries {
+		entry := &entries[i]
+		reference, ok := parsePlaceholder(entry.ConfigValue)
+		if !ok {
+			continue
+		}
+		resolved := c.findDependencyByRefRecursive(c.TestDependencies, reference)
+		if resolved == nil {
+			continue
+		}
+		entry.ConfigValue = resolved.Reference
+		entry.AssertValue = resolved.Reference
+		entry.ValueType = referenceValueRenderType(resolved.ReferenceType)
+	}
+}
+
+func isPlaceholder(value string) bool {
+	// Check if a value is a placeholder (e.g., "{{aci_bd.test.id}}").
+	return strings.HasPrefix(value, "{{") && strings.HasSuffix(value, "}}")
+}
+
+func parsePlaceholder(value string) (string, bool) {
+	// Extract the reference from a placeholder string.
+	// Returns the trimmed reference and true if the value is a placeholder, or empty and false otherwise.
+	if !isPlaceholder(value) {
+		return "", false
+	}
+	return strings.TrimSpace(value[2 : len(value)-2]), true
+}
+
+func (c *Class) findDependencyByRefRecursive(testDependencies []*TestDependency, reference string) *TestDependency {
+	// Search the entire DAG for a dependency with the given reference.
+	// A visited set guards against pathological self-loops or mutual-parent cycles
+	// in the DAG (callers must not rely on the slice being acyclic).
+	return c.findDependencyByRefRecursiveVisited(testDependencies, reference, map[*TestDependency]bool{})
+}
+
+func (c *Class) findDependencyByRefRecursiveVisited(testDependencies []*TestDependency, reference string, visited map[*TestDependency]bool) *TestDependency {
+	for _, testDependency := range testDependencies {
+		if visited[testDependency] {
+			continue
+		}
+		visited[testDependency] = true
+		if testDependency.Reference == reference {
+			return testDependency
+		}
+		if found := c.findDependencyByRefRecursiveVisited(testDependency.Dependencies, reference, visited); found != nil {
+			return found
+		}
+	}
+	return nil
+}
+
+func (c *Class) setChildTestValues(ds *DataStore) {
+	// Build TestChildren from child classes' TestValues.
+	// Also auto-collects child-driven dependencies into the parent's TestDependencies.
+	genLogger.Debugf("Resolving child test values for class '%s'.", c.Name)
+
+	// Track visited classes to prevent infinite recursion from circular child relationships.
+	visited := map[string]bool{c.Name.String(): true}
+
+	// Build TestChildren from the class's direct children.
+	c.TestChildren = c.buildTestChildren(ds, c.Children, visited)
+
+	// Apply overrides from ClassDefinition.TestConfig.Children.
+	if len(c.ClassDefinition.TestConfig.Children) > 0 {
+		c.applyChildOverrides(ds)
+	}
+
+	// Collect child-driven dependencies.
+	c.collectChildDrivenDependencies(ds)
+
+	// Resolve placeholders in child instance properties against parent's TestDependencies.
+	c.resolvePlaceholdersInChildren()
+
+	genLogger.Debugf("Successfully resolved child test values for class '%s'. TestChildren count: %d", c.Name, len(c.TestChildren))
+}
+
+func (c *Class) buildTestChildren(ds *DataStore, children []*ClassName, visited map[string]bool) []*TestChild {
+	// Create TestChild entries for a list of child classes.
+	// The visited map tracks the current ancestor chain to prevent infinite
+	// recursion from circular child relationships in the ACI meta data. It is
+	// NOT a "seen anywhere" set — entries are removed after each child's subtree
+	// is built so that siblings (and cousins) can independently include the same
+	// child class (e.g. tagAnnotation / tagTag, which apply to almost every class).
+	genLogger.Tracef("Building test children for class '%s'. Child count: %d.", c.Name, len(children))
+	var result []*TestChild
+
+	for _, childClassName := range children {
+		if visited[childClassName.String()] {
+			genLogger.Tracef("Class '%s': child class '%s' is an ancestor in the current branch, skipping to prevent cycle.", c.Name, childClassName)
+			continue
+		}
+
+		childClass, exists := ds.Classes[childClassName.String()]
+		if !exists {
+			genLogger.Tracef("Class '%s': child class '%s' not found in DataStore, skipping.", c.Name, childClassName)
+			continue
+		}
+
+		visited[childClassName.String()] = true
+		testChild := c.buildTestChild(ds, &childClass, childClassName, visited)
+		delete(visited, childClassName.String())
+		if testChild != nil {
+			result = append(result, testChild)
+		}
+	}
+
+	genLogger.Tracef("Successfully built %d test children for class '%s'.", len(result), c.Name)
+	return result
+}
+
+func (c *Class) buildTestChild(ds *DataStore, childClass *Class, childClassName *ClassName, visited map[string]bool) *TestChild {
+	// Create a TestChild for a single child class with appropriate instances.
+	genLogger.Tracef("Building test child '%s' for class '%s'.", childClassName, c.Name)
+	instanceCount := 2
+	if childClass.IsSingleNestedWhenDefinedAsChild {
+		instanceCount = 1
+	}
+
+	testChild := &TestChild{
+		Class:     childClassName,
+		Instances: make([]TestChildInstance, 0, instanceCount),
+	}
+	for i := 0; i < instanceCount; i++ {
+		instance := buildChildInstance(childClass, i)
+		c.setCompatibleChildTarget(childClass, &instance, i)
+		instance.Children = c.buildTestChildren(ds, childClass.Children, visited)
+		testChild.Instances = append(testChild.Instances, instance)
+	}
+	if len(childClass.ClassDefinition.TestConfig.EmbeddedInstances) > 0 {
+		testChild.Instances = buildOverrideInstances(ds, childClass, childClass.ClassDefinition.TestConfig.EmbeddedInstances, testChild.Instances)
+		genLogger.Tracef("Successfully built test child '%s' for class '%s' from embedded instances.", childClassName, c.Name)
+		return testChild
+	}
+
+	genLogger.Tracef("Successfully built test child '%s' for class '%s'.", childClassName, c.Name)
+	return testChild
+}
+
+func (c *Class) setCompatibleChildTarget(childClass *Class, instance *TestChildInstance, instanceIndex int) {
+	var compatibleTargetClasses []*ClassName
+	for _, dependency := range childClass.TestDependencies {
+		if dependency.Role == Parent && dependency.Class.Equal(c.Name) {
+			compatibleTargetClasses = dependency.TargetClasses
+			break
+		}
+	}
+	if len(compatibleTargetClasses) == 0 {
+		return
+	}
+
+	var targets []*TestDependency
+	for _, dependency := range childClass.TestDependencies {
+		if dependency.Role != Target || !slices.ContainsFunc(compatibleTargetClasses, dependency.Class.Equal) {
+			continue
+		}
+		targets = append(targets, dependency)
+	}
+	if len(targets) == 0 {
+		return
+	}
+
+	target := targets[min(instanceIndex, len(targets)-1)]
+	entry := testValueEntryForDependency(target)
+	var property *Property
+	switch childClass.Relation.Type {
+	case Explicit:
+		property = childClass.Properties["tDn"]
+	case Named:
+		property = childClass.Properties[target.Class.namedRelationPropertyName()]
+		entry.ConfigValue = targetReferenceToName(entry.ConfigValue)
+		entry.AssertValue = targetReferenceToName(entry.AssertValue)
+	}
+	if property == nil {
+		return
+	}
+	instance.Properties[property.AttributeName] = newTestValueScenario([]TestValueEntry{entry})
+}
+
+func buildChildInstance(childClass *Class, instanceIndex int) TestChildInstance {
+	// Create a TestChildInstance from a child class's properties.
+	// The first instance uses Create. A later instance uses Update for identity,
+	// while non-identifying properties prefer explicit or documented APIC defaults
+	// over synthetic free-form Update values.
+	instance := TestChildInstance{
+		Properties: make(map[string]TestValueScenario),
+	}
+
+	for _, property := range childClass.Properties {
+		if property.TestValues == nil || property.IgnoreInTest || property.ReadOnly {
+			continue
+		}
+		// parent_dn is implicit for nested child blocks (the enclosing resource is the parent),
+		// so skip the synthetic parentDn that setParentDn wires on the underlying class.
+		if property.PropertyName == "parentDn" {
+			continue
+		}
+
+		if instanceIndex == 0 {
+			if property.TestValues.Create.Defined {
+				instance.Properties[property.AttributeName] = property.TestValues.Create.clone()
+			}
+			continue
+		}
+
+		instance.Properties[property.AttributeName] = secondChildPropertyScenario(childClass, property)
+	}
+
+	return instance
+}
+
+func secondChildPropertyScenario(childClass *Class, property *Property) TestValueScenario {
+	if childClass.IsIdentifyingProperty(property.PropertyName) && property.TestValues.Update.Defined {
+		return property.TestValues.Update.clone()
+	}
+	if property.propertyDefinition.TestConfig.Default.Defined && slices.ContainsFunc(property.TestValues.Default.Entries, func(entry TestValueEntry) bool {
+		return entry.ConfigInclude
+	}) {
+		return property.TestValues.Default.clone()
+	}
+	if len(property.Documentation.DefaultValues) > 0 && property.TestValues.Default.Defined {
+		scenario := property.TestValues.Default.clone()
+		for index := range scenario.Entries {
+			scenario.Entries[index].ConfigValue = scenario.Entries[index].AssertValue
+			scenario.Entries[index].ConfigInclude = true
+		}
+		return scenario
+	}
+	if property.TestValues.Update.Defined {
+		return property.TestValues.Update.clone()
+	}
+	return property.TestValues.Create.clone()
+}
+
+func (c *Class) applyChildOverrides(ds *DataStore) {
+	// Apply explicit overrides from ClassDefinition.TestConfig.Children.
+	genLogger.Tracef("Applying child overrides for class '%s'.", c.Name)
+	for childClassStr, override := range c.ClassDefinition.TestConfig.Children {
+		// Find the matching TestChild.
+		var targetChild *TestChild
+		for _, testChild := range c.TestChildren {
+			if testChild.Class.String() == childClassStr {
+				targetChild = testChild
+				break
+			}
+		}
+		if targetChild == nil {
+			genLogger.Warnf("Class '%s': child override for '%s' does not match any resolved child.", c.Name, childClassStr)
+			continue
+		}
+
+		// A non-empty instance list replaces the derived count; each entry remains a
+		// sparse overlay on the corresponding derived instance.
+		if len(override.Instances) > 0 {
+			var childClass *Class
+			if cc, ok := ds.Classes[childClassStr]; ok {
+				childClass = &cc
+			}
+			targetChild.Instances = buildOverrideInstances(ds, childClass, override.Instances, targetChild.Instances)
+		}
+	}
+	genLogger.Tracef("Successfully applied child overrides for class '%s'.", c.Name)
+}
+
+func buildOverrideInstances(ds *DataStore, childClass *Class, defs []ChildTestInstanceOverrideDefinition, baseInstances []TestChildInstance) []TestChildInstance {
+	// Convert override instance definitions into TestChildInstance values.
+	// Each instance's Children start from the matching auto-derived base instance and are
+	// then overlaid per key. Passing the base explicitly avoids depending on whether another
+	// class has already populated its DataStore TestChildren.
+	instances := make([]TestChildInstance, 0, len(defs))
+	for _, def := range defs {
+		instanceIndex := len(instances)
+		instance := TestChildInstance{Properties: make(map[string]TestValueScenario)}
+		if childClass != nil {
+			instance = buildChildInstance(childClass, instanceIndex)
+		}
+		for key, definition := range def.Properties {
+			scenario := convertTestValueScenario(definition)
+			for i := range scenario.Entries {
+				entry := &scenario.Entries[i]
+				if isPlaceholder(entry.ConfigValue) {
+					entry.ValueType = ReferenceValue
+				}
+			}
+			instance.Properties[key] = scenario
+		}
+
+		var baseChildren []*TestChild
+		if len(baseInstances) > 0 {
+			baseIndex := min(instanceIndex, len(baseInstances)-1)
+			baseChildren = baseInstances[baseIndex].Children
+		}
+		instance.Children = mergeOverrideChildren(ds, baseChildren, def.Children)
+		instances = append(instances, instance)
+	}
+	return instances
+}
+
+func mergeOverrideChildren(ds *DataStore, base []*TestChild, overlay map[string]ChildTestOverrideDefinition) []*TestChild {
+	// Per-key merge of an instance's grandchildren overlay onto its auto-derived base.
+	// - Base entries whose class is NOT in overlay are kept as-is.
+	// - Base entries with a non-empty overlay have their Instances rebuilt from the overlay.
+	// - Empty overlays leave the matching base entry unchanged.
+	// - Overlay entries with no matching base entry are appended as override-only TestChildren.
+	if len(base) == 0 && len(overlay) == 0 {
+		return nil
+	}
+	result := make([]*TestChild, 0, len(base)+len(overlay))
+	matched := make(map[string]bool, len(overlay))
+	for _, baseChild := range base {
+		classStr := baseChild.Class.String()
+		if override, ok := overlay[classStr]; ok && len(override.Instances) > 0 {
+			matched[classStr] = true
+			var grandChildClass *Class
+			if gc, ok := ds.Classes[classStr]; ok {
+				grandChildClass = &gc
+			}
+			result = append(result, &TestChild{
+				Class:     baseChild.Class,
+				Instances: buildOverrideInstances(ds, grandChildClass, override.Instances, baseChild.Instances),
+			})
+			continue
+		}
+		result = append(result, baseChild)
+	}
+	overlayClassNames := make([]string, 0, len(overlay))
+	for classStr := range overlay {
+		overlayClassNames = append(overlayClassNames, classStr)
+	}
+	slices.Sort(overlayClassNames)
+	for _, classStr := range overlayClassNames {
+		override := overlay[classStr]
+		if matched[classStr] {
+			continue
+		}
+		if len(override.Instances) == 0 {
+			continue
+		}
+		className, err := NewClassName(classStr)
+		if err != nil {
+			genLogger.Warnf("Override-only child class '%s' failed to parse: %v.", classStr, err)
+			continue
+		}
+		grandChildClass := ds.Classes[classStr]
+		result = append(result, &TestChild{
+			Class:     className,
+			Instances: buildOverrideInstances(ds, &grandChildClass, override.Instances, nil),
+		})
+	}
+	return result
+}
+
+func (c *Class) collectChildDrivenDependencies(ds *DataStore) {
+	// Auto-collect dependencies from child instances that have ReferenceValue properties
+	// pointing to resources not already in TestDependencies.
+	genLogger.Tracef("Collecting child-driven dependencies for class '%s'.", c.Name)
+	c.collectFromTestChildren(ds, c.TestChildren)
+	genLogger.Tracef("Successfully collected child-driven dependencies for class '%s'.", c.Name)
+}
+
+func (c *Class) collectFromTestChildren(ds *DataStore, testChildren []*TestChild) {
+	// Walks a TestChild slice (and recursively each instance's nested Children) collecting
+	// child-driven dependencies. Pulled out so grandchild instance properties also contribute.
+	for _, testChild := range testChildren {
+		childClass, exists := ds.Classes[testChild.Class.String()]
+		if !exists {
+			continue
+		}
+		for instanceIndex := range testChild.Instances {
+			instance := &testChild.Instances[instanceIndex]
+			for propertyName, scenario := range instance.Properties {
+				for entryIndex := range scenario.Entries {
+					entry := &scenario.Entries[entryIndex]
+					if entry.ValueType != ReferenceValue {
+						continue
+					}
+					reference := entry.ConfigValue
+					if placeholderReference, ok := parsePlaceholder(reference); ok {
+						reference = placeholderReference
+					}
+					// Search the child class's full TestDependencies DAG (not just top-level) for the reference.
+					found := c.findDependencyByObjectReferenceRecursive(childClass.TestDependencies, reference)
+					if found == nil {
+						continue
+					}
+					imported, aliases := c.importTestDependency(found)
+					if imported != nil {
+						entry.ConfigValue = rewriteTestReference(reference, referenceValueType(reference), aliases)
+						assertReference := entry.AssertValue
+						if placeholderReference, ok := parsePlaceholder(assertReference); ok {
+							assertReference = placeholderReference
+						}
+						entry.AssertValue = rewriteTestReference(assertReference, referenceValueType(assertReference), aliases)
+					}
+				}
+				instance.Properties[propertyName] = scenario
+			}
+			// Recurse into per-instance nested children so grandchild references are collected too.
+			if len(instance.Children) > 0 {
+				c.collectFromTestChildren(ds, instance.Children)
+			}
+		}
+	}
+}
+
+func (c *Class) importTestDependency(source *TestDependency) (*TestDependency, map[string]terraformTestAddress) {
+	allocator := newSeededTestReferenceAllocator(c)
+	existingBySource := make(map[string]*TestDependency)
+	visited := make(map[*TestDependency]bool)
+	var collectExisting func([]*TestDependency)
+	collectExisting = func(dependencies []*TestDependency) {
+		for _, dependency := range dependencies {
+			if dependency == nil || visited[dependency] {
+				continue
+			}
+			visited[dependency] = true
+			existingBySource[dependency.sourceKey()] = dependency
+			collectExisting(dependency.Dependencies)
+		}
+	}
+	collectExisting(c.TestDependencies)
+
+	clones := make(map[*TestDependency]*TestDependency)
+	var importDependency func(*TestDependency) (*TestDependency, bool)
+	importDependency = func(dependency *TestDependency) (*TestDependency, bool) {
+		if dependency == nil {
+			return nil, false
+		}
+		if existing, ok := existingBySource[dependency.sourceKey()]; ok {
+			if currentAddress, parsed := parseTestDependencyReference(dependency.Reference, dependency.ReferenceType); parsed {
+				if existingAddress, existingParsed := parseTerraformTestReference(existing.Reference); existingParsed {
+					existingAddress.Attribute = ""
+					allocator.aliases[currentAddress.String()] = existingAddress
+				}
+			}
+			return existing, false
+		}
+		if clone, ok := clones[dependency]; ok {
+			return clone, false
+		}
+
+		clone := dependency.clone()
+		clone.Dependencies = nil
+		clones[dependency] = clone
+		allocator.allocate(clone)
+		c.setSameResourceDependencyName(clone)
+		existingBySource[clone.sourceKey()] = clone
+		for _, prerequisite := range dependency.Dependencies {
+			importedPrerequisite, _ := importDependency(prerequisite)
+			if importedPrerequisite != nil {
+				clone.Dependencies = append(clone.Dependencies, importedPrerequisite)
+			}
+		}
+		return clone, true
+	}
+
+	imported, created := importDependency(source)
+	if created {
+		c.TestDependencies = append(c.TestDependencies, imported)
+		// Existing prerequisites already use this fixture's references. Only new
+		// nodes should receive aliases from the imported dependency graph.
+		for _, clone := range clones {
+			clone.rewriteReferences(allocator.aliases)
+		}
+	}
+	return imported, allocator.aliases
+}
+
+func (c *Class) setSameResourceDependencyName(dependency *TestDependency) {
+	nameProperty := c.Properties["name"]
+	if dependency == nil || nameProperty == nil || nameProperty.ReadOnly || nameProperty.IgnoreInTest {
+		return
+	}
+	address, ok := parseTerraformTestReference(dependency.Reference)
+	if !ok || address.BlockType != "resource" || address.Type != "aci_"+c.ResourceName || dependency.TestInstance == 0 {
+		return
+	}
+	suffix := fmt.Sprintf("_%d", dependency.TestInstance)
+	prefix := strings.TrimSuffix(address.Name, suffix)
+	if prefix == address.Name {
+		return
+	}
+	if _, overridden := testPropertyOverride(nameProperty, dependency.ConfigOverrides); overridden && !dependency.nameGenerated {
+		return
+	}
+	if dependency.ConfigOverrides == nil {
+		dependency.ConfigOverrides = make(map[string]string)
+	}
+	dependency.ConfigOverrides[nameProperty.AttributeName] = fmt.Sprintf("%s_name_%d", prefix, dependency.TestInstance)
+	dependency.nameGenerated = true
+}
+
+func (c *Class) findDependencyByObjectReferenceRecursive(testDependencies []*TestDependency, reference string) *TestDependency {
+	if dependency := findTestDependencyByObjectReference(testDependencies, reference); dependency != nil {
+		return dependency
+	}
+	return c.findDependencyByRefRecursive(testDependencies, reference)
+}
+
+func (c *Class) resolvePlaceholdersInChildren() {
+	// Resolve {{<reference>}} placeholders in child instance properties against the parent
+	// class's TestDependencies.
+	// Called after collectChildDrivenDependencies so the parent has both own and child-collected dependencies.
+	genLogger.Tracef("Resolving placeholders in children for class '%s'.", c.Name)
+	c.resolvePlaceholdersInTestChildren(c.TestChildren)
+	// Also resolve placeholders inside per-dependency child overrides.
+	visited := make(map[*TestDependency]bool)
+	c.resolvePlaceholdersInDependencyChildren(c.TestDependencies, visited)
+	genLogger.Tracef("Successfully resolved placeholders in children for class '%s'.", c.Name)
+}
+
+func (c *Class) resolvePlaceholdersInDependencyChildren(deps []*TestDependency, visited map[*TestDependency]bool) {
+	// Walks the TestDependency DAG and resolves placeholders inside each dependency's Children
+	// overrides. The visited map handles DAG-sharing without re-resolving the same node.
+	for _, testDependency := range deps {
+		if visited[testDependency] {
+			continue
+		}
+		visited[testDependency] = true
+		if len(testDependency.Children) > 0 {
+			children := make([]*TestChild, 0, len(testDependency.Children))
+			for _, testChild := range testDependency.Children {
+				children = append(children, testChild)
+			}
+			c.resolvePlaceholdersInTestChildren(children)
+		}
+		c.resolvePlaceholdersInDependencyChildren(testDependency.Dependencies, visited)
+	}
+}
+
+func (c *Class) resolvePlaceholdersInTestChildren(testChildren []*TestChild) {
+	// Recursively resolve placeholders in a slice of TestChild.
+	// Unresolved placeholders are left as-is (see resolveConfigOverridePlaceholders for rationale).
+	genLogger.Tracef("Resolving placeholders in %d test children.", len(testChildren))
+	for _, testChild := range testChildren {
+		for i := range testChild.Instances {
+			instance := &testChild.Instances[i]
+			for key, scenario := range instance.Properties {
+				for i := range scenario.Entries {
+					entry := &scenario.Entries[i]
+					reference, ok := parsePlaceholder(entry.ConfigValue)
+					if !ok {
+						continue
+					}
+					resolved := c.findDependencyByRefRecursive(c.TestDependencies, reference)
+					if resolved == nil {
+						continue
+					}
+					entry.ConfigValue = resolved.Reference
+					entry.AssertValue = resolved.Reference
+					entry.ValueType = referenceValueRenderType(resolved.ReferenceType)
+				}
+				instance.Properties[key] = scenario
+			}
+			// Recurse into grandchildren.
+			c.resolvePlaceholdersInTestChildren(instance.Children)
+		}
+	}
+}
+
+func (c *Class) validateTestCompleteness(ctx *Context) {
+	// Validate the resolved test data for unresolved placeholders and missing values.
+	// Runs after all resolution steps are complete so all errors are reported in a single pass.
+
+	// Check ConfigOverrides for unresolved placeholders.
+	// validateTestDependencyPlaceholders walks both top-level and nested deps using a
+	// shared visited map, so DAG-shared dependencies are diagnosed at most once.
+	visited := make(map[*TestDependency]bool)
+	c.validateTestDependencyPlaceholders(ctx, c.TestDependencies, visited)
+
+	// Check property TestValues for unresolved placeholders.
+	for _, property := range c.Properties {
+		if property.TestValues == nil {
+			continue
+		}
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Create", property.TestValues.Create.Entries)
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Update", property.TestValues.Update.Entries)
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Default", property.TestValues.Default.Entries)
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "ForceNew", property.TestValues.ForceNew.Entries)
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Legacy", property.TestValues.Legacy.Entries)
+	}
+
+	// Assert each testable property ended Loop 3 with all four standard
+	// scenarios defined. Catches silent failures in auto-derivation (e.g. an
+	// enum with zero ValidValues), unwired parent_dn/tDn references, and
+	// post-load regressions in convertTestConfigDefinition. An explicitly empty
+	// scenario is valid only for a set property. Legacy is opt-in
+	// and intentionally not checked. Iterated in PropertiesAll order so
+	// diagnostics are stable across runs.
+	for _, propertyName := range c.PropertiesAll {
+		property := c.Properties[propertyName]
+		if property.IgnoreInTest || property.ReadOnly {
+			continue
+		}
+		if property.TestValues == nil {
+			// parentDn is synthetic for every class with a parent, including classes
+			// whose parents do not have a generated resource and therefore cannot
+			// provide a Parent test dependency. Validate it when dependency wiring
+			// was possible, but do not flag the intentionally unwireable case.
+			if property.PropertyName == "parentDn" && len(c.Parents) > 0 && !slices.ContainsFunc(c.TestDependencies, func(testDependency *TestDependency) bool {
+				return testDependency != nil && testDependency.Role == Parent
+			}) {
+				continue
+			}
+			ctx.Diagnostics.AddError("Class '%s': property '%s' has no test values after test data resolution.", c.Name, property.AttributeName)
+			continue
+		}
+		bucketChecks := []struct {
+			name     string
+			scenario TestValueScenario
+		}{
+			{"Create", property.TestValues.Create},
+			{"Update", property.TestValues.Update},
+			{"Default", property.TestValues.Default},
+			{"ForceNew", property.TestValues.ForceNew},
+		}
+		for _, bucket := range bucketChecks {
+			if !bucket.scenario.Defined {
+				ctx.Diagnostics.AddError("Class '%s': property '%s' has undefined %s bucket after test data resolution.", c.Name, property.AttributeName, bucket.name)
+				continue
+			}
+			if len(bucket.scenario.Entries) == 0 && property.ValueType != Set {
+				ctx.Diagnostics.AddError("Class '%s': non-set property '%s' has an explicitly empty %s bucket after test data resolution.", c.Name, property.AttributeName, bucket.name)
+			}
+		}
+	}
+
+	// Check child instance properties for unresolved placeholders.
+	c.validateChildrenPlaceholders(ctx, c.TestChildren)
+}
+
+func (c *Class) validateTestDependencyPlaceholders(ctx *Context, testDependencies []*TestDependency, visited map[*TestDependency]bool) {
+	// Recursively check nested dependency ConfigOverrides for unresolved placeholders.
+	// The visited map prevents infinite recursion from circular dependency references.
+	for _, testDependency := range testDependencies {
+		if visited[testDependency] {
+			continue
+		}
+		visited[testDependency] = true
+		for key, value := range testDependency.ConfigOverrides {
+			if isPlaceholder(value) {
+				ctx.Diagnostics.AddError("Class '%s': ConfigOverrides placeholder '%s' (key '%s') on dependency '%s' could not be resolved.", c.Name, value, key, testDependency.Reference)
+			}
+		}
+		// Also validate per-dependency child overrides for unresolved placeholders.
+		if len(testDependency.Children) > 0 {
+			children := make([]*TestChild, 0, len(testDependency.Children))
+			for _, testChild := range testDependency.Children {
+				children = append(children, testChild)
+			}
+			c.validateChildrenPlaceholders(ctx, children)
+		}
+		c.validateTestDependencyPlaceholders(ctx, testDependency.Dependencies, visited)
+	}
+}
+
+func (c *Class) validateEntriesPlaceholders(ctx *Context, propName, step string, entries []TestValueEntry) {
+	// Check a slice of TestValueEntry for unresolved placeholders.
+	for _, entry := range entries {
+		if isPlaceholder(entry.ConfigValue) {
+			ctx.Diagnostics.AddError("Class '%s': property '%s' %s placeholder '%s' could not be resolved.", c.Name, propName, step, entry.ConfigValue)
+		}
+	}
+}
+
+func (c *Class) validateChildrenPlaceholders(ctx *Context, children []*TestChild) {
+	// Recursively check child instance properties for unresolved placeholders.
+	for _, testChild := range children {
+		for _, instance := range testChild.Instances {
+			for key, scenario := range instance.Properties {
+				for _, entry := range scenario.Entries {
+					if isPlaceholder(entry.ConfigValue) {
+						ctx.Diagnostics.AddError("Class '%s': child '%s' property '%s' placeholder '%s' could not be resolved.", c.Name, testChild.Class, key, entry.ConfigValue)
+					}
+				}
+			}
+			c.validateChildrenPlaceholders(ctx, instance.Children)
+		}
+	}
+}
+
+func (c *Class) setStateUpgrades(ds *DataStore) {
+	// Copy MigrationSource and StateUpgrades from the class definition onto the
+	// resolved Class struct and validate the upgrade tree against the resolved
+	// properties / children sets. Runs after setProperties so Property name
+	// lookups can validate keys. Authoring mistakes accumulate on
+	// ds.ctx.Diagnostics for a single-pass summary; this matches the policy used
+	// by setTestDependencies and validateTestCompleteness.
+	genLogger.Debugf("Setting StateUpgrades for class '%s'.", c.Name)
+
+	c.StateUpgrades = c.ClassDefinition.StateUpgrades
+
+	c.validateStateUpgrades(ds.ctx)
+
+	genLogger.Debugf("Successfully set StateUpgrades for class '%s'. Entries: %d.", c.Name, len(c.StateUpgrades))
+}
+
+func (c *Class) validateStateUpgrades(ctx *Context) {
+	// Run cross-field and cross-entry validation on the resolved StateUpgrades tree.
+	// Strict-decode of the typed enums in definitions.go already rejects unknown
+	// enum values at parse time; this method enforces the rules that cannot be
+	// expressed via the YAML schema alone.
+	//
+	// All issues are written to ctx.Diagnostics rather than returned, and no check
+	// short-circuits, so a single pass surfaces every authoring mistake.
+
+	for version, entry := range c.StateUpgrades {
+		c.validateStateUpgradeEntry(ctx, entry, fmt.Sprintf("Class '%s': schema version %d", c.Name, version))
+	}
+	// Published resource histories and datasource aliases resolve inherited statuses and targets during model normalization.
+	if c.ClassDefinition.SchemaVersion != nil || c.HasDatasourceArtifact() && !c.HasResourceArtifact() {
+		return
+	}
+
+	// Exhaustiveness on top-level Attributes / Children: keys must resolve to a
+	// current Property / child class on this class (or be marked "removed", in
+	// which case the key is allowed to be a meta-only / excluded name).
+	for version, entry := range c.StateUpgrades {
+		for propertyName, attributeUpgrade := range entry.Attributes {
+			if propertyName == "id" || c.Properties[propertyName] != nil {
+				continue
+			}
+			if attributeUpgrade.Status == Removed || attributeUpgrade.Status == Frozen {
+				continue
+			}
+			ctx.Diagnostics.AddError("Class '%s': schema version %d: attribute %q not found in resolved properties", c.Name, version, propertyName)
+		}
+		for childClassName, childUpgrade := range entry.Children {
+			if c.hasChild(childClassName) {
+				continue
+			}
+			if childUpgrade.Status == Removed {
+				continue
+			}
+			ctx.Diagnostics.AddError("Class '%s': schema version %d: child %q not found in resolved children", c.Name, version, childClassName)
+		}
+	}
+}
+
+func (c *Class) hasChild(childClassName string) bool {
+	for _, child := range c.Children {
+		if child.String() == childClassName {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Class) validateStateUpgradeEntry(ctx *Context, entry StateUpgradeDefinition, prefix string) {
+	// Per-entry checks: collision detection across attribute_name values within
+	// the same prior-version entry, plus structural shape rules per node.
+	// The prefix already contains the class name and schema version, so
+	// per-node diagnostics only need to append the bucket and key.
+	var validateNames func(StateUpgradeDefinition, string)
+	validateNames = func(entry StateUpgradeDefinition, prefix string) {
+		legacyNames := map[string]string{}
+		add := func(name, source string) {
+			if name == "" {
+				return
+			}
+			if previous, exists := legacyNames[name]; exists {
+				ctx.Diagnostics.AddError("%s: duplicate attribute_name %q from %s and %s within the same schema object", prefix, name, previous, source)
+				return
+			}
+			legacyNames[name] = source
+		}
+		for _, name := range slices.Sorted(maps.Keys(entry.Attributes)) {
+			add(entry.Attributes[name].AttributeName, fmt.Sprintf("attribute %q", name))
+		}
+		for _, name := range slices.Sorted(maps.Keys(entry.Children)) {
+			child := entry.Children[name]
+			if entry.Source != FromFramework && child.AttributeName == "" {
+				// SDKv2 flat relationships occupy the containing object's namespace.
+				for _, member := range slices.Sorted(maps.Keys(child.Attributes)) {
+					add(child.Attributes[member].AttributeName, fmt.Sprintf("child %q attribute %q", name, member))
+				}
+				continue
+			}
+			add(child.AttributeName, fmt.Sprintf("child %q", name))
+			validateNames(StateUpgradeDefinition{Source: entry.Source, Attributes: child.Attributes, Children: child.Children}, fmt.Sprintf("%s: children[%q]", prefix, name))
+		}
+	}
+	validateNames(entry, prefix)
+	for propertyName, attributeUpgrade := range entry.Attributes {
+		// Active overrides are validated after metadata and earlier declarations are inherited.
+		if c.ClassDefinition.SchemaVersion == nil && !(c.HasDatasourceArtifact() && !c.HasResourceArtifact()) {
+			attributeUpgrade.validate(ctx, fmt.Sprintf("%s: attributes[%q]", prefix, propertyName))
+		}
+	}
+	for childClassName, childUpgrade := range entry.Children {
+		childUpgrade.validateChild(ctx, fmt.Sprintf("%s: children[%q]", prefix, childClassName))
+	}
+}
+
+func (c *Class) setPropertyStateUpgradeValues() {
+	// Distribute the class-level StateUpgrades tree into per-Property maps
+	// so renderer templates iterating one property at a time can look up
+	// that property's prior-schema shape per version without a back-pointer
+	// to the owning class.
+	//
+	// Walk: the outer loop is one entry per schema version; the inner
+	// Attributes map's keys are CURRENT property names, which is the join
+	// key against c.Properties. Each (property, version) pair lands at
+	// property.StateUpgradeValues[version], so a property referenced in N
+	// version entries accumulates N entries. The map is lazy-initialised,
+	// so properties no upgrade ever touches keep StateUpgradeValues == nil.
+	//
+	// Attributes whose key does not resolve to a current Property are
+	// silently skipped — by design, validateStateUpgrades permits this
+	// when Status == Removed. The underlying meta property may
+	// still be alive but intentionally excluded from the current schema
+	// (a future dual-expose + plan-modify target), or it may be truly
+	// gone; either way there is no schema attribute on c.Properties to
+	// wire StateUpgradeValues onto here.
+	//
+	// Class-side ownership is required because Property has no parentClass
+	// reference and the per-property setter has no way to locate the
+	// class's upgrade tree.
+	//
+	// Inner Children entries are NOT distributed here: child Property maps
+	// would need cross-class lookups before all classes are loaded into the
+	// DataStore. Templates that need inner-child state-upgrade data walk
+	// the full StateUpgrades tree on the owning class directly.
+	genLogger.Debugf("Distributing StateUpgradeValues for class '%s'.", c.Name)
+	for version, stateUpgradeEntry := range c.StateUpgrades {
+		for propertyName, attributeUpgradeDefinition := range stateUpgradeEntry.Attributes {
+			property, ok := c.Properties[propertyName]
+			if !ok {
+				// No current schema attribute under this key — by design
+				// when Status == Removed. The underlying meta
+				// property may still be alive but intentionally excluded
+				// from the current schema (a future dual-expose +
+				// plan-modify target), or it may be truly gone. Nothing
+				// to distribute either way.
+				continue
+			}
+			if property.StateUpgradeValues == nil {
+				property.StateUpgradeValues = make(map[int]StateUpgradeValue)
+			}
+			property.StateUpgradeValues[version] = buildStateUpgradeValue(property, attributeUpgradeDefinition)
+		}
+	}
+	genLogger.Debugf("Successfully distributed StateUpgradeValues for class '%s'.", c.Name)
+}
+
+func buildStateUpgradeValue(property *Property, attributeUpgradeDefinition AttributeUpgradeDefinition) StateUpgradeValue {
+	// Build the prior-schema view of one Property at one version: seed from
+	// the current property's resolved attributes (AttributeName, Type, and
+	// the Required/Optional/Computed triplet), then overlay any explicit
+	// legacy_* overrides from the upgrade node. Unset overrides (empty
+	// string for AttributeName, zero enum for Type and
+	// Restriction) leave the seeded value in place.
+	//
+	// Type is mapped through legacyTypeToValueType to collapse the
+	// framework-attribute vocabulary into the renderer's ValueTypeEnum.
+	// An explicit value_type then restores historical custom string semantics.
+	// Restriction rewrites the entire Required/Optional/Computed
+	// triplet rather than merging field by field, because the three flags
+	// are mutually constrained.
+	genLogger.Tracef("Building state upgrade value for property '%s'.", property.PropertyName)
+	stateUpgradeValue := StateUpgradeValue{
+		AttributeName: property.AttributeName,
+		Required:      property.Required,
+		Optional:      property.Optional,
+		Computed:      property.Computed,
+		Type:          property.ValueType,
+		Status:        attributeUpgradeDefinition.Status,
+	}
+	if attributeUpgradeDefinition.AttributeName != "" {
+		stateUpgradeValue.AttributeName = attributeUpgradeDefinition.AttributeName
+	}
+	if attributeUpgradeDefinition.Type != UndefinedLegacyAttributeType {
+		stateUpgradeValue.Type = legacyTypeToValueType(attributeUpgradeDefinition.Type)
+	}
+	if attributeUpgradeDefinition.ValueType != UndefinedValueType {
+		stateUpgradeValue.Type = attributeUpgradeDefinition.ValueType
+	}
+	if stateUpgradeValue.Status == UndefinedLegacyStatus {
+		stateUpgradeValue.Status = LegacyDeprecated
+	}
+	switch attributeUpgradeDefinition.Restriction {
+	case LegacyOptional:
+		stateUpgradeValue.Required, stateUpgradeValue.Optional, stateUpgradeValue.Computed = false, true, false
+	case LegacyRequired:
+		stateUpgradeValue.Required, stateUpgradeValue.Optional, stateUpgradeValue.Computed = true, false, false
+	case LegacyOptionalComputed:
+		stateUpgradeValue.Required, stateUpgradeValue.Optional, stateUpgradeValue.Computed = false, true, true
+	case LegacyReadOnly:
+		stateUpgradeValue.Required, stateUpgradeValue.Optional, stateUpgradeValue.Computed = false, false, true
+	}
+	genLogger.Tracef("Successfully built state upgrade value for property '%s'.", property.PropertyName)
+	return stateUpgradeValue
+}
+
+func (c *Class) HasSDKv2Migration() bool {
+	for _, entry := range c.StateUpgrades {
+		if entry.Source == FromSDKv2 {
+			return true
+		}
+	}
+	return false
+}

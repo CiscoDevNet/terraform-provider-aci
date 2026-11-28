@@ -1,0 +1,32 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Profiles -> Interface
+    Selectors
+properties:
+  type:
+    attribute_name: port_selector_type
+    documentation:
+      description: The port selector type of the %s object.
+    test_config:
+      create:
+      - config_value: ALL
+resource_name: spine_access_port_selector
+schema_version: 2
+state_upgrades:
+  1:
+    attributes:
+      parentDn:
+        attribute_name: spine_interface_profile_dn
+        status: deprecated
+      type:
+        attribute_name: spine_access_port_selector_type
+        status: deprecated
+    children:
+      infraRsSpAccGrp:
+        attributes:
+          tDn:
+            attribute_name: relation_infra_rs_sp_acc_grp
+            restriction: optional
+            status: deprecated
+    source: sdkv2

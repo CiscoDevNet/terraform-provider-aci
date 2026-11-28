@@ -1,0 +1,43 @@
+documentation:
+  sub_category: L3Out
+  ui_locations:
+  - Tenants (infra) -> Networking -> L3Outs -> Policy -> Main -> Provider Label
+properties:
+  name:
+    example_config:
+      minimum:
+      - value: provider_label
+    test_config:
+      create:
+      - config_value: prov_label
+      datasource_missing:
+      - config_value: prov_label_non_existing
+  tag:
+    default_values:
+      yellow-green: ""
+    test_config:
+      create:
+      - config_value: alice-blue
+resource_name: l3out_provider_label
+test_config:
+  dependencies:
+  - class_name: l3extOut
+    config_overrides:
+      name: name_1
+      relation_l3ext_rs_ectx: aci_vrf.test.id
+      tenant_dn: data.aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+      config_overrides:
+        name: infra
+      reference: data.aci_tenant.test.id
+      reference_type: data_source
+    - class_name: fvCtx
+      config_overrides:
+        parent_dn: data.aci_tenant.test.id
+      dependencies:
+      - class_name: fvTenant
+        reference: data.aci_tenant.test.id
+        reference_type: data_source
+    reference: aci_l3_outside.test.id
+    role: parent

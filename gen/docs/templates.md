@@ -1,0 +1,458 @@
+# Generated output ownership
+
+The generator is intended to produce the complete generated output set in a
+single run. Before writing the current set, it removes the files owned by the
+previous manifest. Files outside that manifest are not inspected or removed.
+
+## Current inventory
+
+The following tracked output areas contain files produced by, or historically
+associated with, `gen/generator.go`:
+
+| Output area | Tracked inventory | Cleanup status |
+| --- | ---: | --- |
+| `internal/provider/` | 977 files | Mixed static and generated output; 125 resource implementations, 126 data-source implementations, 125 resource acceptance tests, 126 data-source acceptance tests, and 19 resource migration tests are actively managed |
+| `internal/provider/models/` | 189 files | 177 class models are managed; shared model helpers and the class-version registry are static |
+| `internal/apicversion/` | 2 files | Static APIC version parsing, comparison, and focused unit tests |
+| `internal/acceptancetest/` | 16 files | Static worker runner, Markdown reporting, event parsing, process management, fixture-prefix helpers, and focused unit tests |
+| `internal/customtypes/` | 6 files | Static custom types and focused unit tests used by generated models |
+| `docs/` | 699 files | Mixed static and generated output; `index.md`, 125 class-backed resource pages, and 126 class-backed data-source pages are actively managed |
+| `examples/resources/` | 376 files | All 125 `provider.tf` and 125 `resource.tf` files, 123 distinct `resource-all-attributes.tf` files, and 3 copied PEM files are managed |
+| `examples/data-sources/` | 252 files | All 126 class-backed `provider.tf` and 126 `data-source.tf` files are managed |
+| `gen/testvars/` | 125 files | Legacy output outside the active generator manifest |
+| `legacy-docs/` | 447 files (4 retain a generated marker) | Not managed by the active generator |
+
+The generated marker is not an ownership declaration. Some legacy files still
+have the marker, while some handwritten files do not. Active ownership is
+determined only by the manifest.
+
+## Files outside the active manifest
+
+The following known static or legacy paths are outside the active generator
+manifest. Normal generator cleanup does not inspect or remove them:
+
+```text
+internal/provider/provider.go
+internal/provider/provider_test.go
+internal/provider/resource_acceptance_test.go
+internal/provider/provider_registry.go
+internal/provider/provider_registry_test.go
+internal/provider/utils.go
+internal/provider/test_constants.go
+internal/provider/resource_aci_rest_managed.go
+internal/provider/resource_aci_rest_managed_test.go
+internal/provider/data_source_aci_rest_managed.go
+internal/provider/data_source_aci_rest_managed_test.go
+internal/provider/annotation_unsupported.go
+internal/provider/data_source_aci_system_test.go
+internal/provider/function_compare_versions.go
+internal/provider/function_compare_versions_test.go
+internal/provider/versions.go
+internal/provider/models/versions.go
+internal/provider/models/versions_test.go
+internal/apicversion/
+internal/acceptancetest/
+internal/customtypes/
+docs/data-sources/rest_managed.md
+examples/provider/provider.tf
+```
+
+`provider.go`, the provider registry files, and
+`examples/provider/provider.tf` are intentionally static. The remaining
+entries are currently unmanaged and can either remain static or be migrated
+to an active template later, except for `annotation_unsupported.go`, which is
+the refresh-owned generated output described below.
+
+## Input validation
+
+Per-class property overrides must name a property in the checked-in metadata or
+the synthetic `parentDn` property. Excluded metadata properties remain valid
+override keys. Final Terraform field names must be unique within each object,
+including properties, children, exposed compatibility fields, and top-level
+`id` and `parent_dn`. State-upgrade-specific checks are described in
+[state_upgrades.md](state_upgrades.md#8-validation).
+
+Definition validation errors accumulate into one diagnostic report before
+template generation and managed-file cleanup. File loading and parsing failures
+still stop generation immediately. Template rendering failures are collected
+across render jobs and reported together.
+
+## Cleanup contract
+
+The active generator must use a manifest containing the files owned and
+produced by the previous run. The manifest is the authoritative deletion
+target. It allows files for removed classes or artifacts to be deleted without
+inspecting every file in shared directories.
+
+The manifest is stored at:
+
+```text
+gen/managed_files.json
+```
+
+It groups exact managed files by their containing directory and stores only the
+filename beneath each directory key:
+
+```json
+{
+  "directories": {
+    "internal/provider/models": [
+      "fvAp.go",
+      "fvTenant.go"
+    ]
+  }
+}
+```
+
+Directory keys and filenames are derived directly from rendered output paths
+and written in deterministic sorted order. The manifest is generator
+bookkeeping, not provider output, and is never included in its own deletion
+list.
+
+The manifest contains outputs that are regenerated by every normal generator
+run. Refresh-only outputs are excluded so an ordinary run does not delete
+them. There is no separate preserved-path list and normal generation does not
+scan output directories for generated markers.
+
+`gen/managed_files.json` is a temporary migration control. It may be removed
+or simplified after all legacy artifacts have been migrated and generated
+output is isolated into dedicated directories.
+
+Render jobs are validated and configured example files are read before managed
+files are deleted. Render validation checks that every referenced template is
+loaded and output paths are unique. Generation then deletes all paths from the
+previous manifest before writing the current output set. A managed file that is
+already absent is skipped; other deletion errors stop generation.
+
+`template.Generator` owns the canonical DataStore, loaded templates, render
+jobs, example-file copies, managed-file cleanup, concurrent file rendering,
+and replacement manifest. The outer generator only initializes the DataStore,
+constructs the template generator, and calls `Generate()`.
+
+`Generator.renderTemplate` is the shared renderer for every template and
+output path. It renders one artifact into its own memory buffer, formats it
+according to the output extension, validates its marker, creates its output
+directory, and writes it directly to its final path. A bounded worker pool
+calls this renderer concurrently because every artifact owns a unique path
+and the normalized DataStore is read-only during rendering. After every render
+worker succeeds, configured example files are copied to their final paths.
+The replacement manifest is written only after rendering and copying both
+succeed. If either phase fails, every planned managed output path is removed
+and the previous manifest is retained. Refresh-only outputs are not in that
+cleanup set and may already have been replaced by a successful worker.
+Existing managed outputs may therefore be absent after a failed run, but files
+written by an unsuccessful attempt cannot become unmanaged. Rerunning the
+generator recreates the complete managed output set.
+
+If all rendering succeeds but writing `gen/managed_files.json` fails, the
+rendered outputs remain on disk and the manifest may still contain its prior
+contents or be incomplete. This internal-tool failure mode is intentionally
+handled by fixing the filesystem problem and rerunning generation (or restoring
+the worktree through Git), rather than by adding transactional file staging.
+
+Generated Go is validated and formatted with `go/format`. Terraform
+configuration is validated with the HCL parser and formatted with `hclwrite`.
+Markdown has no canonical formatter and is therefore written exactly as
+rendered by its template.
+
+## Template ownership
+
+The former templates are stored in `gen/templates/legacy_templates/` for
+comparison and migration reference. Active templates are stored directly in
+`gen/templates/`. Legacy templates remain unchanged even when their former
+outputs become static.
+
+`annotation_unsupported.go.tmpl` is a refresh-only global template. An
+ordinary generator run leaves `internal/provider/annotation_unsupported.go`
+unchanged. Setting `GEN_ANNOTATION_UNSUPPORTED=1` retrieves the complete ACI
+metadata, stores the derived sorted class list only in the in-memory
+DataStore, and renders the output directly. No metadata snapshot is persisted.
+The output remains outside the managed-files manifest so a later ordinary run
+does not delete it. Changing this template therefore requires running the
+generator with the refresh flag.
+
+`index.md.tmpl` is a normal managed template that renders `docs/index.md`.
+Its provider example is read from the intentionally static
+`examples/provider/provider.tf` file and supplied through the standard
+template context. This keeps the documented example identical to the example
+users can copy from the repository.
+
+`datasource.md.tmpl` owns the documentation page for every loaded class with a
+datasource artifact, including `topSystem` (`aci_system`). The handwritten
+`docs/data-sources/rest_managed.md` page remains static because `aci_rest_managed`
+has no metadata-backed class in the active generator.
+
+`datasource.go.tmpl` owns the implementation for every loaded class with a
+datasource artifact. Each generated adapter registers itself, delegates schema
+construction and APIC response decoding to its generated root model, and uses
+the shared provider transport helper to retrieve the requested DN with the
+model's APIC-version-compatible subtree classes. The handwritten
+`data_source_aci_rest_managed.go` implementation remains static and outside the
+managed-files manifest.
+
+`resource.go.tmpl` owns the implementation for every loaded class with a
+resource artifact. Each adapter registers itself and delegates schema,
+DN/payload construction, response decoding, and version-aware subtree selection
+to its generated model. The adapter owns CRUD orchestration, DN-based import,
+and the provider's `allow_existing_on_create` behavior. When creation is
+planned with a known DN and the flag is disabled, ModifyPlan checks whether the
+object already exists; Create checks again after resolving the DN. Non-deletable
+classes retain their state-only deletion warning. The handwritten
+`resource_aci_rest_managed.go` remains outside the managed-files manifest.
+
+Create records the known ID after a successful POST so a failed read-back does
+not leave an untracked object. Classes with parent-DN variants use the model's
+`BuildPayloadDN()` for Create/Update requests; Read and Delete use the full ID.
+
+Resource adapters expose the normalized current schema. Deprecated aliases,
+frozen attributes, and state upgrades are generated from each class's declared
+history. Resource identity remains deferred.
+Generated resource acceptance tests cover the current lifecycle. Legacy resource
+test files and templates remain unchanged as the compatibility baseline, including
+their original dependency configuration. New generated tests use current
+attributes for framework dependencies and existing SDKv2 attributes for resources
+that have not migrated.
+
+`resource.md.tmpl` owns the documentation page for every loaded class with a
+resource artifact. Resource pages without a metadata-backed class remain
+static and outside the managed-files manifest. The template embeds the same
+normalized `Example.ResourceHCL` output used by the standalone resource
+examples. Its import example uses the DN format matching the selected example
+parent or the documented `parent_dn` default, then falls back to the first
+actual DN format; display-only notices are never used as import identifiers.
+
+The provider index intentionally documents `insecure` and
+`validate_relation_dn` as Boolean inputs and `retries` as a Number, matching
+the established SDKv2 user contract. While the provider is muxed, its framework
+schema receives those values through temporary string-backed attributes so it
+can coexist with the SDKv2 schema; Terraform configurations and public
+documentation retain the original value forms.
+
+The current resource implementations and generated data-source implementations
+register their factories with the provider registry from per-file `init`
+functions. Future replacement resource templates must retain that
+self-registration behavior in each generated artifact.
+
+Each active template declares its output location centrally, so the generator
+can account for every expected file. Each active template must also emit a
+format-valid generated marker at the start of its output:
+
+| Output format | Marker form |
+| --- | --- |
+| Go | `// Code generated by "gen/generator.go"; DO NOT EDIT.` |
+| Terraform configuration | `# Configuration generated by "gen/generator.go"; DO NOT EDIT.` |
+| Markdown | YAML front matter delimiter `---`, followed immediately by `# Documentation generated by "gen/generator.go"; DO NOT EDIT.` |
+
+The manifest remains authoritative for cleanup; the marker provides human
+visibility and a safety check that a rendered file came from an active
+template. Template-specific front matter must be tested to ensure the marker
+does not invalidate the document format.
+
+Copied example files are not templates and therefore do not carry a generated
+marker. Their sources live under `gen/definitions/example_files/`, while their
+exact generated destinations are still owned by the managed-files manifest.
+
+Every template executes with the same internally constructed context shape,
+which can carry the canonical DataStore, the current resolved class, and a
+static provider example when the particular template needs them:
+
+```go
+type TemplateContext struct {
+	Class           *data.Class
+	DataStore       *data.DataStore
+	ProviderExample string
+}
+```
+
+This context does not duplicate or reshape datastore fields. Class-specific
+content templates receive both `Class` and `DataStore`; global templates leave
+`Class` nil and read their global or cross-class information from `DataStore`.
+Templates that embed the static provider example receive it through
+`ProviderExample`. Provider-example jobs use an empty context because their
+content is static and only their artifact-derived destinations vary.
+
+`resource_example.tf.tmpl` owns every minimal `examples/resources/aci_*/resource.tf`
+file. `resource_example_all_attributes.tf.tmpl` owns a corresponding
+`resource-all-attributes.tf` only when the resolved full example differs from
+the minimum example. Both templates call `Example.ResourceHCL`, which is also
+used by `resource.md.tmpl`, so the embedded and standalone resource blocks are
+rendered from one implementation. `datasource_example.tf.tmpl` owns every generated
+`examples/data-sources/aci_*/data-source.tf`.
+`provider_example.tf.tmpl` owns the provider file beside each of those
+class-backed resource and data-source examples.
+
+Before rendering, `DataStore.setExampleData` builds the complete class-scoped
+artifacts:
+
+```go
+Class.ResourceExamples.Minimum Example
+Class.ResourceExamples.Full    Example
+Class.ResourceExamples.Files   []string
+Class.DataSourceExample        Example
+```
+
+Each example contains its platform annotation, ordered attributes, semantic
+literal/reference/expression values, and recursively resolved children. One
+representative parent placement is selected when a class requires one. An
+applicable resource-schema default is preferred and its redundant `parent_dn` is omitted;
+otherwise an explicit `ClassDefinition.ExampleParentClass` or the first normalized
+parent with a resource artifact is used. Minimum resources
+derive from included `TestValues.Default` entries and required child properties;
+full resources add optional values from `TestValues.Create` and one representative
+instance of every normalized child. Child values use an explicit
+`PropertyDefinition.ExampleConfig` first, then the selected normalized child
+instance, and finally the child class's inferred value when the instance has no
+entry. Top-level required and identifier values remain stable between minimum,
+full, and datasource examples by default. An explicitly defined
+`ExampleConfig.Full` scenario may intentionally override that default.
+Datasources contain only `parent_dn` and `IdentifiedBy` attributes. Sparse
+`PropertyDefinition.ExampleConfig` values are applied during this normalization
+for cases that intentionally differ from test data and take precedence over all
+derived and global example values. For automatically generated string
+placeholders, `GlobalMetaDefinition.PropertyExampleValueOverrides` supplies
+fixed values shared by every class, keyed by the stable APIC property name.
+Class-derived `name` and `description` values and the generic
+`example_<attribute_name>` fallback remain generator behavior. Explicitly
+authored test literals that do not match a generated placeholder are preserved.
+
+`ClassDefinition.ExampleFiles` declares shared files needed by a class's
+resource example. Normalization copies that list into `ResourceExamples.Files`;
+the generator reads each named source from `gen/definitions/example_files/`
+before cleanup and copies it into the class's example directory after template
+rendering.
+
+The templates assign the fixed block names `example` and `full_example`.
+References assembled from normalized class and property data always use the
+`example` block name. An explicitly authored `example_config` reference records
+its APIC class and only overrides the Terraform resource name when a compatibility
+alias is required; normalization constructs the final typed reference directly.
+
+The two resource templates each contain the same small recursive object-layout
+definition; the datasource template only loops over its flat attribute list.
+None of them looks up dependencies, inspects property metadata, infers references,
+chooses test values, or contains class-specific helpers. Terraform formatting is
+applied after rendering, so the model controls content while the templates control
+block layout.
+
+`datasource_test.go.tmpl` owns
+`internal/provider/data_source_aci_<resource_name>_acceptance_test.go` for every
+datasource artifact not marked with `test_config.ignore_tests: [datasource]`.
+The template only lays out the Go acceptance test. `Class` methods render the
+self-contained Terraform configurations and recursive state assertions:
+
+- dependencies backed by loaded framework classes use required/default test
+  values and recursively follow only the references those values require;
+- definition-only legacy dependencies use complete `config_overrides` and
+  explicitly declared prerequisite dependencies;
+- every non-static dependency is rendered with `count`; HCL references use
+  `[0]`, state assertions use `.0`, and dependencies whose class support does
+  not cover the subject's APIC range receive a conditional version count;
+- the object under test uses the full `TestValues.Create` configuration,
+  including normalized children;
+- property and child configuration that is unavailable on part of the class's
+  APIC range is guarded with `provider::aci::compare_versions(...)` and resolves
+  to `null` outside that range;
+- the existing-object lookup uses `parent_dn` and identifying properties and
+  depends on the subject resource when one exists;
+- a missing-object lookup changes a valid identifier, or uses a second valid
+  parent for a constant-RN class;
+- assertions cover direct properties and every configured child level, skip
+  sensitive values, compare semantic references to their source attributes,
+  and retain APIC-version gates.
+
+Generator unit tests parse every rendered datasource configuration and verify
+that every Terraform resource/data-source reference is declared in that same
+configuration. These checks do not execute acceptance tests or contact APIC.
+
+
+`resource_test.go.tmpl` owns
+`internal/provider/resource_aci_<resource_name>_acceptance_test.go` for each
+resource artifact unless `test_config.ignore_tests` contains `resource`.
+`Class.ResourceTestScenarios` derives applicable lifecycle steps from the
+existing Create, Default, Update, ForceNew, dependency, and child data. The
+resource projection imports additional child-update prerequisites using the
+existing dependency importer; canonical datastore values remain unchanged.
+Each file contains its complete dependency configuration and local scenario
+constants, with the same counted references, APIC-version gates, fixture
+prefix, subprocess runner, and step descriptions used by datasource tests.
+
+The scenarios cover minimum/default configuration, existing-object rejection
+and adoption, full configuration, empty plans,
+in-place updates, omission versus explicit reset, recursive child lifecycle,
+non-deletable child diagnostics, identifier/parent replacement, DN import,
+external deletion and recreation, and destruction. Only classes marked
+`AllowDelete` receive external deletion checks. Non-deletable roots are
+removed from state while their APIC objects remain beneath their owning
+parents. Import verification retains the class-level opt-out and sensitive
+attribute exclusions. Legacy acceptance files remain outside the manifest.
+Existing-object checks reuse the minimum fixture under `existing_on_create`.
+A `removed` block with `destroy = false` forgets that temporary state entry while
+the original resource stays managed; these tests require Terraform 1.7 or later.
+
+Local tests parse every resource scenario's HCL and validate its configuration
+and assertion references, including recursively configured children. Compilation
+checks cover every generated file without executing acceptance tests. Resource
+identity remains separate work.
+
+### Resource state-upgrade tests
+
+`resource_migration_test.go.tmpl` generates
+`internal/provider/resource_aci_<resource_name>_migration_test.go` for resources
+with normalized historical overrides and registered state upgraders. All 19
+resource histories are enabled. The published `schema_version` is preserved for
+every resource independently of its upgrade map. The datasource-only System
+class generates its 21 historical output aliases without a resource upgrader.
+
+The tests invoke the registered upgrader with historical JSON state and compare
+complete typed Terraform state, including nulls and collections. The shared
+harness lives in `internal/provider/provider_migration_test.go`. They require no
+APIC or `TF_ACC=1`. Generated values distinguish fields and collection members,
+including two objects in historical child blocks. The same harness file contains
+handwritten historical input/expected fixtures that are not regenerated or
+derived from the migration definitions. They provide independent examples of
+the conversion rules; generated tests provide coverage across all declared
+histories. Existing legacy tests remain unchanged. The resource
+acceptance flow additionally exercises switching input forms, conflicts, and
+frozen-field retention/clearing. Datasource assertions compare ordinary legacy
+outputs with the corresponding resource state. Configured named relationships'
+deprecated scalar DN outputs use native non-null checks with APIC-version gates,
+allowing APIC's target-DN resolution to complete between reads while retaining
+exact checks for modern relationship attributes.
+
+## Property lifecycle and supported versions
+
+APIC lifecycle metadata and Terraform deprecation have separate owners:
+
+- `isDeprecated` and `deprecatedSince` describe APIC deprecation in generated
+  attribute documentation. Deprecation alone does not end APIC support.
+- `isHidden` and `hiddenSince` describe APIC hiding. A known hidden-version range
+  is subtracted from inferred property availability. A hidden flag without an
+  effective version is documented without inventing a historical cutoff.
+- `properties.<property>.deprecated` explicitly enables Terraform schema
+  deprecation and a provider-deprecation notice in attribute documentation.
+  Compatibility aliases remain controlled by `state_upgrades`.
+
+The generator normalizes final property availability once in the datastore.
+Declared property `versions` remains independent of the enclosing class range;
+absent property versions inherit class availability. Known hidden ranges are then
+subtracted. An explicit `supported_versions` definition replaces inferred property
+availability, including hiding cutoffs. Enclosing class availability is applied
+separately in tests and does not rewrite a declared property's documentation.
+
+Metadata and definition strings retain their existing inclusive `start-end`
+syntax and comma-separated intervals. A metadata `hiddenSince: 6.2(1)` means
+`6.2(1)` and later are unavailable. Its derived supported range therefore ends
+*before* `6.2(1)`. The normalized range retains that exclusive boundary internally;
+documentation and generated tests use the normalized bounds rather than
+round-tripping them through the original string.
+
+Backports can produce multiple supported intervals with gaps. Explicit interval
+boundaries are retained. Multiple bare lifecycle starting points do not establish
+where each release train ends; supply explicit lifecycle ranges in the definition
+instead of treating every starting point as globally open-ended. Permanent
+metadata refreshes are a separate maintenance task.
+
+Ordinary inclusive ranges keep the compact string-based generated test checks.
+Derived inclusive intervals also use the existing string format. Bound-aware
+checks are emitted for exclusive endpoints, empty availability, or an unbounded
+lower endpoint that needs direct comparison.

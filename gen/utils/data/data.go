@@ -1,0 +1,439 @@
+package data
+
+import (
+	"crypto/tls"
+	"encoding/json"
+	"fmt"
+	"io"
+	"maps"
+	"net/http"
+	"os"
+	"slices"
+	"sort"
+	"strconv"
+	"strings"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/logger"
+)
+
+// Initialize a logger instance for the generator.
+var genLogger = logger.InitializeLogger()
+
+type DataStore struct {
+	// A map containing all the information about the classes required to render the templates.
+	Classes map[string]Class
+	// All per-class definitions, including definition-only classes without local APIC metadata.
+	// Definition-only classes participate in Terraform-name and artifact-availability
+	// resolution but are never rendered.
+	ClassDefinitions map[string]ClassDefinition
+	// Configurable APIC classes that do not expose an annotation property.
+	// This is populated only when an annotation refresh is requested.
+	UnsupportedAnnotationClasses []string
+	// The client used to retrieve the meta data from the remote location.
+	client *http.Client
+	// The context carries shared state across the generation pipeline.
+	ctx                  *Context
+	GlobalMetaDefinition GlobalMetaDefinition
+	// The host from which the meta data is retrieved.
+	metaHost string
+	// A map of all the classes that have been retrieved from the remote location.
+	// This is used to avoid retrieving the same class multiple times.
+	// Using a map allows for every lookup to take the same amount of time and removes the slices.contains dependency.
+	retrievedClasses map[string]bool
+	// Classes that could not be loaded while resolving cross-class references.
+	failedToLoadClasses []string
+}
+
+func NewDataStore(ctx *Context) (*DataStore, error) {
+	classDefinitions, err := loadClassDefinitions()
+	if err != nil {
+		return nil, err
+	}
+
+	dataStore := &DataStore{
+		Classes:              make(map[string]Class),
+		ClassDefinitions:     classDefinitions,
+		client:               &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}},
+		ctx:                  ctx,
+		GlobalMetaDefinition: loadGlobalMetaDefinition(),
+		retrievedClasses:     make(map[string]bool),
+	}
+	// Set the meta data host for retrieval of meta files.
+	dataStore.setMetaHost()
+	if err := dataStore.refreshUnsupportedAnnotationClasses(); err != nil {
+		return nil, err
+	}
+	// Check if classes are set in the environment variable 'GEN_ACI_TF_META_CLASSES' and retrieve the meta files for those classes.
+	err = dataStore.retrieveEnvMetaClassesFromRemote()
+	if err != nil {
+		return nil, err
+	}
+	// Refresh the meta files from the remote location if specified in the environment variable 'GEN_ACI_TF_META_REFRESH_ALL'.
+	// If the environment variable is not set, the default is to not refresh the meta data.
+	err = dataStore.refreshMetaFiles()
+	if err != nil {
+		return nil, err
+	}
+	// Load classes into the data store for all meta files in the constMetaPath directory.
+	err = dataStore.loadClasses()
+	if err != nil {
+		return nil, err
+	}
+	return dataStore, nil
+}
+
+func (ds *DataStore) setMetaHost() {
+	// Check if the meta data host is set in the constEnvMetaHost environment variable.
+	// If it is set, use it as the host for the meta data retrieval.
+	// If it is not set, use the default host defined in constPubhubDevnetHost.
+	host := os.Getenv(constEnvMetaHost)
+	if host == "" {
+		host = constPubhubDevnetHost
+	}
+	ds.metaHost = host
+	genLogger.Infof("Meta data host set to: %s.", host)
+}
+
+type annotationMetadata struct {
+	Classes map[string]struct {
+		IsConfigurable bool `json:"isConfigurable"`
+		Properties     struct {
+			Annotation any `json:"annotation"`
+		} `json:"properties"`
+	} `json:"classes"`
+}
+
+func (ds *DataStore) refreshUnsupportedAnnotationClasses() error {
+	refreshValue := os.Getenv(constEnvAnnotationUnsupported)
+	if refreshValue == "" {
+		return nil
+	}
+
+	refresh, err := strconv.ParseBool(refreshValue)
+	if err != nil {
+		genLogger.Warnf("Refreshing unsupported annotation classes is skipped due to error: %s.", err)
+		return nil
+	}
+	if !refresh {
+		return nil
+	}
+
+	url := fmt.Sprintf(constAnnotationUnsupportedMetaFile, ds.metaHost)
+	genLogger.Debugf("Retrieving unsupported annotation classes from: %s.", url)
+
+	response, err := ds.client.Get(url)
+	if err != nil {
+		return fmt.Errorf("retrieve unsupported annotation classes: %w", err)
+	}
+	defer func() {
+		_ = response.Body.Close()
+	}()
+
+	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
+		return fmt.Errorf("retrieve unsupported annotation classes: unexpected HTTP status %s", response.Status)
+	}
+
+	var metadata annotationMetadata
+	if err := json.NewDecoder(response.Body).Decode(&metadata); err != nil {
+		return fmt.Errorf("decode unsupported annotation metadata: %w", err)
+	}
+
+	classes := make([]string, 0)
+	for className, class := range metadata.Classes {
+		if class.IsConfigurable && class.Properties.Annotation == nil {
+			classes = append(classes, className)
+		}
+	}
+	sort.Strings(classes)
+
+	ds.UnsupportedAnnotationClasses = classes
+	genLogger.Debugf("Successfully refreshed %d unsupported annotation classes.", len(classes))
+	return nil
+}
+
+func (ds *DataStore) retrieveEnvMetaClassesFromRemote() error {
+	// Retrieve the meta data for the classes specified in the constEnvMetaClasses environment variable.
+	classNames := strings.Split(os.Getenv(constEnvMetaClasses), ",")
+
+	// Avoid attempting retrieval for unset or set to empty ("") environment variable.
+	if classNames[0] != "" {
+		genLogger.Debugf("Retrieving meta files for classes: %s.", classNames)
+		for _, classNameStr := range classNames {
+			// ENHANCEMENT: Concurrently retrieve/write the meta data.
+			// Retrieve the meta file for the class from the remote location.
+			err := ds.retrieveMetaFileFromRemote(classNameStr)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (ds *DataStore) refreshMetaFiles() error {
+	// Check if the meta data should be refreshed from remote location as specified in the environment variable.
+	metaRefresh := os.Getenv(constEnvMetaRefresh)
+	// If the environment variable is not set, the default is to not refresh the meta data.
+	if metaRefresh != "" {
+		var refresh bool
+		var err error
+		// If the environment variable is set, parse it to a boolean value.
+		// If the parsing fails, log a warning and skip retrieval of meta data.
+		// Parsing accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False.
+		// Any other value returns an error, which is logged and the retrieval is skipped.
+		refresh, err = strconv.ParseBool(metaRefresh)
+		if err != nil {
+			genLogger.Warnf("Refreshing of meta is skipped due to error: %s.", err.Error())
+		} else if refresh {
+			genLogger.Debugf("Refreshing meta data from remote location: %s.", ds.metaHost)
+			for _, classNameStr := range utils.GetFileNamesFromDirectory(constMetaPath, true) {
+				// ENHANCEMENT: Concurrently retrieve/write the meta data.
+				// Retrieve the meta file for the class from the remote location.
+				err = ds.retrieveMetaFileFromRemote(classNameStr)
+				if err != nil {
+					return err
+				}
+			}
+			genLogger.Debugf("Successfully refreshed meta data from remote location: %s.", ds.metaHost)
+		}
+	}
+	return nil
+}
+
+func (ds *DataStore) retrieveMetaFileFromRemote(classNameStr string) error {
+	// Only retrieve the meta file if it is not already retrieved.
+	if !ds.retrievedClasses[classNameStr] {
+		className, err := NewClassName(classNameStr)
+		if err != nil {
+			return err
+		}
+		url := fmt.Sprintf(constMetaFileUrl, ds.metaHost, className.Package(), className.Short())
+		genLogger.Debugf("Retrieving meta data for class '%s' from: %s.", classNameStr, url)
+
+		res, err := ds.client.Get(url)
+		if err != nil {
+			return fmt.Errorf("retrieve meta file for class '%s': %w", classNameStr, err)
+		}
+		defer func() {
+			_ = res.Body.Close()
+		}()
+
+		if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+			return fmt.Errorf("retrieve meta file for class '%s': unexpected HTTP status %s", classNameStr, res.Status)
+		}
+
+		outputFile, err := os.Create(fmt.Sprintf("%s/%s.json", constMetaPath, classNameStr))
+		if err != nil {
+			return fmt.Errorf("create meta file for class '%s': %w", classNameStr, err)
+		}
+
+		if _, err = io.Copy(outputFile, res.Body); err != nil {
+			_ = outputFile.Close()
+			return fmt.Errorf("write meta file for class '%s': %w", classNameStr, err)
+		}
+		if err := outputFile.Close(); err != nil {
+			return fmt.Errorf("close meta file for class '%s': %w", classNameStr, err)
+		}
+
+		ds.retrievedClasses[classNameStr] = true
+
+		genLogger.Debugf("Successfully wrote meta data for class '%s' to: %s.", classNameStr, outputFile.Name())
+	}
+
+	return nil
+}
+
+func (ds *DataStore) loadClasses() error {
+	// Load the meta data for all classes in the meta directory.
+	genLogger.Debugf("Loading classes from: %s.", constMetaPath)
+	for _, classNameStr := range utils.GetFileNamesFromDirectory(constMetaPath, true) {
+		err := ds.loadClass(classNameStr)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Fail when referenced metadata classes cannot be loaded and no per-class
+	// definition supplies their Terraform naming information.
+	if len(ds.failedToLoadClasses) > 0 {
+		sort.Strings(ds.failedToLoadClasses)
+		return fmt.Errorf("failed to load classes: %s", ds.failedToLoadClasses)
+	}
+
+	// Class rnMap metadata can reference APIC classes for which this repository
+	// has no meta file. Keep the raw rnMap available on MetaFileContent, but only
+	// expose loaded classes as generated children.
+	ds.filterClassChildren()
+
+	// Resolve cross-class names and the documentation identity of every class
+	// before building descriptions. Relation and parent descriptions can then use
+	// stable labels and artifact names regardless of Go map iteration order.
+	for classNameStr, class := range ds.Classes {
+		class.setPropertyReferenceAttributeNames(ds)
+		class.Documentation.setClassName(&class)
+		class.Documentation.setLabel(&class, ds)
+		ds.Classes[classNameStr] = class
+	}
+
+	// Resolve historical schemas after cross-class attribute names are final.
+	for name, class := range ds.Classes {
+		class.setMigrationData(ds)
+		ds.Classes[name] = class
+	}
+	ds.setNestedLegacyAttributes()
+	for _, name := range slices.Sorted(maps.Keys(ds.Classes)) {
+		class := ds.Classes[name]
+		class.validatePropertyDefinitions(ds.ctx)
+		class.validateAttributeNames(ds)
+		class.validateLegacyAliases(ds.ctx)
+	}
+
+	// Build complete documentation only after every referenced class has its
+	// documentation identity.
+	for classNameStr, class := range ds.Classes {
+		err := class.setDocumentation(ds)
+		if err != nil {
+			return err
+		}
+		ds.Classes[classNameStr] = class
+	}
+
+	// Set test dependencies and values for all loaded classes.
+	// This requires all classes to be present in the data store for cross-class lookups
+	// (e.g. parent and target classes).
+	ds.setTestData()
+
+	// Build renderer-facing public example artifacts only after all test values,
+	// dependencies, and child instances have been normalized.
+	if err := ds.setExampleData(); err != nil {
+		return err
+	}
+
+	genLogger.Debugf("Successfully loaded classes from: %s.", constMetaPath)
+	return nil
+}
+
+func (ds *DataStore) filterClassChildren() {
+	for className, class := range ds.Classes {
+		children := make([]*ClassName, 0, len(class.Children))
+		for _, child := range class.Children {
+			if _, ok := ds.Classes[child.String()]; ok {
+				children = append(children, child)
+			}
+		}
+		class.Children = children
+		ds.Classes[className] = class
+	}
+}
+
+func (ds *DataStore) loadClass(classNameStr string) error {
+	// Load the meta data for a class to the data store if it is not already loaded.
+	if _, ok := ds.Classes[classNameStr]; !ok {
+		genLogger.Debugf("Loading class: %s.", classNameStr)
+		classDetails, err := NewClass(classNameStr, ds)
+		if err != nil {
+			return err
+		}
+		ds.Classes[classNameStr] = *classDetails
+	} else {
+		genLogger.Debugf("Class '%s' already loaded, skipping.", classNameStr)
+	}
+	return nil
+}
+
+func (ds *DataStore) getResourceName(className string) string {
+	// Resolve the Terraform name for a metadata-backed or definition-only APIC
+	// class.
+	if class, ok := ds.Classes[className]; ok {
+		return class.ResourceName
+	}
+
+	definition, definitionFound := ds.ClassDefinitions[className]
+	if definitionFound && definition.ResourceName != "" {
+		return definition.ResourceName
+	}
+
+	if err := ds.loadClass(className); err == nil {
+		return ds.Classes[className].ResourceName
+	}
+
+	if !slices.Contains(ds.failedToLoadClasses, className) {
+		ds.failedToLoadClasses = append(ds.failedToLoadClasses, className)
+	}
+	return ""
+}
+
+// getResourceNameForArtifact returns the Terraform name only when the class
+// exposes the requested top-level artifact. Definition-only classes default to
+// both legacy artifacts when artifacts is omitted; an explicit list narrows or
+// disables that availability without making the class renderable.
+func (ds *DataStore) getResourceNameForArtifact(className string, artifact ArtifactEnum) string {
+	if class, ok := ds.Classes[className]; ok {
+		if slices.Contains(class.Artifacts, artifact) {
+			return class.ResourceName
+		}
+		return ""
+	}
+
+	definition, ok := ds.ClassDefinitions[className]
+	if !ok || definition.ResourceName == "" {
+		return ""
+	}
+	if definition.Artifacts != nil && !slices.Contains(definition.Artifacts, artifact) {
+		return ""
+	}
+	return definition.ResourceName
+}
+
+func (ds *DataStore) setTestData() {
+	// Set test dependencies, property test values, child test values,
+	// and validate completeness by iterating all loaded classes in the data store.
+	// setChildTestValues requires a separate loop because it reads property test values
+	// from other classes that must already be set.
+	genLogger.Debugf("Setting test data for all classes.")
+
+	// Set test dependencies and property test values for all classes.
+	// setPropertyTestValues only reads the class's own TestDependencies so it can
+	// run in the same loop immediately after setTestDependencies.
+	for classNameStr, class := range ds.Classes {
+		class.setTestDependencies(ds)
+		class.setPropertyTestValues(ds)
+		ds.Classes[classNameStr] = class
+	}
+
+	// Set child test values and validate test completeness.
+	// This requires a separate loop because buildChildInstance reads property TestValues
+	// from other classes that must already be set above.
+	for classNameStr, class := range ds.Classes {
+		class.setChildTestValues(ds)
+		class.validateTestCompleteness(ds.ctx)
+		ds.Classes[classNameStr] = class
+	}
+
+	genLogger.Debugf("Successfully set test data for all classes.")
+}
+
+func (ds *DataStore) setExampleData() error {
+	// Resolve example placement first because import documentation follows the
+	// same selected parent, then project the renderer-facing example artifacts.
+	genLogger.Debug("Setting example data for all classes.")
+
+	for className, class := range ds.Classes {
+		if err := class.setExampleContext(ds); err != nil {
+			return err
+		}
+		ds.Classes[className] = class
+	}
+
+	for className, class := range ds.Classes {
+		class.Documentation.setImportDnFormat(&class, ds)
+		class.setResourceExamples(ds)
+		class.setDataSourceExample(ds)
+		ds.Classes[className] = class
+	}
+
+	genLogger.Debug("Successfully set example data for all classes.")
+	return nil
+}

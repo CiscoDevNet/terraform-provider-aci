@@ -30,7 +30,7 @@ Data source for ACI Relation From Any To Contract Interface
 
 ```hcl
 
-data "aci_relation_from_any_to_contract_interface" "example_any" {
+data "aci_relation_from_any_to_contract_interface" "example" {
   parent_dn              = aci_any.example.id
   imported_contract_name = aci_imported_contract.example.name
 }
@@ -43,7 +43,7 @@ data "aci_relation_from_any_to_contract_interface" "example_any" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_any](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/any) ([vzAny](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzAny/overview))
-* `imported_contract_name` (tnVzCPIfName) - (string) The name of the imported Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) with `aci_imported_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/imported_contract) with `data.aci_imported_contract.example.name`.
+* `imported_contract_name` (tnVzCPIfName) - (string) The name of the imported Contract object.
 
 ### Read-Only ###
 

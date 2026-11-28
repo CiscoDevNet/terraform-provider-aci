@@ -39,13 +39,8 @@ Data source for ACI Relation To Imported Contract
 
 ```hcl
 
-data "aci_relation_to_imported_contract" "example_application_epg" {
+data "aci_relation_to_imported_contract" "example" {
   parent_dn              = aci_application_epg.example.id
-  imported_contract_name = aci_imported_contract.example.name
-}
-
-data "aci_relation_to_imported_contract" "example_endpoint_security_group" {
-  parent_dn              = aci_endpoint_security_group.example.id
   imported_contract_name = aci_imported_contract.example.name
 }
 
@@ -64,7 +59,7 @@ data "aci_relation_to_imported_contract" "example_endpoint_security_group" {
   - [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) ([l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview))
   - [aci_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_epg) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
   - [aci_node_mgmt_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/node_mgmt_epg) ([mgmtInB](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInB/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [cloudISvcEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudISvcEPg/overview)
     - [dhcpCRelPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpCRelPg/overview)
     - [dhcpPRelPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpPRelPg/overview)
@@ -78,7 +73,7 @@ data "aci_relation_to_imported_contract" "example_endpoint_security_group" {
     - [vnsSDEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSDEPpInfo/overview)
     - [vnsSHEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSHEPpInfo/overview)
 
-* `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) with `aci_imported_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/imported_contract) with `data.aci_imported_contract.example.name`.
+* `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name.
 
 ### Read-Only ###
 

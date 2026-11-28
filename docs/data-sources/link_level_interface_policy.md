@@ -31,7 +31,7 @@ Data source for ACI Link Level Interface Policy
 ```hcl
 
 data "aci_link_level_interface_policy" "example" {
-  name = "test_name"
+  name = "link_level_interface_policy"
 }
 
 ```

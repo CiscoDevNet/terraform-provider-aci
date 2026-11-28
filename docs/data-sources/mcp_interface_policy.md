@@ -31,7 +31,7 @@ Data source for ACI MCP Interface Policy
 ```hcl
 
 data "aci_mcp_interface_policy" "example" {
-  name = "test_name"
+  name = "mcp_interface_policy"
 }
 
 ```

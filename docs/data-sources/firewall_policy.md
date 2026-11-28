@@ -31,7 +31,7 @@ Data source for ACI Firewall Policy
 ```hcl
 
 data "aci_firewall_policy" "example" {
-  name = "test_name"
+  name = "firewall_policy"
 }
 
 ```

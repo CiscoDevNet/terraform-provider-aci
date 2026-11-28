@@ -1,0 +1,23 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Overrides
+  - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Overrides
+properties:
+  name:
+    test_config:
+      create:
+      - config_value: host_path_selector
+      datasource_missing:
+      - config_value: host_path_selector_non_existing
+  parentDn:
+    default_values:
+      uni/infra: ""
+resource_name: access_interface_override
+test_config:
+  dependencies:
+  - class_name: infraInfra
+    reference: uni/infra
+    reference_type: static
+    role: parent
+  run_serially: true

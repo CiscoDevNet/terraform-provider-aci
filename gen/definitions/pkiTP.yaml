@@ -1,0 +1,96 @@
+# Test limitation: certUsage is excluded from acceptance tests.
+# This is a legacy exclusion whose original reason was not recorded.
+# Metadata marks it configurable but readWrite is false; create/update behavior needs validation.
+# Compatibility: requires_replace is false because the legacy set schema did not
+# enforce createOnly replacement. Reassess this separately with APIC validation.
+# TODO: Reassess create/update behavior and response values after the generator refactor.
+
+documentation:
+  sub_category: AAA
+  ui_locations:
+  - Admin -> AAA -> Security -> Certificate Authorities
+  - Cloud Network Controller -> Administrative -> Security -> Certificate Authorities
+example_files:
+- certificate.pem
+parent_dn_variants:
+- parent_class: fvTenant
+  rn_prepend: certstore
+  test_platform: cloud
+  wrapper_class: cloudCertStore
+properties:
+  certChain:
+    attribute_name: certificate_chain
+    example_config:
+      minimum:
+      - value: file("${path.module}/certificate.pem")
+        value_type: expression
+    restriction: required
+    test_config:
+      create:
+      - config_value: |-
+          -----BEGIN CERTIFICATE-----
+          MIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL
+          BQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx
+          CzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4
+          MREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG
+          A1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C
+          H6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX
+          pCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE
+          WY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7
+          e4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e
+          ZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV
+          ZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV
+          djAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD
+          AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6
+          JC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb
+          pArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr
+          ZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2
+          S2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR
+          aY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10
+          -----END CERTIFICATE-----
+      update:
+      - config_value: |-
+          -----BEGIN CERTIFICATE-----
+          MIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL
+          BQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx
+          CzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4
+          MREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG
+          A1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C
+          H6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX
+          pCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE
+          WY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7
+          e4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e
+          ZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV
+          ZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV
+          djAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD
+          AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6
+          JC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb
+          pArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr
+          ZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2
+          S2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR
+          aY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10
+          -----END CERTIFICATE-----
+  certUsage:
+    attribute_name: certificate_usage
+    documentation:
+      description: The usage of the Certificate Authority object which can be Web
+        Service/Authentication (WebSvcOrAuth), Platform Experience Grid (pxGrid),
+        or both.
+    example_config:
+      full:
+      - value: WebSvcOrAuth
+    requires_replace: false
+    test_config:
+      create:
+      - config_value: WebSvcOrAuth
+      - config_value: pxGrid
+      default:
+      - config_value: WebSvcOrAuth
+      ignore_in_test: true
+    value_type: set
+  parentDn:
+    default_values:
+      uni/userext/pkiext: ""
+test_config:
+  post_test_delay_seconds: 15
+  run_serially: true

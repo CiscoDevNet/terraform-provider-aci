@@ -30,9 +30,9 @@ Data source for ACI Relation To Domain
 
 ```hcl
 
-data "aci_relation_to_domain" "example_application_epg" {
+data "aci_relation_to_domain" "example" {
   parent_dn = aci_application_epg.example.id
-  target_dn = "uni/vmmp-VMware/dom-domain_2"
+  target_dn = aci_vmm_domain.example.id
 }
 
 ```
@@ -81,10 +81,10 @@ data "aci_relation_to_domain" "example_application_epg" {
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
     * `standby_uplinks` (standby) - (string) The passive uplink IDs of the Uplink Order Container object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

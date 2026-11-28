@@ -30,7 +30,7 @@ Data source for ACI EPG uSeg DNS Attribute
 
 ```hcl
 
-data "aci_epg_useg_dns_attribute" "example_epg_useg_block_statement" {
+data "aci_epg_useg_dns_attribute" "example" {
   parent_dn = aci_epg_useg_block_statement.example.id
   name      = "dns_attribute"
 }

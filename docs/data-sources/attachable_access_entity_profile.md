@@ -31,7 +31,7 @@ Data source for ACI Attachable Access Entity Profile
 ```hcl
 
 data "aci_attachable_access_entity_profile" "example" {
-  name = "test_name"
+  name = "attachable_access_entity_profile"
 }
 
 ```
@@ -50,8 +50,7 @@ data "aci_attachable_access_entity_profile" "example" {
 * `name_alias` (nameAlias) - (string) The name alias of the Attachable Access Entity Profile object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-      
-* `relation_to_domains` - (list) A list of Relation To Domains (ACI object [infraRsDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsDomP/overview)). This relation can point to multiple ACI objects:
+* `relation_to_domains` - (list) A list of Relation From Attachable Access Entity Profile To Domains (ACI object [infraRsDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsDomP/overview)). This relation can point to multiple ACI objects:
     - [vmmDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmDomP/overview).
     - [physDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/physDomP/overview).
     - [fcDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fcDomP/overview).

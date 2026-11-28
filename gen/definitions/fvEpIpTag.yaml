@@ -1,0 +1,35 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> Endpoint Tags -> Endpoint IP
+exclude_parents:
+- fvEpTags
+include_parents:
+- fvTenant
+properties:
+  ctxName:
+    reference:
+      classes:
+      - fvCtx
+      example_attribute: name
+      example_class: fvCtx
+  id:
+    default_values:
+      "0": ""
+    test_config:
+      create:
+      - config_value: "1"
+      update:
+      - config_value: "2"
+  ip:
+    documentation:
+      description: The IP address of the %s object.
+    test_config:
+      create:
+      - config_value: 192.0.2.2
+      datasource_missing:
+      - config_value: 192.0.3.2
+      update:
+      - config_value: fe80::1
+resource_name: endpoint_tag_ip
+rn_prepend: eptags

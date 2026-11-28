@@ -34,9 +34,8 @@ Data source for ACI NetFlow Monitor Policy
 
 ```hcl
 
-data "aci_netflow_monitor_policy" "example_tenant" {
-  parent_dn = aci_tenant.example.id
-  name      = "netfow_monitor"
+data "aci_netflow_monitor_policy" "example" {
+  name = "netflow_monitor"
 }
 
 ```
@@ -51,7 +50,7 @@ data "aci_netflow_monitor_policy" "example_tenant" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
   - Default: `uni/infra`

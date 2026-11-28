@@ -1,0 +1,19 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Access Policies -> Policies -> Interface -> CDP Interface
+exclude_parents:
+- infraInfra
+properties:
+  adminSt:
+    attribute_name: admin_state
+resource_name: cdp_interface_policy
+rn_prepend: infra
+schema_version: 2
+state_upgrades:
+  1:
+    attributes:
+      adminSt:
+        attribute_name: admin_st
+        status: deprecated
+    source: sdkv2

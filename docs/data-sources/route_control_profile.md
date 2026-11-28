@@ -34,14 +34,9 @@ Data source for ACI Route Control Profile
 
 ```hcl
 
-data "aci_route_control_profile" "example_tenant" {
+data "aci_route_control_profile" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
-}
-
-data "aci_route_control_profile" "example_l3_outside" {
-  parent_dn = aci_l3_outside.example.id
-  name      = "test_name"
+  name      = "route_control_profile"
 }
 
 ```

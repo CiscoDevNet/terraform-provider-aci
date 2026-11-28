@@ -30,7 +30,7 @@ Data source for ACI Relation From Taboo Contract Subject To Filter
 
 ```hcl
 
-data "aci_relation_from_taboo_contract_subject_to_filter" "example_taboo_contract_subject" {
+data "aci_relation_from_taboo_contract_subject_to_filter" "example" {
   parent_dn   = aci_taboo_contract_subject.example.id
   filter_name = aci_filter.example.name
 }
@@ -43,7 +43,7 @@ data "aci_relation_from_taboo_contract_subject_to_filter" "example_taboo_contrac
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_taboo_contract_subject](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/taboo_contract_subject) ([vzTSubj](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzTSubj/overview))
-* `filter_name` (tnVzFilterName) - (string) The name of the filter object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter) with `aci_filter.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/filter) with `data.aci_filter.example.name`.
+* `filter_name` (tnVzFilterName) - (string) The name of the filter object.
 
 ### Read-Only ###
 

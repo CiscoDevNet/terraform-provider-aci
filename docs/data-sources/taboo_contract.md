@@ -30,9 +30,9 @@ Data source for ACI Taboo Contract
 
 ```hcl
 
-data "aci_taboo_contract" "example_tenant" {
+data "aci_taboo_contract" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "taboo_contract"
 }
 
 ```

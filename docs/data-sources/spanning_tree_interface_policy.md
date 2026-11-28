@@ -31,7 +31,7 @@ Data source for ACI Spanning Tree Interface Policy
 ```hcl
 
 data "aci_spanning_tree_interface_policy" "example" {
-  name = "test_name"
+  name = "spanning_tree_interface_policy"
 }
 
 ```

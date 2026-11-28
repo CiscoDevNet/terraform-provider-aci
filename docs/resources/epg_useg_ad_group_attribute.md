@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI EPG uSeg AD Group Attribute
 
-
-
 ## API Information ##
 
 * Class: [fvIdGroupAttr](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvIdGroupAttr/overview)
@@ -34,38 +32,39 @@ The configuration snippet below creates a EPG uSeg AD Group Attribute with only 
 
 ```hcl
 
-resource "aci_epg_useg_ad_group_attribute" "example_epg_useg_block_statement" {
+resource "aci_epg_useg_ad_group_attribute" "example" {
   parent_dn = aci_epg_useg_block_statement.example.id
   selector  = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the EPG uSeg AD Group Attribute.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_epg_useg_ad_group_attribute" "full_example_epg_useg_block_statement" {
+resource "aci_epg_useg_ad_group_attribute" "full_example" {
   parent_dn   = aci_epg_useg_block_statement.example.id
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "name_1"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  annotation  = "example_annotation"
+  description = "Example EPG uSeg AD Group Attribute"
+  name        = "epg_useg_ad_group_attribute"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   selector    = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -79,6 +78,7 @@ All examples for the EPG uSeg AD Group Attribute resource can be found in the [e
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_epg_useg_block_statement](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_block_statement) ([fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview))
+
 * `selector` (selector) - (string) The selector of the EPG uSeg AD Group Attribute object. Represents the DN or expression to select an identity group.
 
 ### Read-Only ###
@@ -94,14 +94,14 @@ All examples for the EPG uSeg AD Group Attribute resource can be found in the [e
 * `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg AD Group Attribute object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -110,7 +110,7 @@ All examples for the EPG uSeg AD Group Attribute resource can be found in the [e
 An existing EPG uSeg AD Group Attribute can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_epg_useg_ad_group_attribute.example_epg_useg_block_statement uni/tn-{name}/ap-{name}/epg-{name}/crtrn/idgattr-[{selector}]
+terraform import aci_epg_useg_ad_group_attribute.example uni/tn-{name}/ap-{name}/epg-{name}/crtrn/idgattr-[{selector}]
 ```
 
 Starting in Terraform version 1.5, an existing EPG uSeg AD Group Attribute can be imported
@@ -119,6 +119,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/idgattr-[{selector}]"
-  to = aci_epg_useg_ad_group_attribute.example_epg_useg_block_statement
+  to = aci_epg_useg_ad_group_attribute.example
 }
 ```

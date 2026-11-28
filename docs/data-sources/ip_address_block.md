@@ -34,10 +34,10 @@ Data source for ACI IP Address Block
 
 ```hcl
 
-data "aci_ip_address_block" "example_ip_address_pool" {
+data "aci_ip_address_block" "example" {
   parent_dn = aci_ip_address_pool.example.id
-  from      = "10.0.0.2"
-  to        = "10.0.0.5"
+  from      = "192.0.2.2"
+  to        = "192.0.2.5"
 }
 
 ```
@@ -48,7 +48,7 @@ data "aci_ip_address_block" "example_ip_address_pool" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_ip_address_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_address_pool) ([fvnsAddrInst](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsAddrInst/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [vnsAddrInst](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsAddrInst/overview)
 
 * `from` (from) - (string) The first unicast address in the address block.

@@ -30,9 +30,9 @@ Data source for ACI L3Out Provider Label
 
 ```hcl
 
-data "aci_l3out_provider_label" "example_l3_outside" {
+data "aci_l3out_provider_label" "example" {
   parent_dn = aci_l3_outside.example.id
-  name      = "prov_label"
+  name      = "provider_label"
 }
 
 ```

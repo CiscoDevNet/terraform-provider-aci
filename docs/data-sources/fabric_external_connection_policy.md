@@ -30,8 +30,7 @@ Data source for ACI Fabric External Connection Policy
 
 ```hcl
 
-data "aci_fabric_external_connection_policy" "example_tenant" {
-  parent_dn = aci_tenant.example.id
+data "aci_fabric_external_connection_policy" "example" {
   fabric_id = "1"
 }
 
@@ -47,6 +46,7 @@ data "aci_fabric_external_connection_policy" "example_tenant" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+
   - Default: `uni/tn-infra`
 
 ### Read-Only ###

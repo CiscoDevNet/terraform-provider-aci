@@ -30,7 +30,7 @@ Data source for ACI DSCP to Priority Map
 
 ```hcl
 
-data "aci_dscp_to_priority_map" "example_custom_qos_policy" {
+data "aci_dscp_to_priority_map" "example" {
   parent_dn = aci_custom_qos_policy.example.id
   from      = "AF11"
   to        = "AF22"

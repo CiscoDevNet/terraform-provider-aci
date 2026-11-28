@@ -31,7 +31,7 @@ Data source for ACI Slow Drain Interface Policy
 ```hcl
 
 data "aci_slow_drain_interface_policy" "example" {
-  name = "test_name"
+  name = "slow_drain_interface_policy"
 }
 
 ```

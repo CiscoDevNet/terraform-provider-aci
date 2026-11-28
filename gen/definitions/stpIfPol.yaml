@@ -1,0 +1,33 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> Spanning Tree Interface
+exclude_parents:
+- infraInfra
+properties:
+  ctrl:
+    attribute_name: interface_controls
+    default_values:
+      "": ""
+    documentation:
+      description: The interface controls of the %s object.
+    remove_valid_values:
+    - unspecified
+    test_config:
+      create:
+      - config_value: bpdu-filter
+      - config_value: bpdu-guard
+      default: []
+    value_type: set
+resource_name: spanning_tree_interface_policy
+rn_prepend: infra
+schema_version: 2
+state_upgrades:
+  1:
+    attributes:
+      ctrl:
+        attribute_name: ctrl
+        element_type: string_attribute
+        status: deprecated
+        type: list_attribute
+    source: sdkv2

@@ -30,7 +30,7 @@ Data source for ACI Relation From Any To Consumer Contract
 
 ```hcl
 
-data "aci_relation_from_any_to_consumer_contract" "example_any" {
+data "aci_relation_from_any_to_consumer_contract" "example" {
   parent_dn     = aci_any.example.id
   contract_name = aci_contract.example.name
 }
@@ -43,7 +43,7 @@ data "aci_relation_from_any_to_consumer_contract" "example_any" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_any](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/any) ([vzAny](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzAny/overview))
-* `contract_name` (tnVzBrCPName) - (string) The name of the Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
+* `contract_name` (tnVzBrCPName) - (string) The name of the Contract object.
 
 ### Read-Only ###
 

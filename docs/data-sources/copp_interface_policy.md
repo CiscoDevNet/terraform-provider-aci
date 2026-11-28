@@ -31,7 +31,7 @@ Data source for ACI CoPP Interface Policy
 ```hcl
 
 data "aci_copp_interface_policy" "example" {
-  name = "test_name"
+  name = "copp_interface_policy"
 }
 
 ```

@@ -1,0 +1,32 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> NetFlow -> NetFlow Monitors
+  - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Monitors
+properties:
+  name:
+    example_config:
+      minimum:
+      - value: netflow_monitor
+    test_config:
+      create:
+      - config_value: netfow_monitor
+      datasource_missing:
+      - config_value: netfow_monitor_non_existing
+  parentDn:
+    default_values:
+      uni/infra: ""
+resource_name: netflow_monitor_policy
+schema_version: 1
+state_upgrades:
+  0:
+    children:
+      netflowRsMonitorToRecord:
+        type: set_nested_attribute
+    source: framework
+test_config:
+  dependencies:
+  - class_name: infraInfra
+    reference: uni/infra
+    reference_type: static
+    role: parent

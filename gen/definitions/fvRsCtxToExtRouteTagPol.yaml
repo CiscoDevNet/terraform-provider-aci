@@ -1,0 +1,20 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> Policy
+properties:
+  tnL3extRouteTagPolName:
+    documentation:
+      description: The name of the External Route Tag policy associated with this
+        context.
+resource_name: relation_from_vrf_to_l3out_route_tag_policy
+test_config:
+  dependencies:
+  - class_name: l3extRouteTagPol
+    config_overrides:
+      name: name_1
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_l3out_route_tag_policy.test_l3out_route_tag_policy_0.id
+    role: target

@@ -1,0 +1,1534 @@
+package data
+
+import (
+	"fmt"
+	"math"
+	"net"
+	"slices"
+	"strconv"
+	"strings"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
+)
+
+type Property struct {
+	// The name of the property in the resource and datasource schemas.
+	AttributeName string
+	// Indicates if the property is computed in the resource schemas.
+	Computed bool
+	// APIC create-only values require replacement and stay fixed throughout generated in-place test scenarios.
+	CreateOnly bool
+	// APIC deprecation is documentation metadata, independent of Terraform schema deprecation.
+	APICDeprecated bool
+	// Indicates if the property is deprecated in the resource and datasource schemas.
+	// Deprecated properties include a warning the resource and datasource schemas.
+	// Set explicitly by the definition; APIC lifecycle metadata never promises provider removal.
+	Deprecated bool
+	// The deprecated APIC versions for the property.
+	// Used to indicate versions where the property is deprecated but still functional.
+	// Driven by the meta `deprecatedSince` value with an optional definition override.
+	DeprecatedVersions *Versions
+	// Documentation specific information for the property.
+	Documentation PropertyDocumentation
+	// Hidden indicates that the property is no longer accepted by the APIC API.
+	// Driven by the meta `isHidden` flag with an optional definition override (logical OR).
+	// A known hidden-version boundary narrows generated documentation and test availability.
+	Hidden bool
+	// The hidden APIC versions for the property.
+	// Driven by the meta `hiddenSince` value with an optional definition override.
+	HiddenVersions *Versions
+	// State upgrade specific information for the property.
+	// Maps prior schema version to the prior-schema representation of this attribute,
+	// populated externally by Class.setPropertyStateUpgradeValues() from the validated
+	// state_upgrades tree on the owning class.
+	StateUpgradeValues map[int]StateUpgradeValue
+	// Indicates if a property is optional in the resource and datasource schemas.
+	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
+	Optional bool
+	// The name of the property in the APIC class.
+	PropertyName string
+	// Indicates if the property is read-only in the resource schemas.
+	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
+	ReadOnly bool
+	// Indicates if the property is required in the resource and datasource schemas.
+	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
+	Required bool
+	// Indicates if changing the property forces resource replacement (destroy + recreate).
+	// Driven by meta isNaming or createOnly with an optional definition override (*bool for tri-state).
+	RequiresReplace bool
+	// Indicates if the property is sensitive in the resource and datasource schemas.
+	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
+	Sensitive bool
+	// The supported APIC versions for the property.
+	// Each version range is separated by a comma, ex "4.2(7f)-4.2(7w),5.2(1g)-".
+	// The first version is the minimum version and the second version is the maximum version.
+	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
+	SupportedVersions *Versions
+	// Indicates if the property should be excluded from generated tests entirely.
+	// For properties that are untestable regardless of version (e.g., server-generated values).
+	// Version-gating is handled separately via SupportedVersions.
+	IgnoreInTest bool
+	// Indicates if the property should be omitted only from generated datasource
+	// setup and assertions while remaining available to resource tests.
+	IgnoreInDataSourceTest bool
+	// PrefixEnabled is a test-only naming override; public examples use the canonical values.
+	PrefixEnabled *bool
+	// Test specific information for the property.
+	// This is used to generate the test cases and examples for the property.
+	// Nil means no test values have been resolved for this property.
+	TestValues *TestValues
+	// Reference describes the target classes for a configurable DN or name property that
+	// is neither parentDn nor tDn. Nil for ordinary scalar properties.
+	Reference *PropertyReference
+	// Validation specific information for the property.
+	// In the meta file for the class this is a regex statement that is used to validate the property.
+	Validators []Validator
+	// Specifies the valid values for the property when only certain values are allowed as input.
+	// Sourced from the meta `validValues` array, with definition-driven AddValidValues and RemoveValidValues overrides.
+	ValidValues ValidValues
+	// The ValueTypeEnum type is used to indicate the type of the property in the resource and datasource schemas.
+	ValueType ValueTypeEnum
+	// The global meta definition containing global overrides. Unexported because it is only used internally by setter methods.
+	globalDefinition GlobalMetaDefinition
+	// The meta file details for the property. Unexported because it is only used internally by setter methods.
+	metaDetails map[string]any
+	// The property definition overrides from the class definition file. Unexported because it is only used internally by setter methods.
+	propertyDefinition PropertyDefinition
+}
+
+// ModelFieldName returns the Go field name used for this property in a
+// generated class model. An APIC property named id is class-prefixed so it
+// remains distinct from the top-level resource or data-source ID field.
+func (p *Property) ModelFieldName(className *ClassName) string {
+	if p.PropertyName == "id" {
+		return className.Capitalized() + "ID"
+	}
+	return strings.ToUpper(p.PropertyName[:1]) + p.PropertyName[1:]
+}
+
+// ModelValueType returns the Terraform framework value type used by the
+// generated model field.
+func (p *Property) ModelValueType(className *ClassName) string {
+	switch p.ValueType {
+	case Set:
+		return "types.Set"
+	case Object:
+		return "types.Object"
+	case IpAddress:
+		return "customtypes.IPAddressValue"
+	case SemanticEquality:
+		return "customtypes.SemanticStringValue"
+	case VMMArpLearning:
+		return "customtypes.VMMArpLearningValue"
+	default:
+		return "types.String"
+	}
+}
+
+// ModelAttributeType returns the attr.Type expression for a generated model
+// field. It is reused by parent models when constructing nested object types.
+func (p *Property) ModelAttributeType(className *ClassName) string {
+	if customStringType := p.ModelCustomStringType(className); customStringType != "" {
+		return customStringType
+	}
+
+	switch p.ValueType {
+	case Set:
+		return "types.SetType{ElemType: types.StringType}"
+	case Object:
+		return "types.ObjectType{AttrTypes: map[string]attr.Type{}}"
+	default:
+		return "types.StringType"
+	}
+}
+
+// ModelNullValue returns the constructor expression used to initialize a
+// generated model field with an explicit Terraform null value.
+func (p *Property) ModelNullValue(className *ClassName) string {
+	switch p.ValueType {
+	case Set:
+		return "types.SetNull(types.StringType)"
+	case Object:
+		return "types.ObjectNull(map[string]attr.Type{})"
+	case IpAddress:
+		return "customtypes.NewIPAddressNull()"
+	case SemanticEquality:
+		return fmt.Sprintf("%s.Null()", p.SemanticStringTypeVariable(className))
+	case VMMArpLearning:
+		return "customtypes.NewVMMArpLearningNull()"
+	default:
+		return "types.StringNull()"
+	}
+}
+
+// ModelStringValueConstructor returns the Terraform string value constructor
+// used when decoding this property from an APIC response.
+func (p *Property) ModelStringValueConstructor(className *ClassName) string {
+	switch p.ValueType {
+	case IpAddress:
+		return "customtypes.NewIPAddressValue"
+	case SemanticEquality:
+		return fmt.Sprintf("%s.Value", p.SemanticStringTypeVariable(className))
+	case VMMArpLearning:
+		return "customtypes.NewVMMArpLearningValue"
+	default:
+		return "types.StringValue"
+	}
+}
+
+// UsesCustomModelType reports whether the generated model field requires the
+// customtypes package.
+func (p *Property) UsesCustomModelType() bool {
+	switch p.ValueType {
+	case IpAddress, SemanticEquality, VMMArpLearning:
+		return true
+	default:
+		return false
+	}
+}
+
+// ModelCustomStringType returns the custom string type expression used by a
+// generated model schema. An empty string denotes a framework built-in type.
+func (p *Property) ModelCustomStringType(className *ClassName) string {
+	switch p.ValueType {
+	case IpAddress:
+		return "customtypes.IPAddressType{}"
+	case SemanticEquality:
+		return p.SemanticStringTypeVariable(className)
+	case VMMArpLearning:
+		return "customtypes.VMMArpLearningType{}"
+	default:
+		return ""
+	}
+}
+
+// SemanticStringTypeVariable returns the private configured type variable for
+// a generated semantic-equality property.
+func (p *Property) SemanticStringTypeVariable(className *ClassName) string {
+	return className.String() + p.ModelFieldName(className) + "Type"
+}
+
+// StateUpgradeValue is the prior-schema representation of a property for one
+// state-upgrade hop. Keyed by prior schema version inside
+// Property.StateUpgradeValues and populated by Class.setPropertyStateUpgradeValues().
+type StateUpgradeValue struct {
+	// The name of the attribute in the prior resource schema.
+	AttributeName string
+	// Indicates if the attribute is computed in the prior resource schema.
+	Computed bool
+	// Indicates if the attribute is optional in the prior resource schema.
+	Optional bool
+	// Indicates if the attribute is required in the prior resource schema.
+	Required bool
+	// The type of the attribute in the prior resource schema.
+	Type ValueTypeEnum
+	// Status carries the resolved current lifecycle (LegacyDeprecated / Frozen / Removed) so
+	// consumers (Legacy test value derivation, plan-modifiers) can filter
+	// without re-walking the class StateUpgrades tree.
+	Status LegacyStatusEnum
+}
+
+type RegexStatement struct {
+	// The regex string.
+	Regex string
+	// The type of the regex statement.
+	Type RegexStatementTypeEnum
+}
+
+// TestValueEntry represents a single value used in a test scenario with behavior metadata.
+type TestValueEntry struct {
+	// ConfigValue is the value written into the HCL configuration.
+	ConfigValue string
+	// ConfigInclude controls whether this value is included in test configs.
+	// When false, the value is omitted (used for required-only test steps where optional properties are skipped).
+	ConfigInclude bool
+	// AssertValue is the expected value in terraform state after apply.
+	// When empty, defaults to ConfigValue. Used when the server normalizes the value
+	// (e.g. IP zero-padding: config "fe80::1" -> state "fe80::0001").
+	AssertValue string
+	// AssertStrategy selects value comparison or a non-empty presence check.
+	AssertStrategy AssertStrategyEnum
+	// ValueType controls HCL rendering: StringValue is quoted; ReferenceValue and
+	// ExpressionValue are unquoted.
+	ValueType ValueRenderTypeEnum
+	// Versions restricts this entry to specific APIC versions.
+	// Only set for Default step entries where the server default value is version-dependent.
+	// Nil means the entry applies to all versions.
+	Versions *Versions
+}
+
+// TestValueScenario holds all values for one lifecycle scenario and records whether
+// that scenario was explicitly defined. A defined scenario may intentionally contain
+// no entries, which represents an empty set rather than an absent override.
+type TestValueScenario struct {
+	Defined bool
+	Entries []TestValueEntry
+}
+
+func newTestValueScenario(entries []TestValueEntry) TestValueScenario {
+	return TestValueScenario{Defined: true, Entries: entries}
+}
+
+func (s TestValueScenario) clone() TestValueScenario {
+	entries := make([]TestValueEntry, len(s.Entries))
+	copy(entries, s.Entries)
+	return TestValueScenario{Defined: s.Defined, Entries: entries}
+}
+
+func (scenario TestValueScenario) includedEntries() []TestValueEntry {
+	entries := make([]TestValueEntry, 0, len(scenario.Entries))
+	for _, entry := range scenario.Entries {
+		if entry.ConfigInclude {
+			entries = append(entries, entry)
+		}
+	}
+	return entries
+}
+
+func (scenario TestValueScenario) firstIncludedEntry() (TestValueEntry, bool) {
+	for _, entry := range scenario.Entries {
+		if entry.ConfigInclude {
+			return entry, true
+		}
+	}
+	return TestValueEntry{}, false
+}
+
+// PropertyReference is the resolved form of PropertyReferenceDefinition.
+type PropertyReference struct {
+	Classes              []*ClassName
+	ExampleClass         *ClassName
+	ExampleAttributeName string
+}
+
+// TestValues holds the per-property test values for each test scenario.
+// Each field is a full step description — the template renders all steps uniformly by iterating entries.
+// For set-typed properties, each scenario can contain multiple entries (one per set member)
+// or be explicitly defined with no entries to represent an empty set.
+type TestValues struct {
+	// Create is the value(s) for the "all attributes" create step (Step 1).
+	// ConfigInclude=true for all properties that should appear in the HCL config.
+	Create TestValueScenario
+	// DataSourceMissing is used only for a negative datasource lookup. It is
+	// independent from Update because a valid missing identifier is not
+	// necessarily a valid resource update value.
+	DataSourceMissing TestValueScenario
+	// Update is the changed value(s) for the update step (Step 2).
+	// ConfigInclude=true for all properties that should appear in the HCL config.
+	Update TestValueScenario
+	// Default is the full step description for the "required-only" create step (Step 3).
+	// Required properties remain in config. Constrained and numeric values retain Create;
+	// unconstrained strings use a stable "test_<property_name>" value.
+	// Optional properties: ConfigInclude=false (omitted from config), AssertValue=server default.
+	Default TestValueScenario
+	// ForceNew is the full step description for the ForceNew step (Step 4).
+	// parent_dn: uses second parent reference (triggers destroy+recreate).
+	// All other properties: same as Create (resource is recreated with same attribute values).
+	ForceNew TestValueScenario
+	// Legacy is the per-step values for legacy alias attributes exposed via
+	// state_upgrades (LegacyDeprecated / Frozen). Undefined when the property has no
+	// testable legacy alias (no distinct renamed alias, or all legacy aliases
+	// have Status Removed). Auto-derived from Create when the legacy type
+	// matches the current attribute type; explicit YAML test_config.legacy
+	// always wins and is required when types diverge.
+	Legacy TestValueScenario
+}
+
+type Validator struct {
+	// If the property has a range of values, these are the minimum and maximum values of the range.
+	Max int64
+	Min int64
+	// If the property has one or more regex statements it requires to match.
+	RegexList []RegexStatement
+}
+
+// ValidValues is a map keyed by the wire value (e.g. "1") with details about that valid value.
+// The map is sourced from the meta `validValues` array, with optional add/remove overrides from the property definition.
+type ValidValues map[string]ValidValue
+
+// ValidValue describes a single allowed value for a property.
+// Currently it only carries the localName (the human-readable identifier, e.g. "level3") but is
+// designed to be extended later with additional fields without changing the shape of the
+// surrounding map. For example, when valid values become version-specific, a Versions field
+// can be added here so that templates can render only the values supported by a given APIC
+// version. Other anticipated extensions include Label, Comment, and PlatformFlavors.
+type ValidValue struct {
+	// The localName of the valid value (e.g. "level3").
+	LocalName string
+}
+
+// LocalNamesList returns the localNames of all valid values, sorted alphabetically.
+func (vv ValidValues) LocalNamesList() []string {
+	localNames := make([]string, 0, len(vv))
+	for _, entry := range vv {
+		localNames = append(localNames, entry.LocalName)
+	}
+	slices.Sort(localNames)
+	return localNames
+}
+
+// HasLocalName reports whether any valid value exposes the supplied local
+// name. APIC responses use these local names as Terraform-facing values.
+func (vv ValidValues) HasLocalName(localName string) bool {
+	for _, entry := range vv {
+		if entry.LocalName == localName {
+			return true
+		}
+	}
+	return false
+}
+
+// ValuesList returns the wire values of all valid values, sorted alphabetically.
+func (vv ValidValues) ValuesList() []string {
+	values := make([]string, 0, len(vv))
+	for value := range vv {
+		values = append(values, value)
+	}
+	slices.Sort(values)
+	return values
+}
+
+// ValueLocalNameMap returns a flattened map of wire value to localName, useful for templates.
+func (vv ValidValues) ValueLocalNameMap() map[string]string {
+	out := make(map[string]string, len(vv))
+	for value, entry := range vv {
+		out[value] = entry.LocalName
+	}
+	return out
+}
+
+// knownStringUiTypes are the meta `uitype` values that legitimately render as a string-typed
+// schema attribute. Listed explicitly so that genuinely new uitype values surface via WARN.
+var knownStringUiTypes = map[string]struct{}{
+	"":         {}, // missing key
+	"string":   {},
+	"enum":     {},
+	"number":   {},
+	"boolean":  {},
+	"auto":     {},
+	"password": {}, // sensitive string; sensitivity is handled separately via meta `secure`.
+}
+
+func NewProperty(name string, details map[string]any, definition PropertyDefinition, globalDefinition GlobalMetaDefinition) (*Property, error) {
+	genLogger.Tracef("Creating new property struct for property: %s.", name)
+
+	property := &Property{
+		PropertyName:       name,
+		globalDefinition:   globalDefinition,
+		metaDetails:        details,
+		propertyDefinition: definition,
+	}
+
+	err := property.setPropertyData()
+	if err != nil {
+		return nil, err
+	}
+
+	genLogger.Tracef("Successfully created new property struct for property: %s.", name)
+
+	return property, nil
+}
+
+func (p *Property) setPropertyData() error {
+	genLogger.Debugf("Setting property data for property '%s'.", p.PropertyName)
+
+	p.setAttributeName()
+
+	err := p.setReference()
+	if err != nil {
+		return err
+	}
+
+	p.setDeprecated()
+
+	err = p.setDeprecatedVersions()
+	if err != nil {
+		return err
+	}
+
+	p.setHidden()
+
+	err = p.setHiddenVersions()
+	if err != nil {
+		return err
+	}
+
+	p.setRequired()
+
+	p.setCreateOnly()
+
+	p.setRequiresReplace()
+
+	// setOptional is called after setRequired because it depends on p.Required.
+	p.setOptional()
+
+	p.setReadOnly()
+
+	p.setSensitive()
+
+	// setComputed is called after setRequired, setReadOnly, and setSensitive
+	// because its resource-schema behavior depends on all three values.
+	p.setComputed()
+
+	err = p.setValidators()
+	if err != nil {
+		return err
+	}
+
+	err = p.setValidValues()
+	if err != nil {
+		return err
+	}
+
+	err = p.setValueType()
+	if err != nil {
+		return err
+	}
+
+	// setDocumentation is called after setValidValues and setValueType because
+	// setDefaultValues depends on p.ValidValues and p.ValueType.
+	err = p.setDocumentation()
+	if err != nil {
+		return err
+	}
+
+	// setTestValues is called after setValidValues, setValueType, and setDocumentation because
+	// auto-derivation depends on p.ValidValues, p.ValueType, p.Required, and p.Documentation.DefaultValues.
+	p.setTestValues()
+
+	err = p.setSupportedVersions()
+	if err != nil {
+		return err
+	}
+
+	genLogger.Debugf("Successfully set property data for property '%s'.", p.PropertyName)
+	return nil
+}
+
+func (p *Property) setReference() error {
+	definition := p.propertyDefinition.Reference
+	if len(definition.Classes) == 0 && definition.ExampleClass == "" {
+		return nil
+	}
+
+	reference := &PropertyReference{
+		ExampleAttributeName: definition.ExampleAttributeName,
+	}
+	if reference.ExampleAttributeName == "" {
+		reference.ExampleAttributeName = "id"
+	}
+	for _, className := range definition.Classes {
+		parsed, err := NewClassName(className)
+		if err != nil {
+			return fmt.Errorf("property '%s': invalid reference class '%s': %w", p.PropertyName, className, err)
+		}
+		reference.Classes = append(reference.Classes, parsed)
+	}
+
+	exampleClass := definition.ExampleClass
+	if exampleClass == "" && len(definition.Classes) > 0 {
+		exampleClass = definition.Classes[0]
+	}
+	if exampleClass != "" {
+		parsed, err := NewClassName(exampleClass)
+		if err != nil {
+			return fmt.Errorf("property '%s': invalid example reference class '%s': %w", p.PropertyName, exampleClass, err)
+		}
+		reference.ExampleClass = parsed
+	}
+	p.Reference = reference
+	return nil
+}
+
+func (p *Property) setNamedReferenceAttributeName(ds *DataStore, referenceClass *ClassName) {
+	// Use the referenced class's Terraform resource name for a name-reference attribute.
+	if p.propertyDefinition.AttributeName != "" || p.globalDefinition.AttributeNameOverrides[p.PropertyName] != "" {
+		return
+	}
+	if resourceName := ds.getResourceName(referenceClass.String()); resourceName != "" {
+		p.AttributeName = resourceName + "_name"
+	}
+}
+
+func (p *Property) setAttributeName() {
+	// Determine the attribute name of the property.
+	// Priority: per-class definition override > global attribute name override > default snake_case derivation.
+	genLogger.Debugf("Setting AttributeName for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.AttributeName != "" {
+		p.AttributeName = p.propertyDefinition.AttributeName
+	} else if override, ok := p.globalDefinition.AttributeNameOverrides[p.PropertyName]; ok {
+		p.AttributeName = override
+	} else {
+		p.AttributeName = utils.Underscore(p.PropertyName)
+	}
+
+	genLogger.Debugf("Successfully set AttributeName '%s' for property '%s'.", p.AttributeName, p.PropertyName)
+}
+
+func (p *Property) setComputed() {
+	// Determine if the property is computed.
+	// Sensitive inputs are optional unless an override preserves legacy computed behavior.
+	genLogger.Debugf("Setting Computed for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.Computed != nil {
+		p.Computed = *p.propertyDefinition.Computed
+	} else {
+		p.Computed = p.ReadOnly || (!p.Required && !p.Sensitive)
+	}
+
+	genLogger.Debugf("Successfully set Computed '%t' for property '%s'.", p.Computed, p.PropertyName)
+}
+
+func (p *Property) setDeprecated() {
+	// Determine if the property is deprecated.
+	genLogger.Debugf("Setting Deprecated for property '%s'.", p.PropertyName)
+
+	p.Deprecated = p.propertyDefinition.Deprecated != nil && *p.propertyDefinition.Deprecated
+	p.APICDeprecated, _ = p.metaDetails["isDeprecated"].(bool)
+
+	genLogger.Debugf("Successfully set Deprecated '%t' for property '%s'.", p.Deprecated, p.PropertyName)
+}
+
+func (p *Property) setDeprecatedVersions() error {
+	// Determine the deprecated APIC versions for the property from the definition file (override) or meta `deprecatedSince`.
+	genLogger.Debugf("Setting DeprecatedVersions for property '%s'.", p.PropertyName)
+
+	parsedVersions, err := lifecycleVersions(p.propertyDefinition.DeprecatedVersions, p.metaDetails["deprecatedSince"])
+	if err != nil {
+		return fmt.Errorf("failed to parse deprecated versions for property '%s': %w", p.PropertyName, err)
+	}
+	p.DeprecatedVersions = parsedVersions
+
+	genLogger.Debugf("Successfully set DeprecatedVersions for property '%s'. Versions: '%s'", p.PropertyName, p.DeprecatedVersions)
+	return nil
+}
+
+func (p *Property) setHidden() {
+	// Determine if the property is hidden by the APIC API.
+	genLogger.Debugf("Setting Hidden for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.Hidden {
+		p.Hidden = true
+	} else if metaHidden, ok := p.metaDetails["isHidden"].(bool); ok {
+		p.Hidden = metaHidden
+	}
+
+	genLogger.Debugf("Successfully set Hidden '%t' for property '%s'.", p.Hidden, p.PropertyName)
+}
+
+func (p *Property) setHiddenVersions() error {
+	// Determine the hidden APIC versions for the property from the definition file (override) or meta `hiddenSince`.
+	genLogger.Debugf("Setting HiddenVersions for property '%s'.", p.PropertyName)
+
+	parsedVersions, err := lifecycleVersions(p.propertyDefinition.HiddenVersions, p.metaDetails["hiddenSince"])
+	if err != nil && p.propertyDefinition.SupportedVersions != "" && p.propertyDefinition.HiddenVersions == "" {
+		// An explicit availability override avoids inferring backport bounds from bare starting points.
+		since, _ := p.metaDetails["hiddenSince"].(string)
+		parsedVersions, err = NewVersions(since)
+	}
+	if err != nil {
+		return fmt.Errorf("failed to parse hidden versions for property '%s': %w", p.PropertyName, err)
+	}
+	p.HiddenVersions = parsedVersions
+
+	genLogger.Debugf("Successfully set HiddenVersions for property '%s'. Versions: '%s'", p.PropertyName, p.HiddenVersions)
+	return nil
+}
+
+func lifecycleVersions(override string, metadata any) (*Versions, error) {
+	if override != "" {
+		return NewVersions(override)
+	}
+	since, _ := metadata.(string)
+	if since == "" {
+		return nil, nil
+	}
+	parts := strings.Split(since, ",")
+	for index, part := range parts {
+		part = strings.TrimSpace(part)
+		if !strings.Contains(part, "-") {
+			if _, err := NewVersions(part); err != nil {
+				return nil, err
+			}
+			// Several starting points do not identify where a backport's release train ends.
+			if len(parts) > 1 {
+				return nil, fmt.Errorf("multiple lifecycle starting versions %q need explicit version ranges in the definition", since)
+			}
+			part += "-"
+		}
+		parts[index] = part
+	}
+	return NewVersions(strings.Join(parts, ","))
+}
+
+func (p *Property) setOptional() {
+	// Determine if the property is optional.
+	// A property is optional when the definition restriction is "optional",
+	// or when the meta file indicates isConfigurable is true and the property is not required and the restriction is not "read_only".
+	genLogger.Debugf("Setting Optional for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.Restriction == Optional {
+		p.Optional = true
+	} else if p.propertyDefinition.Restriction != ReadOnly && p.metaDetails["isConfigurable"] == true && !p.Required {
+		p.Optional = true
+	}
+
+	genLogger.Debugf("Successfully set Optional '%t' for property '%s'.", p.Optional, p.PropertyName)
+}
+
+func (p *Property) setReadOnly() {
+	// Determine if the property is read-only.
+	// A property is read-only only when the definition restriction is "read_only".
+	// This is used to include isConfigurable=false properties as read-only attributes in the schema.
+	genLogger.Debugf("Setting ReadOnly for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.Restriction == ReadOnly {
+		p.ReadOnly = true
+	}
+
+	genLogger.Debugf("Successfully set ReadOnly '%t' for property '%s'.", p.ReadOnly, p.PropertyName)
+}
+
+func (p *Property) setRequired() {
+	// Determine if the property is required.
+	// A property is required when the definition restriction is "required",
+	// or when the meta file indicates isConfigurable and isNaming are both true.
+	genLogger.Debugf("Setting Required for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.Restriction == Required {
+		p.Required = true
+	} else if p.metaDetails["isConfigurable"] == true && p.metaDetails["isNaming"] == true {
+		p.Required = true
+	}
+
+	genLogger.Debugf("Successfully set Required '%t' for property '%s'.", p.Required, p.PropertyName)
+}
+
+func (p *Property) setCreateOnly() {
+	// Resolve create-only behavior before schema and test normalization use it.
+	genLogger.Debugf("Setting CreateOnly for property '%s'.", p.PropertyName)
+
+	p.CreateOnly, _ = p.metaDetails["createOnly"].(bool)
+
+	genLogger.Debugf("Successfully set CreateOnly '%t' for property '%s'.", p.CreateOnly, p.PropertyName)
+}
+
+func (p *Property) setRequiresReplace() {
+	// Determine if changing the property forces resource replacement.
+	// Priority: definition override > meta isNaming or createOnly.
+	genLogger.Debugf("Setting RequiresReplace for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.RequiresReplace != nil {
+		p.RequiresReplace = *p.propertyDefinition.RequiresReplace
+	} else {
+		p.RequiresReplace = p.metaDetails["isNaming"] == true || p.CreateOnly
+	}
+
+	genLogger.Debugf("Successfully set RequiresReplace '%t' for property '%s'.", p.RequiresReplace, p.PropertyName)
+}
+
+func (p *Property) setSensitive() {
+	// Determine if the property is sensitive.
+	// A property is sensitive when the definition override is true,
+	// or when the meta file indicates secure is true.
+	genLogger.Debugf("Setting Sensitive for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.Sensitive {
+		p.Sensitive = true
+	} else if p.metaDetails["secure"] == true {
+		p.Sensitive = true
+	}
+
+	genLogger.Debugf("Successfully set Sensitive '%t' for property '%s'.", p.Sensitive, p.PropertyName)
+}
+
+func (p *Property) setTestValues() {
+	// Determine the test values for the property with per-scenario merge:
+	// auto-derive every scenario first, then overlay explicit YAML scenarios.
+	// Default and ForceNew are re-derived from the merged Create so they
+	// stay consistent when only Create is overridden, then the explicit
+	// Default / ForceNew (rare) overlays last.
+	genLogger.Debugf("Setting TestValues for property '%s'.", p.PropertyName)
+
+	// Check if the property should be ignored in tests.
+	if p.propertyDefinition.TestConfig.IgnoreInTest {
+		p.IgnoreInTest = true
+		genLogger.Debugf("Property '%s' marked as IgnoreInTest.", p.PropertyName)
+		return
+	}
+	p.IgnoreInDataSourceTest = p.propertyDefinition.TestConfig.IgnoreInDataSourceTest
+	p.PrefixEnabled = p.propertyDefinition.TestConfig.Prefix.Enabled
+
+	// Reference properties: explicit YAML wins; otherwise dependency
+	// resolution populates TestValues later (setParentDn / setTargetDn).
+	if p.PropertyName == "parentDn" || p.PropertyName == "tDn" {
+		if p.hasTestConfigDefinition() {
+			p.TestValues = p.convertTestConfigDefinition()
+		}
+		genLogger.Debugf("Skipping auto-derivation for reference property '%s'; values will be derived during dependency resolution.", p.PropertyName)
+		return
+	}
+
+	// 1. Auto-derive every scenario from meta. May return nil for read-only.
+	p.TestValues = p.generateTestValues()
+
+	// 2. Overlay explicit Create / Update from YAML. Defined-but-empty scenarios
+	// are preserved because they intentionally clear set-valued attributes.
+	explicit := p.convertTestConfigDefinition()
+	if p.TestValues == nil {
+		// Read-only with no explicit overrides stays nil to match the
+		// "no test config" sentinel downstream consumers expect.
+		if !explicit.Create.Defined && !explicit.DataSourceMissing.Defined && !explicit.Update.Defined &&
+			!explicit.Default.Defined && !explicit.ForceNew.Defined {
+			genLogger.Debugf("Property '%s' has no auto-derive and no explicit test config; TestValues left nil.", p.PropertyName)
+			return
+		}
+		p.TestValues = &TestValues{}
+	}
+	if explicit.Create.Defined {
+		p.TestValues.Create = explicit.Create
+	}
+	if explicit.DataSourceMissing.Defined {
+		p.TestValues.DataSourceMissing = explicit.DataSourceMissing
+	}
+	if explicit.Update.Defined {
+		p.TestValues.Update = explicit.Update
+	}
+
+	// 3. Re-derive Default / ForceNew from the MERGED Create so an explicit
+	//    Create override flows through to the dependent scenarios.
+	p.TestValues.Default = newTestValueScenario(p.generateDefault(p.TestValues.Create.Entries))
+	p.TestValues.ForceNew = newTestValueScenario(p.generateForceNew(p.TestValues.Create.Entries))
+
+	// 4. Overlay explicit Default / ForceNew (rare manual overrides).
+	if explicit.Default.Defined {
+		p.TestValues.Default = explicit.Default
+	}
+	if explicit.ForceNew.Defined {
+		p.TestValues.ForceNew = explicit.ForceNew
+	}
+
+	genLogger.Debugf("Successfully set TestValues for property '%s'.", p.PropertyName)
+}
+
+func (p *Property) hasTestConfigDefinition() bool {
+	// Determine if the property definition has any explicit test values configured.
+	// Returns true when at least one standard test step is present, including an
+	// explicitly empty set scenario.
+	genLogger.Tracef("Checking for explicit test config definition for property '%s'.", p.PropertyName)
+	return p.hasLifecycleTestConfigDefinition() || p.propertyDefinition.TestConfig.DataSourceMissing.Defined
+}
+
+func (p *Property) hasLifecycleTestConfigDefinition() bool {
+	testConfig := p.propertyDefinition.TestConfig
+	return testConfig.Create.Defined || testConfig.Update.Defined || testConfig.Default.Defined || testConfig.ForceNew.Defined
+}
+
+func (p *Property) convertTestConfigDefinition() *TestValues {
+	// Convert the YAML-driven TestConfigDefinition entries into TestValues.
+	genLogger.Tracef("Converting test config definition for property '%s'.", p.PropertyName)
+	testConfig := p.propertyDefinition.TestConfig
+	testValues := &TestValues{}
+
+	testValues.Create = convertTestValueScenario(testConfig.Create)
+	testValues.DataSourceMissing = convertTestValueScenario(testConfig.DataSourceMissing)
+	testValues.Update = convertTestValueScenario(testConfig.Update)
+	testValues.Default = convertTestValueScenario(testConfig.Default)
+	testValues.ForceNew = convertTestValueScenario(testConfig.ForceNew)
+	testValues.Legacy = convertTestValueScenario(testConfig.Legacy)
+
+	genLogger.Tracef("Successfully converted test config definition for property '%s'.", p.PropertyName)
+	return testValues
+}
+
+func convertTestValueScenario(definition TestValueScenarioDefinition) TestValueScenario {
+	return TestValueScenario{
+		Defined: definition.Defined,
+		Entries: convertTestValueEntries(definition.Entries),
+	}
+}
+
+func convertTestValueEntries(testValueEntryDefinitions []TestValueEntryDefinition) []TestValueEntry {
+	// Convert a slice of TestValueEntryDefinition to TestValueEntry.
+	// This is done manually rather than via unmarshal because the conversion applies non-trivial defaults:
+	//   - ConfigInclude defaults to true (not Go's zero value false) when the definition's *bool is nil.
+	//   - AssertValue defaults to ConfigValue (a sibling field), not a static value.
+	// ValueType needs no manual fixup: ValueRenderTypeEnum's iota zero IS StringValue,
+	// so omitted value_type in YAML naturally renders as a quoted string.
+	genLogger.Tracef("Converting %d test value entry definitions.", len(testValueEntryDefinitions))
+	if len(testValueEntryDefinitions) == 0 {
+		return nil
+	}
+	result := make([]TestValueEntry, 0, len(testValueEntryDefinitions))
+	for _, testValueEntryDefinition := range testValueEntryDefinitions {
+		testValueEntry := TestValueEntry{
+			ConfigValue:    testValueEntryDefinition.ConfigValue,
+			ConfigInclude:  true,
+			AssertValue:    testValueEntryDefinition.ConfigValue,
+			AssertStrategy: testValueEntryDefinition.AssertStrategy,
+			ValueType:      testValueEntryDefinition.ValueType,
+		}
+		if testValueEntryDefinition.ConfigInclude != nil {
+			testValueEntry.ConfigInclude = *testValueEntryDefinition.ConfigInclude
+		}
+		if testValueEntryDefinition.AssertValue != "" {
+			testValueEntry.AssertValue = testValueEntryDefinition.AssertValue
+		}
+		result = append(result, testValueEntry)
+	}
+	return result
+}
+
+func (p *Property) generateTestValues() *TestValues {
+	// Generate test values automatically based on property characteristics.
+	// Returns nil if auto-derivation is not possible (e.g., read-only properties).
+	genLogger.Tracef("Generating test values for property '%s'.", p.PropertyName)
+
+	// Read-only properties don't need test values — they are never in HCL config.
+	if p.ReadOnly {
+		genLogger.Tracef("Skipping test value generation for read-only property '%s'.", p.PropertyName)
+		return nil
+	}
+
+	testValues := &TestValues{}
+
+	// Auto-derive Create and Update values.
+	switch {
+	case p.ValueType == Set:
+		create, update := p.generateSetValues()
+		testValues.Create = newTestValueScenario(create)
+		testValues.Update = newTestValueScenario(update)
+	case len(p.ValidValues) > 0:
+		create, update := p.generateFromValidValues()
+		testValues.Create = newTestValueScenario(create)
+		testValues.Update = newTestValueScenario(update)
+	default:
+		create, update := p.generateStringValues()
+		testValues.Create = newTestValueScenario(create)
+		testValues.Update = newTestValueScenario(update)
+	}
+
+	// Auto-derive Default step.
+	testValues.Default = newTestValueScenario(p.generateDefault(testValues.Create.Entries))
+
+	// Auto-derive ForceNew step (same as Create — resource is recreated).
+	testValues.ForceNew = newTestValueScenario(p.generateForceNew(testValues.Create.Entries))
+
+	genLogger.Tracef("Successfully generated test values for property '%s'.", p.PropertyName)
+	return testValues
+}
+
+func (p *Property) generateFromValidValues() ([]TestValueEntry, []TestValueEntry) {
+	// Pick test values from the property's ValidValues list.
+	// Returns Create and Update slices (each with one entry).
+	genLogger.Tracef("Generating test values from ValidValues for property '%s'.", p.PropertyName)
+	localNames := p.ValidValues.LocalNamesList()
+	if len(localNames) == 0 {
+		return nil, nil
+	}
+
+	createValue := localNames[0]
+	updateValue := createValue
+	if len(localNames) > 1 {
+		updateValue = localNames[1]
+	}
+
+	create := []TestValueEntry{{ConfigValue: createValue, ConfigInclude: true, AssertValue: createValue, ValueType: StringValue}}
+	update := []TestValueEntry{{ConfigValue: updateValue, ConfigInclude: true, AssertValue: updateValue, ValueType: StringValue}}
+	genLogger.Tracef("Successfully generated test values from ValidValues for property '%s'.", p.PropertyName)
+	return create, update
+}
+
+func (p *Property) generateSetValues() ([]TestValueEntry, []TestValueEntry) {
+	// Pick test values for set-typed (bitmask) properties.
+	// Returns Create (2 members) and Update (2 different members) slices.
+	genLogger.Tracef("Generating set test values for property '%s'.", p.PropertyName)
+	localNames := p.ValidValues.LocalNamesList()
+	if len(localNames) == 0 {
+		return nil, nil
+	}
+
+	// Pick members for Create: first and second (if available).
+	var create []TestValueEntry
+	create = append(create, TestValueEntry{ConfigValue: localNames[0], ConfigInclude: true, AssertValue: localNames[0], ValueType: StringValue})
+	if len(localNames) > 1 {
+		create = append(create, TestValueEntry{ConfigValue: localNames[1], ConfigInclude: true, AssertValue: localNames[1], ValueType: StringValue})
+	}
+
+	// Pick members for Update: third and fourth (if available), otherwise overlap.
+	var update []TestValueEntry
+	switch {
+	case len(localNames) > 3:
+		update = append(update,
+			TestValueEntry{ConfigValue: localNames[2], ConfigInclude: true, AssertValue: localNames[2], ValueType: StringValue},
+			TestValueEntry{ConfigValue: localNames[3], ConfigInclude: true, AssertValue: localNames[3], ValueType: StringValue},
+		)
+	case len(localNames) > 2:
+		update = append(update,
+			TestValueEntry{ConfigValue: localNames[2], ConfigInclude: true, AssertValue: localNames[2], ValueType: StringValue},
+			TestValueEntry{ConfigValue: localNames[0], ConfigInclude: true, AssertValue: localNames[0], ValueType: StringValue},
+		)
+	default:
+		// Fewer than 3 values: reuse create values for update.
+		update = create
+	}
+
+	genLogger.Tracef("Successfully generated set test values for property '%s'.", p.PropertyName)
+	return create, update
+}
+
+func (p *Property) generateStringValues() ([]TestValueEntry, []TestValueEntry) {
+	// Generate test values for free-form string properties.
+	// Both Required and Optional properties get distinct Create/Update values so the two buckets
+	// are always usable as the source of truth for downstream consumers — in particular the
+	// per-instance derivation in buildChildInstance, which assigns Create to instance 0 and Update
+	// to instance 1 to disambiguate list-type child siblings. Required properties on the parent
+	// resource are not value-updated by the (template) Update step, so emitting distinct values
+	// here is safe; overrides on either bucket continue to win.
+	genLogger.Tracef("Generating string test values for property '%s'.", p.PropertyName)
+
+	createValue := ""
+	for _, defaultValue := range p.Documentation.DefaultValues {
+		if defaultValue.Value != "" {
+			createValue = defaultValue.Value
+			break
+		}
+	}
+
+	updateValue := ""
+	rangeValues := p.numericRange()
+	switch {
+	case p.ValueType == IpAddress:
+		// These values feed both future acceptance tests and public examples, so use
+		// IANA documentation ranges instead of arbitrary publicly routable addresses.
+		if createValue == "" {
+			createValue = "192.0.2.1"
+		}
+		if net.ParseIP(createValue) != nil {
+			updateValue = "198.51.100.2"
+		} else {
+			updateValue = "198.51.100.2/24"
+		}
+	case rangeValues != nil:
+		if createValue == "" {
+			createValue = strconv.FormatInt(rangeValues[0], 10)
+		}
+		updateNumeric := rangeValues[0]
+		if rangeValues[1] > rangeValues[0] {
+			updateNumeric++
+		}
+		updateValue = strconv.FormatInt(updateNumeric, 10)
+	default:
+		if createValue == "" {
+			createValue = p.AttributeName + "_1"
+		}
+		updateValue = p.AttributeName + "_2"
+	}
+	create := []TestValueEntry{{ConfigValue: createValue, ConfigInclude: true, AssertValue: createValue, ValueType: StringValue}}
+	update := []TestValueEntry{{ConfigValue: updateValue, ConfigInclude: true, AssertValue: updateValue, ValueType: StringValue}}
+	genLogger.Tracef("Successfully generated string test values for property '%s'.", p.PropertyName)
+	return create, update
+}
+
+func (p *Property) numericRange() *[2]int64 {
+	if uiType, _ := p.metaDetails["uitype"].(string); uiType != "number" {
+		return nil
+	}
+	for _, validator := range p.Validators {
+		if validator.Min != 0 || validator.Max != 0 {
+			return &[2]int64{validator.Min, validator.Max}
+		}
+	}
+	return nil
+}
+
+func (p *Property) generateDefault(create []TestValueEntry) []TestValueEntry {
+	// Build the Default step description for the "required-only" test step.
+	genLogger.Tracef("Generating default test values for property '%s'.", p.PropertyName)
+	if len(create) == 0 {
+		return nil
+	}
+
+	if p.Required {
+		// Required properties remain in HCL config during the required-only step.
+		defaults := make([]TestValueEntry, 0, len(create))
+		for _, c := range create {
+			defaults = append(defaults, TestValueEntry{
+				ConfigValue:    c.ConfigValue,
+				ConfigInclude:  true,
+				AssertValue:    c.AssertValue,
+				AssertStrategy: c.AssertStrategy,
+				ValueType:      c.ValueType,
+				Versions:       c.Versions,
+			})
+		}
+		genLogger.Tracef("Successfully generated default test values for property '%s'.", p.PropertyName)
+		return defaults
+	}
+
+	// Optional properties: omitted from config, assert server default.
+	if len(p.Documentation.DefaultValues) == 0 {
+		genLogger.Tracef("Successfully generated default test values for property '%s'.", p.PropertyName)
+		return []TestValueEntry{{
+			ConfigValue:   "",
+			ConfigInclude: false,
+			AssertValue:   "",
+			ValueType:     StringValue,
+		}}
+	}
+	defaults := make([]TestValueEntry, 0, len(p.Documentation.DefaultValues))
+	for _, dv := range p.Documentation.DefaultValues {
+		defaults = append(defaults, TestValueEntry{
+			ConfigValue:   "",
+			ConfigInclude: false,
+			AssertValue:   dv.Value,
+			ValueType:     StringValue,
+			Versions:      dv.Versions,
+		})
+	}
+	genLogger.Tracef("Successfully generated default test values for property '%s'.", p.PropertyName)
+	return defaults
+}
+
+func (p *Property) generateForceNew(create []TestValueEntry) []TestValueEntry {
+	// Build the ForceNew step description.
+	// ForceNew re-creates the resource under a different parent, so all properties use Create values.
+	// parent_dn is handled separately by setParentDn (uses the second parent reference).
+	genLogger.Tracef("Generating force new test values for property '%s'.", p.PropertyName)
+	if len(create) == 0 {
+		return nil
+	}
+
+	// All properties use the same values as Create in the ForceNew step.
+	forceNew := make([]TestValueEntry, 0, len(create))
+	for _, c := range create {
+		forceNew = append(forceNew, TestValueEntry{
+			ConfigValue:    c.ConfigValue,
+			ConfigInclude:  c.ConfigInclude,
+			AssertValue:    c.AssertValue,
+			AssertStrategy: c.AssertStrategy,
+			ValueType:      c.ValueType,
+		})
+	}
+	genLogger.Tracef("Successfully generated force new test values for property '%s'.", p.PropertyName)
+	return forceNew
+}
+
+// setLegacyTestValues populates TestValues.Legacy. Called at the end of
+// Class.setPropertyTestValues so any dependency-derived Create entries
+// (parent_dn, tDn) are already wired and can be cloned safely.
+//
+// Resolution order:
+//  1. Explicit YAML test_config.legacy always wins. This is the sole path
+//     when the legacy alias has a different Terraform type than the current
+//     attribute (auto-derive cannot guess a valid HCL shape).
+//  2. Skip entirely when the property is not testable (no TestValues,
+//     IgnoreInTest, or ReadOnly).
+//  3. Skip when no legacy alias is testable — see hasTestableLegacyAlias.
+//  4. Skip with a generator-log warning when any non-Removed alias has a
+//     different Type than the current property — cloning Create would
+//     produce HCL of the wrong shape.
+//  5. Clone Create into Legacy (inline, matching generateForceNew style;
+//     preserves Versions which generateForceNew currently drops).
+func (p *Property) setLegacyTestValues() {
+	if p.TestValues == nil || p.IgnoreInTest || p.ReadOnly {
+		return
+	}
+
+	if definition := p.propertyDefinition.TestConfig.Legacy; definition.Defined {
+		p.TestValues.Legacy = convertTestValueScenario(definition)
+		genLogger.Tracef("Set Legacy test values for property '%s' from definition.", p.PropertyName)
+		return
+	}
+
+	if !p.hasTestableLegacyAlias() {
+		genLogger.Tracef("Skipping Legacy test value derivation for property '%s': no testable legacy alias.", p.PropertyName)
+		return
+	}
+	if p.hasDivergentLegacyType() {
+		genLogger.Warnf(
+			"Skipping Legacy test value auto-derivation for property %q: at least one LegacyDeprecated/Frozen legacy alias has a type different from the current attribute type %v. Supply explicit test_config.legacy values in the property definition.",
+			p.PropertyName, p.ValueType,
+		)
+		return
+	}
+
+	entries := make([]TestValueEntry, 0, len(p.TestValues.Create.Entries))
+	for _, c := range p.TestValues.Create.Entries {
+		entries = append(entries, TestValueEntry{
+			ConfigValue:    c.ConfigValue,
+			ConfigInclude:  c.ConfigInclude,
+			AssertValue:    c.AssertValue,
+			AssertStrategy: c.AssertStrategy,
+			ValueType:      c.ValueType,
+			Versions:       c.Versions,
+		})
+	}
+	p.TestValues.Legacy = newTestValueScenario(entries)
+	genLogger.Tracef("Auto-derived Legacy test values for property '%s' from Create bucket.", p.PropertyName)
+}
+
+// fillUndefinedTestValueScenarios mirrors Create into any undefined Update / Default /
+// ForceNew scenario. Explicitly defined empty scenarios are retained. Runs as the
+// final auto-derivation step in
+// Class.setPropertyTestValues so authored values and earlier wiring
+// (setParentDn, setTargetDn, setTargetNameProperty, setLegacyTestValues)
+// have already populated whatever they intend to.
+//
+// Why mirror Create:
+//   - Single-parent classes wire Create/Update/Default from parents[0] in
+//     setParentDn but only fills ForceNew when a second parent is available.
+//     The four-scenario validator requires ForceNew to be defined, so we
+//     reuse Create. This keeps the normalized lifecycle shape complete; an
+//     actual replacement test still requires a distinct value or parent.
+//   - Authored test_config blocks that supply only `create` (or
+//     `create` + `default`) leave the remaining scenarios undefined. Mirroring
+//     preserves the author's value while keeping the lifecycle steps
+//     consistent.
+//
+// Skips:
+//   - Non-testable properties (no TestValues, IgnoreInTest, ReadOnly):
+//     match the validator's gate; nothing to fill.
+//   - Properties whose Create scenario is undefined: indicates a real
+//     wiring gap. validateTestCompleteness will surface it separately.
+//   - Legacy bucket: derived independently by setLegacyTestValues and
+//     not subject to the four-bucket validator.
+func (p *Property) fillUndefinedTestValueScenarios() {
+	if p.TestValues == nil || p.IgnoreInTest || p.ReadOnly {
+		return
+	}
+	if !p.TestValues.Create.Defined {
+		return
+	}
+	if !p.TestValues.Update.Defined {
+		p.TestValues.Update = p.TestValues.Create.clone()
+		genLogger.Tracef("Filled undefined Update scenario for property '%s' from Create.", p.PropertyName)
+	}
+	if !p.TestValues.Default.Defined {
+		p.TestValues.Default = p.TestValues.Create.clone()
+		genLogger.Tracef("Filled undefined Default scenario for property '%s' from Create.", p.PropertyName)
+	}
+	if !p.TestValues.ForceNew.Defined {
+		p.TestValues.ForceNew = p.TestValues.Create.clone()
+		genLogger.Tracef("Filled undefined ForceNew scenario for property '%s' from Create.", p.PropertyName)
+	}
+}
+
+// hasTestableLegacyAlias returns true when at least one StateUpgradeValue
+// entry has Status LegacyDeprecated or Frozen AND renames the attribute. Same-name
+// entries (type-only or restriction-only changes) are not testable as a
+// separate legacy attribute — they share the current attribute name, and
+// the standard Create bucket on that name already exercises them.
+func (p *Property) hasTestableLegacyAlias() bool {
+	for _, stateUpgradeValue := range p.StateUpgradeValues {
+		if stateUpgradeValue.Status == Removed {
+			continue
+		}
+		if stateUpgradeValue.AttributeName != p.AttributeName {
+			return true
+		}
+	}
+	return false
+}
+
+// hasDivergentLegacyType returns true when any non-Removed legacy alias uses
+// a different Type than the current property. Cloning Create into a slot of
+// the wrong shape (e.g. a List literal into a String attribute) would render
+// invalid HCL; we refuse to guess and require explicit YAML in this case.
+func (p *Property) hasDivergentLegacyType() bool {
+	for _, stateUpgradeValue := range p.StateUpgradeValues {
+		if stateUpgradeValue.Status == Removed {
+			continue
+		}
+		if stateUpgradeValue.Type != p.ValueType {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Property) setValidators() error {
+	// Determine the validators for the property.
+	// Driven by the meta `validators` array; the property definition replaces the meta entirely when non-empty.
+	genLogger.Debugf("Setting Validators for property '%s'.", p.PropertyName)
+
+	var validators []Validator
+	var err error
+
+	if len(p.propertyDefinition.Validators) > 0 {
+		validators, err = validatorsFromDefinition(p.propertyDefinition.Validators)
+	} else {
+		validators, err = parseValidatorsFromMeta(p.metaDetails["validators"])
+	}
+	if err != nil {
+		return fmt.Errorf("failed to parse validators for property '%s': %w", p.PropertyName, err)
+	}
+
+	p.Validators = validators
+
+	genLogger.Debugf("Successfully set Validators for property '%s'. Count: %d", p.PropertyName, len(p.Validators))
+	return nil
+}
+
+func parseValidatorsFromMeta(rawValidators any) ([]Validator, error) {
+	// Convert the raw `validators` value from the meta JSON (already decoded into any) into a typed slice.
+	// Returns nil when the value is absent. Returns an error on shape mismatch or unknown regex statement type.
+	if rawValidators == nil {
+		return nil, nil
+	}
+
+	validatorList, ok := rawValidators.([]any)
+	if !ok {
+		return nil, fmt.Errorf("expected validators to be a list, got %T", rawValidators)
+	}
+	if len(validatorList) == 0 {
+		return nil, nil
+	}
+
+	validators := make([]Validator, 0, len(validatorList))
+	for index, rawValidator := range validatorList {
+		validatorMap, ok := rawValidator.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("expected validator entry %d to be a map, got %T", index, rawValidator)
+		}
+
+		minValue, err := readOptionalInt64(validatorMap, "min")
+		if err != nil {
+			return nil, fmt.Errorf("validator entry %d: %w", index, err)
+		}
+		maxValue, err := readOptionalInt64(validatorMap, "max")
+		if err != nil {
+			return nil, fmt.Errorf("validator entry %d: %w", index, err)
+		}
+
+		validator := Validator{Min: minValue, Max: maxValue}
+
+		if rawRegexes, hasRegexes := validatorMap["regexs"]; hasRegexes && rawRegexes != nil {
+			regexList, ok := rawRegexes.([]any)
+			if !ok {
+				return nil, fmt.Errorf("validator entry %d: expected regexs to be a list, got %T", index, rawRegexes)
+			}
+			regexStatements := make([]RegexStatement, 0, len(regexList))
+			for regexIndex, rawRegexEntry := range regexList {
+				regexMap, ok := rawRegexEntry.(map[string]any)
+				if !ok {
+					return nil, fmt.Errorf("validator entry %d regex %d: expected map, got %T", index, regexIndex, rawRegexEntry)
+				}
+				regexValue, _ := regexMap["regex"].(string)
+				typeValue, _ := regexMap["type"].(string)
+				parsedType, err := parseRegexStatementType(typeValue)
+				if err != nil {
+					return nil, fmt.Errorf("validator entry %d regex %d: %w", index, regexIndex, err)
+				}
+				regexStatements = append(regexStatements, RegexStatement{Regex: regexValue, Type: parsedType})
+			}
+			validator.RegexList = regexStatements
+		}
+
+		validators = append(validators, validator)
+	}
+
+	return validators, nil
+}
+
+func validatorsFromDefinition(definitionValidators []ValidatorDefinition) ([]Validator, error) {
+	// Convert ValidatorDefinition entries from a property definition into typed Validator structs.
+	validators := make([]Validator, 0, len(definitionValidators))
+	for index, definitionValidator := range definitionValidators {
+		validator := Validator{Min: definitionValidator.Min, Max: definitionValidator.Max}
+
+		if len(definitionValidator.RegexList) > 0 {
+			regexStatements := make([]RegexStatement, 0, len(definitionValidator.RegexList))
+			for regexIndex, definitionRegex := range definitionValidator.RegexList {
+				parsedType, err := parseRegexStatementType(definitionRegex.Type)
+				if err != nil {
+					return nil, fmt.Errorf("validator entry %d regex %d: %w", index, regexIndex, err)
+				}
+				regexStatements = append(regexStatements, RegexStatement{Regex: definitionRegex.Regex, Type: parsedType})
+			}
+			validator.RegexList = regexStatements
+		}
+
+		validators = append(validators, validator)
+	}
+	return validators, nil
+}
+
+func parseRegexStatementType(rawType string) (RegexStatementTypeEnum, error) {
+	// Thin wrapper over RegexStatementTypeEnum.UnmarshalText used by the meta JSON-map loader,
+	// which only has string values from a parsed map[string]any. The YAML-driven path
+	// (validatorsFromDefinition) decodes directly into the enum via UnmarshalText.
+	var t RegexStatementTypeEnum
+	if err := t.UnmarshalText([]byte(rawType)); err != nil {
+		return 0, err
+	}
+	return t, nil
+}
+
+func readOptionalInt64(source map[string]any, key string) (int64, error) {
+	// Return the value at key as int64. The zero value is returned when the key is absent or nil.
+	// Returns an error when the value is not a JSON number or when the number is not an integer within int64 range.
+	// (encoding/json decodes JSON numbers into float64 when the target is any, so we type-assert float64 first.)
+	rawValue, present := source[key]
+	if !present || rawValue == nil {
+		return 0, nil
+	}
+	numericValue, ok := rawValue.(float64)
+	if !ok {
+		return 0, fmt.Errorf("expected %s to be a number, got %T", key, rawValue)
+	}
+	if numericValue != math.Trunc(numericValue) || numericValue < math.MinInt64 || numericValue > math.MaxInt64 {
+		return 0, fmt.Errorf("expected %s to be an integer, got %v", key, numericValue)
+	}
+	return int64(numericValue), nil
+}
+
+func (p *Property) setValidValues() error {
+	// Determine the valid values for the property.
+	// Driven by the meta `validValues` array; the property definition can add or remove entries by localName.
+	// Entries with localName "defaultValue" are skipped as they only carry the default value information.
+	genLogger.Debugf("Setting ValidValues for property '%s'.", p.PropertyName)
+
+	validValues := ValidValues{}
+
+	removeSet := make(map[string]struct{}, len(p.propertyDefinition.RemoveValidValues))
+	for _, name := range p.propertyDefinition.RemoveValidValues {
+		removeSet[name] = struct{}{}
+	}
+
+	// Warn when a name appears in both AddValidValues and RemoveValidValues: the Add wins but the
+	// definition is contradictory and likely a mistake.
+	for _, localName := range p.propertyDefinition.AddValidValues {
+		if _, contradicts := removeSet[localName]; contradicts {
+			genLogger.Warnf("AddValidValues %q also listed in RemoveValidValues for property %q; the Add takes precedence.", localName, p.PropertyName)
+		}
+	}
+
+	if rawValidValues := p.metaDetails["validValues"]; rawValidValues != nil {
+		validValueList, ok := rawValidValues.([]any)
+		if !ok {
+			return fmt.Errorf("failed to parse validValues for property '%s': expected validValues to be a list, got %T", p.PropertyName, rawValidValues)
+		}
+		for index, rawEntry := range validValueList {
+			entry, ok := rawEntry.(map[string]any)
+			if !ok {
+				return fmt.Errorf("failed to parse validValues for property '%s': expected validValues entry %d to be a map, got %T", p.PropertyName, index, rawEntry)
+			}
+			localName, localOk := entry["localName"].(string)
+			value, valueOk := entry["value"].(string)
+			if !localOk || !valueOk {
+				return fmt.Errorf("failed to parse validValues for property '%s': validValues entry %d is missing or has non-string localName/value", p.PropertyName, index)
+			}
+			if localName == "defaultValue" {
+				continue
+			}
+			if _, drop := removeSet[localName]; drop {
+				// Delete on hit so any names still in removeSet after the loop are stale.
+				delete(removeSet, localName)
+				continue
+			}
+			if existing, exists := validValues[value]; exists {
+				// Multiple localNames can legitimately alias the same wire value in the meta
+				// (e.g. "aqua" and "cyan" both map to "0x00FFFF"). Keep the first-seen entry
+				// under the wire-value key and fall back to inserting the alias under its
+				// localName key so it is still addressable (mirroring how AddValidValues
+				// entries are keyed). If the localName key is also already taken (e.g. the
+				// same localName appears more than once in the meta, or a prior alias already
+				// claimed it), skip the alias entirely with a warning. Use RemoveValidValues
+				// in the property definition if a different localName should win the
+				// wire-value slot.
+				if _, localTaken := validValues[localName]; localTaken {
+					genLogger.Warnf("Duplicate validValues value %q for property %q: keeping localName %q, skipping alias %q (localName key already in use).", value, p.PropertyName, existing.LocalName, localName)
+					continue
+				}
+				genLogger.Warnf("Duplicate validValues value %q for property %q: keeping localName %q under value key, registering alias %q under its localName key.", value, p.PropertyName, existing.LocalName, localName)
+				validValues[localName] = ValidValue{LocalName: localName}
+				continue
+			}
+			validValues[value] = ValidValue{LocalName: localName}
+		}
+	}
+
+	for name := range removeSet {
+		genLogger.Warnf("RemoveValidValues %q not found in meta for property %q.", name, p.PropertyName)
+	}
+
+	for _, localName := range p.propertyDefinition.AddValidValues {
+		if _, exists := validValues[localName]; exists {
+			genLogger.Warnf("AddValidValues %q already present in meta for property %q.", localName, p.PropertyName)
+		}
+		validValues[localName] = ValidValue{LocalName: localName}
+	}
+
+	p.ValidValues = validValues
+
+	genLogger.Debugf("Successfully set ValidValues for property '%s'. Count: %d", p.PropertyName, len(p.ValidValues))
+	return nil
+}
+
+func (p *Property) setValueType() error {
+	// Determine the value type of the property.
+	// Precedence (first match wins):
+	//   1. Definition `value_type` override (errors on unknown).
+	//   2. Meta `uitype == "bitmask"` -> Set.
+	//   3. Meta `validateAsIPv4OrIPv6 == true` -> IpAddress.
+	//   4. Has both ValidValues and Validators -> SemanticEquality.
+	//      (Reads fields populated earlier in setPropertyData by setValidators and
+	//      setValidValues; pipeline order matters here.)
+	//   5. Meta `uitype` in the known string-rendered set (or missing) -> String silently.
+	//   6. Anything else -> String + WARN so new meta vocabulary surfaces.
+	genLogger.Debugf("Setting ValueType for property '%s'.", p.PropertyName)
+
+	if override := p.propertyDefinition.ValueType; override != 0 {
+		p.ValueType = override
+		genLogger.Debugf("Successfully set ValueType '%v' for property '%s' from definition override.", p.ValueType, p.PropertyName)
+		return nil
+	}
+
+	uiType, _ := p.metaDetails["uitype"].(string)
+
+	switch {
+	case uiType == "bitmask":
+		p.ValueType = Set
+	case p.metaDetails["validateAsIPv4OrIPv6"] == true:
+		p.ValueType = IpAddress
+	case len(p.ValidValues) > 0 && len(p.Validators) > 0:
+		p.ValueType = SemanticEquality
+	default:
+		if _, known := knownStringUiTypes[uiType]; !known {
+			genLogger.Warnf("Unmapped meta uiType %q for property %q; defaulting to String.", uiType, p.PropertyName)
+		}
+		p.ValueType = String
+	}
+
+	genLogger.Debugf("Successfully set ValueType '%v' for property '%s'.", p.ValueType, p.PropertyName)
+	return nil
+}
+
+func (p *Property) setSupportedVersions() error {
+	// Determine the supported APIC versions for the property.
+	// Class normalization supplies inherited bounds and subtracts known hidden versions.
+	// Explicit supported_versions is authoritative; APIC deprecation does not end support.
+	genLogger.Debugf("Setting SupportedVersions for property '%s'.", p.PropertyName)
+
+	// Initialize with versions from PropertyDefinition, if not defined set the versions from meta file.
+	metaVersions := p.propertyDefinition.SupportedVersions
+	if metaVersions == "" {
+		metaVersions, _ = p.metaDetails["versions"].(string)
+	}
+
+	if metaVersions == "" {
+		genLogger.Debugf("No SupportedVersions specified for property '%s'.", p.PropertyName)
+		return nil
+	}
+
+	versions, err := NewVersions(metaVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse versions for property '%s': %w", p.PropertyName, err)
+	}
+	p.SupportedVersions = versions
+
+	genLogger.Debugf("Successfully set SupportedVersions for property '%s'. Versions: '%s'", p.PropertyName, p.SupportedVersions)
+	return nil
+}

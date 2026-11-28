@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation From Application EPG To Attachable Access Entity Profile
 
-
-
 ## API Information ##
 
 * Class: [fvRsAepAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAepAtt/overview)
@@ -34,20 +32,21 @@ The configuration snippet below creates a Relation From Application EPG To Attac
 
 ```hcl
 
-resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "example_application_epg" {
+resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "example" {
   parent_dn                             = aci_application_epg.example.id
   encapsulation                         = "vlan-100"
   attachable_access_entity_profile_name = aci_attachable_access_entity_profile.example.name
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation From Application EPG To Attachable Access Entity Profile.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "full_example_application_epg" {
+resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "full_example" {
   parent_dn                             = aci_application_epg.example.id
   encapsulation                         = "vlan-100"
   deployment_immediacy                  = "immediate"
@@ -56,15 +55,15 @@ resource "aci_relation_from_application_epg_to_attachable_access_entity_profile"
   attachable_access_entity_profile_name = aci_attachable_access_entity_profile.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -78,6 +77,7 @@ All examples for the Relation From Application EPG To Attachable Access Entity P
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
+
 * `encapsulation` (encap) - (string) The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.
 * `attachable_access_entity_profile_name` (tnInfraAttEntityPName) - (string) The name of the Attachable Access Entity Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) with `aci_attachable_access_entity_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/attachable_access_entity_profile) with `data.aci_attachable_access_entity_profile.example.name`.
 
@@ -94,14 +94,15 @@ All examples for the Relation From Application EPG To Attachable Access Entity P
   - Default: `"regular"`
   - Valid Values: `"native"`, `"regular"`, `"untagged"`.
 * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  - Default: `"unknown"`
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -110,7 +111,7 @@ All examples for the Relation From Application EPG To Attachable Access Entity P
 An existing Relation From Application EPG To Attachable Access Entity Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_from_application_epg_to_attachable_access_entity_profile.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rsaepAtt-{tnInfraAttEntityPName}
+terraform import aci_relation_from_application_epg_to_attachable_access_entity_profile.example uni/tn-{name}/ap-{name}/epg-{name}/rsaepAtt-{tnInfraAttEntityPName}
 ```
 
 Starting in Terraform version 1.5, an existing Relation From Application EPG To Attachable Access Entity Profile can be imported
@@ -119,6 +120,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/rsaepAtt-{tnInfraAttEntityPName}"
-  to = aci_relation_from_application_epg_to_attachable_access_entity_profile.example_application_epg
+  to = aci_relation_from_application_epg_to_attachable_access_entity_profile.example
 }
 ```

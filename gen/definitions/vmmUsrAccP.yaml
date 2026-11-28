@@ -1,0 +1,35 @@
+# Compatibility: pwd keeps the legacy Optional+Computed schema so a configured
+# password remains in state when it is later omitted from configuration.
+# TODO: Standardize secret handling after the redesign; removing Computed would
+# change omission behavior and must be treated as a breaking compatibility change.
+
+documentation:
+  sub_category: Virtual Networking
+  ui_locations:
+  - Virtual Networking -> Provider -> Domain -> Credentials
+properties:
+  pwd:
+    attribute_name: password
+    computed: true
+    documentation:
+      description: The password of the %s object. This sensitive value is excluded
+        from the resource's lifecycle configuration and is not tracked by Terraform.
+  usr:
+    attribute_name: username
+    documentation:
+      description: The username of the %s object.
+resource_name: vmm_credential
+schema_version: 2
+state_upgrades:
+  1:
+    attributes:
+      parentDn:
+        attribute_name: vmm_domain_dn
+        status: deprecated
+      pwd:
+        attribute_name: pwd
+        status: deprecated
+      usr:
+        attribute_name: usr
+        status: deprecated
+    source: sdkv2

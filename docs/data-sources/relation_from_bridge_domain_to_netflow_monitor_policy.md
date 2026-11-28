@@ -33,7 +33,7 @@ Data source for ACI Relation From Bridge Domain To NetFlow Monitor Policy
 
 ```hcl
 
-data "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "example_bridge_domain" {
+data "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "example" {
   parent_dn                   = aci_bridge_domain.example.id
   filter_type                 = "ipv4"
   netflow_monitor_policy_name = aci_netflow_monitor_policy.example.name
@@ -47,12 +47,12 @@ data "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "example_bridge
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [fvSvcBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSvcBD/overview)
 
 * `filter_type` (fltType) - (string) The filter type of the NetFlow Monitor Policy object.
   - Valid Values: `ce`, `ipv4`, `ipv6`, `unspecified`.
-* `netflow_monitor_policy_name` (tnNetflowMonitorPolName) - (string) The name of the NetFlow Monitor Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) with `aci_netflow_monitor_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/netflow_monitor_policy) with `data.aci_netflow_monitor_policy.example.name`.
+* `netflow_monitor_policy_name` (tnNetflowMonitorPolName) - (string) The name of the NetFlow Monitor Policy object.
 
 ### Read-Only ###
 

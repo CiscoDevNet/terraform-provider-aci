@@ -1,0 +1,72 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/out-{name}/lnodep-{name}/rsnodeL3OutAtt-[{tDn}]/lbp-[{addr}]/nodesidp-{sidoffset}
+  sub_category: L3Out
+  ui_locations:
+  - Tenants -> Networking -> L3Outs -> Logical Node Profiles -> Policy -> Nodes ->
+    Policy -> Loopback Addresses
+exclude_parents:
+- l3extRsNodeL3OutAtt
+properties:
+  loopbackAddr:
+    attribute_name: loopback_address
+    default_values:
+      0.0.0.0: ""
+    documentation:
+      description: The loopback address of the %s object.
+    test_config:
+      create:
+      - config_value: 192.0.2.1
+      update:
+      - config_value: fe80::0002
+  name:
+    default_values:
+      "": ""
+    test_config:
+      create:
+      - config_value: node_sid_profile
+  sidoffset:
+    attribute_name: segment_id
+    documentation:
+      description: The segment ID of the %s object.
+    test_config:
+      create:
+      - config_value: "1"
+      update:
+      - config_value: "2"
+resource_name: l3out_node_sid_profile
+test_config:
+  dependencies:
+  - class_name: l3extLoopBackIfP
+    config_overrides:
+      addr: 192.0.2.5
+      fabric_node_dn: aci_logical_node_to_fabric_node.test.id
+    dependencies:
+    - class_name: l3extRsNodeL3OutAtt
+      config_overrides:
+        logical_node_profile_dn: aci_logical_node_profile.test.id
+        rtr_id: 192.0.2.1
+        tdn: topology/pod-2/node-2011
+      dependencies:
+      - class_name: l3extLNodeP
+        config_overrides:
+          l3_outside_dn: aci_l3_outside.test.id
+          name: name_1
+        dependencies:
+        - class_name: l3extOut
+          config_overrides:
+            name: name_1
+            relation_l3ext_rs_ectx: aci_vrf.test.id
+            tenant_dn: aci_tenant.test.id
+          dependencies:
+          - class_name: fvTenant
+          - class_name: fvCtx
+            config_overrides:
+              parent_dn: aci_tenant.test.id
+            dependencies:
+            - class_name: fvTenant
+          reference: aci_l3_outside.test.id
+        reference: aci_logical_node_profile.test.id
+      reference: aci_logical_node_to_fabric_node.test.id
+    reference: aci_l3out_loopback_interface_profile.test.id
+    role: parent

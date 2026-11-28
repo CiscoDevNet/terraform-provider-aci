@@ -31,7 +31,7 @@ Data source for ACI PoE Interface Policy
 ```hcl
 
 data "aci_poe_interface_policy" "example" {
-  name = "test_name"
+  name = "poe_interface_policy"
 }
 
 ```
@@ -59,10 +59,10 @@ data "aci_poe_interface_policy" "example" {
 * `relation_to_application_epg` - (map) A map of Relation To Application EPG (ACI object [poeRsPoeEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/poeRsPoeEpg/overview)) pointing to Application EPG (ACI Object [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview)). This attribute is supported in ACI versions: 4.0(1h) and later.
     * `annotation` (annotation) - (string) The annotation of the Relation To Application EPG object.
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the EPG object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

@@ -1,0 +1,28 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/ap-{name}/epg-{name}/crtrn/macattr-{name}
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes
+exclude_parents:
+- fvSCrtrn
+properties:
+  mac:
+    restriction: required
+    test_config:
+      create:
+      - config_value: AA:BB:CC:BB:BB:EE
+      default:
+      - config_value: AA:BB:CC:DD:EE:FF
+      update:
+      - config_value: AA:BB:CC:BB:BB:EE
+  name:
+    example_config:
+      minimum:
+      - value: mac_attribute
+    test_config:
+      create:
+      - config_value: mac_attr
+      datasource_missing:
+      - config_value: mac_attr_non_existing
+resource_name: epg_useg_mac_attribute

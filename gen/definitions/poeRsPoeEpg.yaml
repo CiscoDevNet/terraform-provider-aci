@@ -1,0 +1,8 @@
+properties:
+  tDn:
+    documentation:
+      description: The distinguished name (DN) of the EPG object.
+relation_info:
+  to_classes:
+  - fvAEPg
+resource_name: relation_to_application_epg

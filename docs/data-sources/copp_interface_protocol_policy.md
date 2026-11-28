@@ -30,9 +30,9 @@ Data source for ACI CoPP Interface Protocol Policy
 
 ```hcl
 
-data "aci_copp_interface_protocol_policy" "example_copp_interface_policy" {
+data "aci_copp_interface_protocol_policy" "example" {
   parent_dn = aci_copp_interface_policy.example.id
-  name      = "test_name"
+  name      = "copp_interface_protocol_policy"
 }
 
 ```

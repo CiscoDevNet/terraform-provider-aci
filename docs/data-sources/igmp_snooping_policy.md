@@ -32,9 +32,9 @@ Data source for ACI IGMP Snooping Policy
 
 ```hcl
 
-data "aci_igmp_snooping_policy" "example_tenant" {
+data "aci_igmp_snooping_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "igmp_snooping_policy"
 }
 
 ```

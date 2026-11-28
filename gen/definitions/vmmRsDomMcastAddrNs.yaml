@@ -1,0 +1,18 @@
+documentation:
+  ui_locations:
+  - Virtual Networking -> Provider -> Domain -> Pool of Multicast Addresses
+properties:
+  tDn:
+    documentation:
+      description: The distinguished name of the target.
+resource_name: relation_to_multicast_pool
+test_config:
+  dependencies:
+  - class_name: fvnsMcastAddrInstP
+    reference: aci_multicast_pool.test.id
+    role: target
+  - class_name: fvnsMcastAddrInstP
+    reference: aci_multicast_pool.test_2.id
+    role: target
+  ignore_tests:
+  - child

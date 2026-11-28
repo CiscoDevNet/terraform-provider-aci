@@ -30,9 +30,9 @@ Data source for ACI EPG uSeg IP Attribute
 
 ```hcl
 
-data "aci_epg_useg_ip_attribute" "example_epg_useg_block_statement" {
+data "aci_epg_useg_ip_attribute" "example" {
   parent_dn = aci_epg_useg_block_statement.example.id
-  name      = "131"
+  name      = "ip_attribute"
 }
 
 ```

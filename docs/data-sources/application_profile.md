@@ -30,9 +30,9 @@ Data source for ACI Application Profile
 
 ```hcl
 
-data "aci_application_profile" "example_tenant" {
+data "aci_application_profile" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "application_profile"
 }
 
 ```

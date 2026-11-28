@@ -1,0 +1,21 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> Bridge Domains -> Policy -> Advanced/Troubleshooting
+    -> Rogue/Coop Exception List
+properties:
+  mac:
+    test_config:
+      create:
+      - config_value: "00:00:00:00:00:01"
+      update:
+      - config_value: "00:00:00:00:00:02"
+resource_name: rogue_coop_exception
+test_config:
+  embedded_instances:
+  - properties:
+      mac:
+      - config_value: "00:00:00:00:00:03"
+  - properties:
+      mac:
+      - config_value: "00:00:00:00:00:01"

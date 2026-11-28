@@ -31,7 +31,7 @@ Data source for ACI Leaf Interface Profile
 ```hcl
 
 data "aci_leaf_interface_profile" "example" {
-  name = "test_name"
+  name = "leaf_interface_profile"
 }
 
 ```

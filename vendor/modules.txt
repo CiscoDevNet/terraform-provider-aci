@@ -74,6 +74,9 @@ github.com/cloudflare/circl/sign/slhdsa
 github.com/cloudflare/circl/simd/keccakf1600
 github.com/cloudflare/circl/xof
 github.com/cloudflare/circl/xof/k12
+# github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
+## explicit
+github.com/davecgh/go-spew/spew
 # github.com/fatih/color v1.18.0
 ## explicit; go 1.17
 github.com/fatih/color
@@ -222,7 +225,6 @@ github.com/hashicorp/terraform-plugin-framework/types/basetypes
 github.com/hashicorp/terraform-plugin-framework-validators/helpers/validatordiag
 github.com/hashicorp/terraform-plugin-framework-validators/helpers/validatorfuncerr
 github.com/hashicorp/terraform-plugin-framework-validators/internal/schemavalidator
-github.com/hashicorp/terraform-plugin-framework-validators/listvalidator
 github.com/hashicorp/terraform-plugin-framework-validators/setvalidator
 github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator
 # github.com/hashicorp/terraform-plugin-go v0.31.0
@@ -343,6 +345,13 @@ github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.2.0
 ## explicit; go 1.20
 github.com/oklog/run
+# github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
+## explicit
+github.com/pmezard/go-difflib/difflib
+# github.com/stretchr/testify v1.10.0
+## explicit; go 1.17
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/assert/yaml
 # github.com/vmihailenco/msgpack v4.0.4+incompatible
 ## explicit
 github.com/vmihailenco/msgpack
@@ -385,9 +394,6 @@ golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/sha3
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
-# golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0
-## explicit; go 1.23.0
-golang.org/x/exp/slices
 # golang.org/x/mod v0.43.0
 ## explicit; go 1.26.0
 golang.org/x/mod/internal/lazyregexp
@@ -590,3 +596,6 @@ google.golang.org/protobuf/types/known/timestamppb
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
+# gopkg.in/yaml.v3 v3.0.1
+## explicit
+gopkg.in/yaml.v3

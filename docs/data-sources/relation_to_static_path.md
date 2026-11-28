@@ -30,7 +30,7 @@ Data source for ACI Relation To Static Path
 
 ```hcl
 
-data "aci_relation_to_static_path" "example_application_epg" {
+data "aci_relation_to_static_path" "example" {
   parent_dn = aci_application_epg.example.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
@@ -43,7 +43,7 @@ data "aci_relation_to_static_path" "example_application_epg" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
-* `target_dn` (tDn) - (string) null.
+* `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
 
 ### Read-Only ###
 

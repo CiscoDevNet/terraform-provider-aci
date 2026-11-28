@@ -30,9 +30,9 @@ Data source for ACI Bridge Domain
 
 ```hcl
 
-data "aci_bridge_domain" "example_tenant" {
+data "aci_bridge_domain" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "bridge_domain"
 }
 
 ```
@@ -99,10 +99,10 @@ data "aci_bridge_domain" "example_tenant" {
     * `mac` (mac) - (string) The MAC address of the Rogue Coop Exception object.
     * `name` (name) - (string) The name of the Rogue Coop Exception object.
     * `name_alias` (nameAlias) - (string) The name alias of the Rogue Coop Exception object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_monitoring_policy` - (map) A map of Relation From Bridge Domain To Monitoring Policy (ACI object [fvRsABDPolMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsABDPolMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
@@ -201,10 +201,10 @@ data "aci_bridge_domain" "example_tenant" {
 * `relation_to_mld_snooping_policy` - (map) A map of Relation To MLD Snooping Policy (ACI object [fvRsMldsn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsMldsn/overview)) pointing to MLD Snooping Policy (ACI Object [mldSnoopPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mldSnoopPol/overview)). This attribute is supported in ACI versions: 4.1(1i) and later.
     * `annotation` (annotation) - (string) The annotation of the Relation To MLD Snooping Policy object.
     * `mld_snooping_policy_name` (tnMldSnoopPolName) - (string) The name of the MLD Snooping Policy object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

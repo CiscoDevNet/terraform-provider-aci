@@ -1,0 +1,29 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF -> Provided Contracts
+properties:
+  intent:
+    restriction: exclude
+  tnVzBrCPName:
+    documentation:
+      description: The name of the Contract object.
+resource_name: relation_from_any_to_provider_contract
+test_config:
+  dependencies:
+  - class_name: vzBrCP
+    config_overrides:
+      name: name_1
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_contract.test_contract_0.id
+    role: target
+  - class_name: vzBrCP
+    config_overrides:
+      name: name_2
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_contract.test_2.id
+    role: target

@@ -1,0 +1,737 @@
+package data
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"slices"
+	"strings"
+
+	"gopkg.in/yaml.v2"
+)
+
+type GlobalMetaDefinition struct {
+	// A list of class names that should always be included as children regardless of standard inclusion logic.
+	AlwaysIncludeAsChild []string `yaml:"always_include_as_child"`
+	// A map of meta property names to their desired attribute names.
+	// Used to globally override the default snake_case derivation for specific properties (e.g., "descr" → "description").
+	// Per-class PropertyDefinition.AttributeName takes precedence over this.
+	AttributeNameOverrides map[string]string `yaml:"attribute_name_overrides"`
+	// A list of class names to globally exclude from parent resolution (root-level singletons like polUni, fabricInst).
+	ExcludeParents []string `yaml:"exclude_parents"`
+	// A list of property names to exclude from all classes.
+	// A class-level PropertyDefinition entry for the same property takes precedence over this global exclude.
+	ExcludeProperties []string `yaml:"exclude_properties"`
+	// A map of word substitutions applied when humanizing a snake_case resource name into a documentation label.
+	// e.g., "Bgp" → "BGP", "External Network Instance Profile" → "External EPG".
+	// Multi-word keys are matched as substrings; single-word keys are only replaced on whole-word matches.
+	DocumentationLabelOverrides map[string]string `yaml:"documentation_label_overrides"`
+	// Per-meta-property documentation overrides applied as a global layer between
+	// any per-class PropertyDefinition.Documentation.Description and the meta
+	// `comment` / `label` fallbacks (consumed by setDescription).
+	// Keys are meta property names (e.g., "descr", "nameAlias"); values are the
+	// English sentence rendered as the property description. When the value
+	// contains `%s`, the renderer interpolates the class's humanised resource
+	// name (same substitution as GetResourceNameAsDescription).
+	// Normalises inconsistent meta `comment` wording across the ~180 classes
+	// without duplicating the same text into every per-class file.
+	PropertyDocumentationOverrides map[string]string `yaml:"property_documentation_overrides"`
+	// A map of meta property names to fixed public-example values. These values replace
+	// automatically generated placeholders only; per-class PropertyDefinition.ExampleConfig
+	// values take precedence.
+	PropertyExampleValueOverrides map[string]string `yaml:"property_example_value_overrides"`
+}
+
+func loadGlobalMetaDefinition() GlobalMetaDefinition {
+	definition, err := os.ReadFile(constGlobalDefinitionFilePath)
+	if err != nil {
+		genLogger.Fatal("A file 'global.yaml' is required to be defined in the definitions folder.")
+	}
+
+	definitionGlobalMetaData, err := parseGlobalMetaDefinition(definition)
+	if err != nil {
+		genLogger.Fatal(err.Error())
+	}
+
+	return definitionGlobalMetaData
+}
+
+// parseGlobalMetaDefinition decodes raw YAML bytes into a GlobalMetaDefinition.
+// UnmarshalStrict rejects unknown YAML keys so renamed/typo'd fields surface
+// as a generator error instead of being silently ignored.
+func parseGlobalMetaDefinition(data []byte) (GlobalMetaDefinition, error) {
+	var definitionGlobalMetaData GlobalMetaDefinition
+	err := yaml.UnmarshalStrict(data, &definitionGlobalMetaData)
+	return definitionGlobalMetaData, err
+}
+
+func loadClassDefinitions() (map[string]ClassDefinition, error) {
+	entries, err := os.ReadDir(constDefinitionsPath)
+	if err != nil {
+		return nil, fmt.Errorf("read class definitions directory: %w", err)
+	}
+
+	definitions := make(map[string]ClassDefinition)
+	for _, entry := range entries {
+		if entry.IsDir() || entry.Name() == "global.yaml" || filepath.Ext(entry.Name()) != ".yaml" {
+			continue
+		}
+
+		definitionPath := filepath.Join(constDefinitionsPath, entry.Name())
+		definition, err := os.ReadFile(definitionPath)
+		if err != nil {
+			return nil, fmt.Errorf("read class definition %q: %w", definitionPath, err)
+		}
+
+		classDefinition, err := parseClassDefinition(definition)
+		if err != nil {
+			return nil, fmt.Errorf("parse class definition %q: %w", definitionPath, err)
+		}
+		definitions[strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))] = classDefinition
+	}
+
+	return definitions, nil
+}
+
+type ClassDocumentationDefinition struct {
+	// Overrides the humanized documentation label for this class (e.g., "Application EPG").
+	// Used to build "Manages ACI <Label>" / "Data source for ACI <Label>" and any other
+	// documentation text that references the class by its label.
+	// When empty, the label is derived from class.ResourceName via humanization + DocumentationLabelOverrides.
+	Label string `yaml:"label"`
+	// Overrides the final Terraform Registry documentation path segment when a
+	// legacy page filename differs from the Terraform artifact name.
+	RegistryPath string `yaml:"registry_path"`
+	// Additional sentence(s) appended after the standard description prefix.
+	// Shared and applied to both the resource and datasource documentation.
+	// Per-artifact entries in Resource.Description / Datasource.Description are appended after this shared text.
+	Description string `yaml:"description"`
+	// Overrides the DN format strings sourced from the meta file. When set, these values are
+	// sorted but are not capped because the explicitly curated list is used in full.
+	DnFormats []string `yaml:"dn_formats"`
+	// A list of child class names to exclude from the documentation children list.
+	ExcludeChildren []string `yaml:"exclude_children"`
+	// A list of child class names to force-include in the documentation children list.
+	IncludeChildren []string `yaml:"include_children"`
+	// Notes rendered with -> prefix in the documentation.
+	// These are shared and applied to both the resource and datasource documentation.
+	// Per-artifact entries in Resource.Notes / Datasource.Notes are appended after this shared list.
+	Notes []string `yaml:"notes"`
+	// Sub-category for Terraform Registry sidebar grouping.
+	SubCategory string `yaml:"sub_category"`
+	// GUI locations in APIC (e.g., "Tenants -> Networking -> VRFs").
+	UiLocations []string `yaml:"ui_locations"`
+	// Warnings rendered with ~> prefix in the documentation.
+	// These are shared and applied to both the resource and datasource documentation.
+	// Per-artifact entries in Resource.Warnings / Datasource.Warnings are appended after this shared list.
+	Warnings []string `yaml:"warnings"`
+	// Resource-only notes/warnings appended to the shared lists for the resource documentation.
+	Resource ArtifactDocumentationDefinition `yaml:"resource"`
+	// Datasource-only notes/warnings appended to the shared lists for the datasource documentation.
+	Datasource ArtifactDocumentationDefinition `yaml:"datasource"`
+}
+
+// ArtifactDocumentationDefinition holds documentation overrides specific to a single
+// generated artifact (resource or datasource). Description/notes/warnings entries here
+// are appended to the shared ClassDocumentationDefinition lists.
+type ArtifactDocumentationDefinition struct {
+	// Additional sentence(s) appended after the shared description text for this artifact.
+	Description string `yaml:"description"`
+	// Notes rendered with -> prefix in the documentation, appended after the shared notes.
+	Notes []string `yaml:"notes"`
+	// Warnings rendered with ~> prefix in the documentation, appended after the shared warnings.
+	Warnings []string `yaml:"warnings"`
+}
+
+type PropertyDefinition struct {
+	// Overrides the default attribute name derived from the meta property name in snake_case notation.
+	AttributeName string `yaml:"attribute_name"`
+	// Overrides the inferred resource Computed flag; nil retains the inferred behavior.
+	Computed *bool `yaml:"computed"`
+	// Overrides the APIC property name displayed in generated documentation without
+	// changing the property used for payload construction or response decoding.
+	DocumentationPropertyName string `yaml:"documentation_property_name"`
+	// Explicit Terraform/provider deprecation. APIC isDeprecated is documentation metadata only.
+	Deprecated *bool `yaml:"deprecated"`
+	// The deprecated APIC versions for the property. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	// Used to indicate versions where the property is deprecated but still functional.
+	// When non-empty, this overrides the meta `deprecatedSince` value.
+	DeprecatedVersions string `yaml:"deprecated_versions"`
+	// Indicates that the property is hidden by the APIC API (no longer accepted).
+	// When true, this overrides the meta `isHidden` flag with logical OR semantics.
+	Hidden bool `yaml:"hidden"`
+	// The hidden APIC versions for the property. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	// When non-empty, this overrides the meta `hiddenSince` value.
+	HiddenVersions string `yaml:"hidden_versions"`
+	// Controls the schema behavior of the property.
+	// Valid values: "required", "optional", "read_only", "exclude".
+	// When the field is omitted or empty, the default behavior is derived from the meta file
+	// (isConfigurable+isNaming → required, isConfigurable → optional).
+	Restriction RestrictionEnum `yaml:"restriction"`
+	// Overrides the RequiresReplace behavior for the property.
+	// When non-nil, takes precedence over the meta-derived isNaming or createOnly logic.
+	// Use true to force replacement on change; false to suppress even for naming properties.
+	RequiresReplace *bool `yaml:"requires_replace"`
+	// Overrides the sensitive flag for the property.
+	// When true, the property is marked as sensitive in the Terraform schema regardless of the meta file.
+	Sensitive bool `yaml:"sensitive"`
+	// Overrides inferred property availability, including hidden-version cutoffs. Class test gates apply separately.
+	// Uses inclusive metadata ranges: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	SupportedVersions string `yaml:"supported_versions"`
+	// Overrides the meta `validators` array. When non-empty, replaces the meta validators entirely.
+	Validators []ValidatorDefinition `yaml:"validators"`
+	// Adds extra valid values to the property on top of the meta `validValues` array.
+	// Each entry is treated as both the wire value and the localName.
+	// A warning is logged when an entry is already present in the meta valid values.
+	AddValidValues []string `yaml:"add_valid_values"`
+	// Removes valid values from the meta `validValues` array by localName.
+	// A warning is logged when an entry is not present in the meta valid values.
+	RemoveValidValues []string `yaml:"remove_valid_values"`
+	// Overrides the value type derived from the meta `uitype`.
+	// Accepted values mirror the ValueTypeEnum vocabulary: "string", "set", "object", "ip_address", "semantic_equality", "vmm_arp_learning".
+	// An error is returned by YAML decoding when set to an unrecognized value.
+	ValueType ValueTypeEnum `yaml:"value_type"`
+	// Per-property documentation overrides (description, notes, warnings).
+	// Reuses the shared ArtifactDocumentationDefinition struct.
+	Documentation ArtifactDocumentationDefinition `yaml:"documentation"`
+	// Overrides the default values derived from the meta `default` field.
+	// Each key is the default value and the map value is an optional version range string (e.g., "5.0(1a)-").
+	// An empty version string means the default applies to all versions.
+	// When non-empty, completely replaces the meta-derived defaults.
+	DefaultValues map[string]string `yaml:"default_values"`
+	// Test configuration for the property. Controls test value generation and inclusion/exclusion.
+	TestConfig TestConfigDefinition `yaml:"test_config"`
+	// Example configuration for values that cannot be derived from TestConfig or intentionally
+	// differ in public examples. Omitted scenarios are derived by the datastore.
+	ExampleConfig PropertyExampleConfigDefinition `yaml:"example_config"`
+	// Semantic reference information for configurable DN/name reference properties that cannot
+	// be inferred from parentDn, tDn, or named-relation semantics. The target classes describe
+	// what the value may reference; ExampleClass selects the class used in generated examples.
+	Reference PropertyReferenceDefinition `yaml:"reference"`
+}
+
+// ExampleValueEntryDefinition is an explicitly authored public-example value. A value is a
+// quoted Terraform string unless ValueType is ExpressionValue. References use the structured
+// Reference field so the datastore never has to infer their class from an HCL expression.
+type ExampleValueEntryDefinition struct {
+	Value     string                      `yaml:"value"`
+	ValueType ValueRenderTypeEnum         `yaml:"value_type"`
+	Reference *ExampleReferenceDefinition `yaml:"reference"`
+}
+
+// ExampleReferenceDefinition identifies a resource reference used only by a public example.
+// ResourceName is normally derived from ClassName and is set only to preserve a deliberate
+// compatibility alias. AttributeName defaults to id.
+type ExampleReferenceDefinition struct {
+	ClassName     string `yaml:"class_name"`
+	ResourceName  string `yaml:"resource_name"`
+	AttributeName string `yaml:"attribute_name"`
+}
+
+// ExampleValueScenarioDefinition preserves the distinction between an omitted scenario and
+// an explicitly empty value list. The latter renders an included empty value (`[]` for sets).
+type ExampleValueScenarioDefinition struct {
+	Defined bool
+	Entries []ExampleValueEntryDefinition
+}
+
+func (s *ExampleValueScenarioDefinition) UnmarshalYAML(unmarshal func(any) error) error {
+	var entries []ExampleValueEntryDefinition
+	if err := unmarshal(&entries); err != nil {
+		return err
+	}
+	s.Defined = true
+	s.Entries = entries
+	return nil
+}
+
+func (s ExampleValueScenarioDefinition) MarshalYAML() (any, error) {
+	return s.Entries, nil
+}
+
+// PropertyExampleConfigDefinition contains sparse public-example overrides. Minimum is used
+// by resource.tf and Full by resource-all-attributes.tf. A Full override falls back to
+// Minimum when Full is omitted so a documentation-specific value can be authored once.
+type PropertyExampleConfigDefinition struct {
+	Minimum ExampleValueScenarioDefinition `yaml:"minimum"`
+	Full    ExampleValueScenarioDefinition `yaml:"full"`
+}
+
+// PropertyReferenceDefinition describes the Terraform resource reference used when an APIC
+// property carries another object's DN or name. Relation and parent properties normally derive
+// this information from the class model and do not need this override.
+type PropertyReferenceDefinition struct {
+	Classes              []string `yaml:"classes"`
+	ExampleClass         string   `yaml:"example_class"`
+	ExampleAttributeName string   `yaml:"example_attribute"`
+}
+
+// TestValueEntryDefinition is the YAML representation of a single test value entry.
+type TestValueEntryDefinition struct {
+	// The value to write into HCL configuration.
+	ConfigValue string `yaml:"config_value"`
+	// Whether to include this value in the test config. Pointer: nil = default true, explicit false = omit.
+	ConfigInclude *bool `yaml:"config_include"`
+	// Expected value in state after apply. Empty = same as ConfigValue.
+	AssertValue string `yaml:"assert_value"`
+	// Selects value comparison (default) or a non-empty presence check.
+	AssertStrategy AssertStrategyEnum `yaml:"assert_strategy"`
+	// Controls HCL rendering: "string" (default, quoted), "reference" (unquoted expression).
+	ValueType ValueRenderTypeEnum `yaml:"value_type"`
+}
+
+// TestValueScenarioDefinition preserves whether a scenario was omitted or explicitly defined
+// as an empty list. The distinction matters for set attributes: `update: []` means clear the
+// set, while an omitted update allows the datastore to derive it from Create.
+//
+// Its custom YAML methods retain the existing compact list syntax:
+//
+//	update:
+//	- config_value: value
+type TestValueScenarioDefinition struct {
+	Defined bool
+	Entries []TestValueEntryDefinition
+	// Preserve is used only while migrating legacy definitions to prevent a
+	// required-input scenario from being folded into APIC default_values.
+	Preserve bool `yaml:"-"`
+}
+
+func (s *TestValueScenarioDefinition) UnmarshalYAML(unmarshal func(any) error) error {
+	var entries []TestValueEntryDefinition
+	if err := unmarshal(&entries); err != nil {
+		return err
+	}
+	s.Defined = true
+	s.Entries = entries
+	return nil
+}
+
+func (s TestValueScenarioDefinition) MarshalYAML() (any, error) {
+	return s.Entries, nil
+}
+
+// TestPrefixDefinition controls the shared prefix generated for one test fixture.
+type TestPrefixDefinition struct {
+	Characters string `yaml:"characters"`
+	Length     int    `yaml:"length"`
+}
+
+// TestPrefixOverrideDefinition distinguishes automatic prefixing from an explicit override.
+type TestPrefixOverrideDefinition struct {
+	Enabled *bool `yaml:"enabled"`
+}
+
+// TestConfigDefinition groups test-related overrides for a property definition.
+type TestConfigDefinition struct {
+	Prefix TestPrefixOverrideDefinition `yaml:"prefix"`
+	// Scenario names use snake_case. These override configuration presence, not assertions.
+	IncludeIn   []string `yaml:"include_in"`
+	ExcludeFrom []string `yaml:"exclude_from"`
+	// Values for the "all attributes" create step. Each entry becomes a TestValueEntry.
+	Create TestValueScenarioDefinition `yaml:"create"`
+	// Values used only by a datasource lookup that is expected not to find an
+	// object. This preserves valid, class-specific negative lookup inputs without
+	// reusing them as resource update values.
+	DataSourceMissing TestValueScenarioDefinition `yaml:"datasource_missing"`
+	// Values for the "required-only" step. Typically auto-derived; explicit overrides here.
+	Default TestValueScenarioDefinition `yaml:"default"`
+	// Values for the update step. Each entry becomes a TestValueEntry.
+	Update TestValueScenarioDefinition `yaml:"update"`
+	// Values for the ForceNew step. Typically auto-derived (same as Create for non-parent_dn).
+	ForceNew TestValueScenarioDefinition `yaml:"force_new"`
+	// Values for the Legacy step, exercising state_upgrades legacy attribute
+	// aliases (LegacyDeprecated / Frozen). Independent of the standard buckets:
+	// supplying legacy alone is permitted, and supplying legacy is required
+	// when the legacy alias has a different Terraform type than the current
+	// attribute (auto-derivation skips that case with a warning).
+	Legacy TestValueScenarioDefinition `yaml:"legacy"`
+	// When true, the property is excluded from generated tests entirely.
+	IgnoreInTest bool `yaml:"ignore_in_test"`
+	// When true, the property remains available to resource tests but is omitted
+	// from generated datasource setup and assertions.
+	IgnoreInDataSourceTest bool `yaml:"ignore_in_datasource_test"`
+}
+
+func (d *TestConfigDefinition) UnmarshalYAML(unmarshal func(any) error) error {
+	type definition TestConfigDefinition
+	var value definition
+	if err := unmarshal(&value); err != nil {
+		return err
+	}
+	for _, scenario := range value.IncludeIn {
+		if slices.Contains(value.ExcludeFrom, scenario) {
+			return fmt.Errorf("test scenario %q appears in both include_in and exclude_from", scenario)
+		}
+	}
+	*d = TestConfigDefinition(value)
+	return nil
+}
+
+// ValidatorDefinition mirrors the YAML/JSON shape of a single validator entry (min/max plus optional regex statements).
+type ValidatorDefinition struct {
+	Min       int64                      `yaml:"min"`
+	Max       int64                      `yaml:"max"`
+	RegexList []RegexStatementDefinition `yaml:"regexs"`
+}
+
+// RegexStatementDefinition mirrors the YAML/JSON shape of a single regex entry inside a validator.
+type RegexStatementDefinition struct {
+	Regex string `yaml:"regex"`
+	Type  string `yaml:"type"`
+}
+
+// RelationInfoDefinition mirrors the meta `relationInfo` block and allows per-field overrides
+// from the class definition file. Empty fields fall back to the corresponding meta value.
+type RelationInfoDefinition struct {
+	// When true, the class is treated as non-relational regardless of the meta `relationInfo`
+	// block. Used to opt out of relational handling for classes whose meta declares a relation
+	// that should not be exposed by the provider. Mutually exclusive with the override fields
+	// below; an error is returned during generation when `Disabled` is combined with any of
+	// `Type`, `FromClass`, or `ToClasses`.
+	Disabled bool `yaml:"disabled"`
+	// Relationship type. Valid values: "named", "explicit". Zero value (UndefinedRelationshipType)
+	// means "no override" — fall back to meta `relationInfo.type`.
+	Type RelationshipTypeEnum `yaml:"type"`
+	// Source class of the relation in `pkg:Class` form (e.g., "fv:EPg").
+	FromClass string `yaml:"from_class"`
+	// Target classes of the relation in `pkg:Class` form (e.g., ["vz:BrCP"]).
+	// Replaces the meta `toMo` entirely when set; a single-element list is the common case,
+	// while a multi-element list is required when the meta `toMo` is an abstract superclass
+	// (e.g., "infra:DomP") that maps to multiple concrete target classes. When more than one
+	// class is listed, the class definition must also provide an explicit `resource_name`
+	// since auto-naming from a single target is no longer meaningful.
+	ToClasses []string `yaml:"to_classes"`
+}
+
+type ClassDefinition struct {
+	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
+	// The value "never" is used to keep the input consistent with the meta data file.
+	AllowDelete string `yaml:"allow_delete"`
+	// Selects which top-level resource/data-source artifacts are available for a
+	// class. For metadata-backed classes, class-scoped renderers honor this
+	// selection; shared models are generated for every loaded class. A nil slice
+	// signals the resolver to auto-derive: classes with non-empty `IdentifiedBy`
+	// get [resource, datasource], while classes with empty `IdentifiedBy` get
+	// nothing. Definition-only classes never enter class-scoped render jobs, but
+	// their artifact availability is used when documentation resolves links; an
+	// omitted field defaults to both existing legacy artifacts.
+	// A non-nil but empty slice (`artifacts: []`) is an explicit opt-out. A
+	// non-empty list overrides the auto-derivation; `[resource, datasource]`
+	// opts an empty-`IdentifiedBy` class in as both, while `[datasource]` or
+	// `[resource]` selects one artifact kind.
+	Artifacts []ArtifactEnum `yaml:"artifacts"`
+	// Indicates that the resource and datasource are deprecated. A deprecation warning will be included in the schemas.
+	// When true, this overrides the meta `isDeprecated` flag with logical OR semantics: definition can flip true on top of meta but cannot force-off.
+	Deprecated bool `yaml:"deprecated"`
+	// The deprecated APIC versions for the class. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	// Used to indicate versions where the class is deprecated but still functional.
+	// When non-empty, this overrides the meta `deprecatedSince` value.
+	DeprecatedVersions string `yaml:"deprecated_versions"`
+	// Indicates that the class is hidden by the APIC API (no longer accepted).
+	// When true, this overrides the meta `isHidden` flag with logical OR semantics.
+	Hidden bool `yaml:"hidden"`
+	// The hidden APIC versions for the class. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	// When non-empty, this overrides the meta `hiddenSince` value.
+	HiddenVersions string `yaml:"hidden_versions"`
+	// Documentation specific overrides for the class.
+	Documentation ClassDocumentationDefinition `yaml:"documentation"`
+	// ExampleFiles lists shared generator assets that must be copied into this
+	// class's resource-example directory.
+	ExampleFiles []string `yaml:"example_files"`
+	// ExampleParentClass selects the single parent used to place generated public
+	// examples when the first normalized parent with a resource is not suitable.
+	ExampleParentClass string `yaml:"example_parent_class"`
+	// A list of child class names to exclude from the Children list.
+	ExcludeChildren []string `yaml:"exclude_children"`
+	// A list of parent class names to exclude from the Parents list.
+	ExcludeParents []string `yaml:"exclude_parents"`
+	// A list of identifier attributes for the class.
+	IdentifiedBy []string `yaml:"identified_by"`
+	// A list of child class names to include in the Children list outside of the standard inclusion logic.
+	IncludeChildren []string `yaml:"include_children"`
+	// A list of parent class names to include in the Parents list outside of the standard inclusion logic.
+	IncludeParents []string `yaml:"include_parents"`
+	// Overrides the default single nested behavior. When true, the class is treated as a single nested attribute
+	// when defined as a child in a parent resource, regardless of whether it has identifying properties.
+	IsSingleNestedWhenDefinedAsChild bool `yaml:"is_single_nested_when_defined_as_child"`
+	// Overrides the platform type from the meta file. Valid values: "apic", "cloud", "both".
+	PlatformType string `yaml:"platform_type"`
+	// Property-level overrides keyed by the meta property name (e.g., "pcTag", "name").
+	// Used to override the attribute name, or control the schema restriction (required, optional, read_only, exclude).
+	Properties map[string]PropertyDefinition `yaml:"properties"`
+	// Per-version state upgrade definitions. Each entry describes the prior-schema
+	// shape used by Terraform's UpgradeResourceState RPC and the current-schema
+	// exposure (or non-exposure) of any legacy attribute alias. Independent
+	// direct-to-current upgraders per the framework contract: the framework selects
+	// the upgrader matching the saved version and does not chain entries.
+	StateUpgrades map[int]StateUpgradeDefinition `yaml:"state_upgrades"`
+	// Explicitly pins the published resource schema; omission means version zero.
+	SchemaVersion *int `yaml:"schema_version"`
+	// Overrides (or supplies) the meta `relationInfo` block on a per-field basis.
+	// Any non-empty field replaces the matching field from the meta file; empty fields fall back to meta.
+	// When the meta file has no `relationInfo` and this definition supplies at least one field,
+	// the class is treated as a relational class driven entirely by the definition.
+	// `to_classes` directly maps to `Relation.ToClasses`; when more than one class is listed,
+	// `resource_name` must also be set explicitly since auto-naming from a single target is no longer meaningful.
+	// Set `disabled: true` to opt out of relational handling entirely, even when the meta declares a relation.
+	RelationInfo RelationInfoDefinition `yaml:"relation_info"`
+	// Indicates that the class is required when defined as a child in a parent resource.
+	RequiredAsChild bool `yaml:"required_as_child"`
+	// Overrides the resource name derived from the meta file label (e.g., "vrf" instead of "context").
+	ResourceName string `yaml:"resource_name"`
+	// Overrides the Terraform attribute name used when this class is embedded in a parent model.
+	// When empty, the nested name is derived from ResourceName and child cardinality. Explicit
+	// `relation_from_<source>_to_<target>` names are normalized to `relation_to_<target>`.
+	ResourceNameNested string `yaml:"resource_name_nested"`
+	// Overrides the rnFormat from the meta file. The full RN format string (e.g., "custom-{name}").
+	RnFormat string `yaml:"rn_format"`
+	// Prepends a path prefix to the resolved RN format (e.g., "infra" results in "infra/{rnFormat}").
+	RnPrepend string `yaml:"rn_prepend"`
+	// Alternate parent-DN placements for classes that legitimately resolve under
+	// more than one user-facing parent and reach APIC via different request paths
+	// per placement (e.g. pkiKeyRing as system-scoped vs tenant-scoped). The
+	// generated model's DN and payload methods branch on `parent_dn` and select
+	// the matching variant's (api_endpoint, json_envelope) pair. A future resource
+	// adapter can reuse that behavior. Each entry pins one
+	// (parent_class, rn_prepend, wrapper_class, test_platform) tuple; not
+	// representable in meta `containedBy`, which lists direct parents without the
+	// implicit-wrapper or user-facing-parent annotations.
+	ParentDnVariants []ParentDnVariantDefinition `yaml:"parent_dn_variants"`
+	// Overrides the versions from the meta file. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	SupportedVersions string `yaml:"supported_versions"`
+	// Test configuration for the class. Controls dependency resolution and child test value overrides.
+	TestConfig ClassTestConfigDefinition `yaml:"test_config"`
+}
+
+// TestDependencyDefinition is used at ALL levels of test_config.dependencies (top-level and nested).
+// Role is required at the top level (tells resource-under-test how to consume this dep).
+// Role must be empty at nested levels (pure prerequisites). Validated based on depth.
+type TestDependencyDefinition struct {
+	Prefix TestPrefixOverrideDefinition `yaml:"prefix"`
+	// The class name of the dependency resource. Always required.
+	ClassName string `yaml:"class_name"`
+	// The reference value: either a static DN string or a Terraform resource/datasource attribute path.
+	Reference string `yaml:"reference"`
+	// How to interpret the Reference field. Valid values: "static", "resource", "data_source".
+	// When omitted, defaults to ResourceReference (the iota zero of ReferenceTypeEnum).
+	ReferenceType ReferenceTypeEnum `yaml:"reference_type"`
+	// Role of this dependency. Valid values: "parent", "target". Required at top level, empty for nested.
+	Role TestDependencyRoleEnum `yaml:"role"`
+	// Target classes associated with this parent dependency for polymorphic relations.
+	// Generated examples use this mapping to select a compatible target for the
+	// representative parent placement.
+	TargetClasses []string `yaml:"target_classes"`
+	// Recursive dependencies: resources that THIS dependency needs to exist first.
+	Dependencies []TestDependencyDefinition `yaml:"dependencies"`
+	// OrderOnly makes this nested dependency an explicit Terraform depends_on
+	// edge when its value cannot safely be referenced during planning.
+	OrderOnly bool `yaml:"order_only"`
+	// Attributes managed by standalone resources in this test, rather than this dependency.
+	IgnoreChanges []string `yaml:"ignore_changes"`
+	// Property overrides for the dependency resource's HCL configuration. Optional
+	// for loaded framework classes; complete input is required for definition-only
+	// legacy resources because no normalized schema/test values are available.
+	ConfigOverrides map[string]string `yaml:"config_overrides"`
+	// Children of THIS dependency resource (i.e. nested blocks within the dependency's HCL),
+	// keyed by child class name. Only explicitly listed dependency children are rendered.
+	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
+}
+
+// ChildTestOverrideDefinition is the YAML representation of child test value overrides.
+// Keyed by child class name in the parent map. No instance_count: when no instances
+// are listed, cardinality is derived from IsSingleNestedWhenDefinedAsChild; otherwise,
+// the listed entries determine the count.
+type ChildTestOverrideDefinition struct {
+	// When non-empty, these entries replace the auto-derived instance count. Each entry
+	// is a sparse overlay on the corresponding auto-derived instance's properties and children.
+	Instances []ChildTestInstanceOverrideDefinition `yaml:"instances"`
+}
+
+// ChildTestInstanceOverrideDefinition represents a single instance override with its properties and nested children.
+type ChildTestInstanceOverrideDefinition struct {
+	// Property overrides for this instance, keyed by attribute name. Each property retains
+	// all entries so set-valued child attributes are not collapsed to their first member.
+	Properties map[string]TestValueScenarioDefinition `yaml:"properties"`
+	// Grandchildren of THIS override instance (i.e. nested blocks within this child instance),
+	// keyed by grandchild class name. Recursively overrides auto-derived nested children.
+	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
+}
+
+// ClassTestConfigDefinition groups all test-related configuration for a class.
+// Consistent with PropertyDefinition.TestConfig — both use the `test_config` YAML key.
+type ClassTestConfigDefinition struct {
+	Prefix TestPrefixDefinition `yaml:"prefix"`
+	// RunSerially prevents overlap with other generated tests when fixtures change shared APIC settings.
+	RunSerially bool `yaml:"run_serially"`
+	// PostTestDelaySeconds allows shared APIC settings to settle after Terraform cleanup.
+	PostTestDelaySeconds int `yaml:"post_test_delay_seconds"`
+	// When true, Dependencies fully replaces all auto-resolved dependencies.
+	// When false (default), Dependencies are merged on top of auto-resolved dependencies.
+	ReplaceAutoResolved bool `yaml:"replace_auto_resolved"`
+	// Test dependencies for the class. By default additive on top of auto-resolved dependencies.
+	// Set replace_auto_resolved to true to skip auto-resolution entirely.
+	Dependencies []TestDependencyDefinition `yaml:"dependencies"`
+	// Children of THIS class (the one being generated), keyed by child class name.
+	// A non-empty `instances` list replaces the auto-derived count and applies each
+	// entry as a sparse positional overlay. Empty entries and unspecified child
+	// classes keep their auto-derived values.
+	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
+	// Canonical instances to use whenever this class is embedded as a child of another class.
+	// This preserves correlated legacy test_values_for_parent values that cannot be derived by
+	// selecting each property independently.
+	EmbeddedInstances []ChildTestInstanceOverrideDefinition `yaml:"embedded_instances"`
+	// Retained for future test templates. `child`, `resource`, and `datasource`
+	// select the test buckets that should not be emitted. Combinations are valid;
+	// a nil or empty slice means no skips.
+	IgnoreTests []IgnoreTestEnum `yaml:"ignore_tests"`
+	// Tells the future resource-test renderer to omit ImportStateVerify equality
+	// checking while retaining the import smoke test.
+	IgnoreImportStateVerify bool `yaml:"ignore_import_state_verify"`
+	// DataSourceExpectNonEmptyPlan preserves known legacy fixtures where reading
+	// an independently managed child causes its parent resource to retain a diff.
+	DataSourceExpectNonEmptyPlan bool `yaml:"datasource_expect_non_empty_plan"`
+}
+
+// StateUpgradeDefinition describes a single prior-schema version's state upgrade.
+// Keys are saved schema versions. Each entry is direct-to-current: the Terraform plugin framework selects the
+// upgrader matching the saved state's version and does not chain intermediate
+// upgraders. Keys under Attributes are meta PropertyName values (or known
+// synthetic names like "parentDn"/"tDn"); keys under Children are meta child
+// class names. The two splits keep scalar/leaf attributes separate from nested
+// blocks at every level.
+type StateUpgradeDefinition struct {
+	// Source describes the implementation that produced this saved schema version.
+	Source MigrationSourceEnum `yaml:"source"`
+	// Top-level scalar attributes that changed between the prior schema and the
+	// current schema. Map keys are meta PropertyName values; map values describe
+	// how the prior attribute differed from the current attribute and what to do
+	// with its legacy name in the current schema.
+	Attributes map[string]AttributeUpgradeDefinition `yaml:"attributes"`
+	// Top-level nested blocks (child classes) that changed between the prior
+	// schema and the current schema. Map keys are meta child class names; values
+	// recursively describe the block-level diff and any inner attribute changes.
+	Children map[string]AttributeUpgradeDefinition `yaml:"children"`
+}
+
+// AttributeUpgradeDefinition describes scalar and nested differences inside a
+// state_upgrades entry. Framework histories resolve nested attribute differences
+// recursively; existing SDKv2 flat relation and block mappings retain their published behavior.
+type AttributeUpgradeDefinition struct {
+	// The Terraform attribute name as it appeared in the prior schema. Omit when
+	// the prior name matches the current name. On a children entry, presence
+	// records a block rename or a scalar-wrap (when the new block didn't exist
+	// in the prior schema, an inner attribute carries the prior flat scalar
+	// name instead).
+	AttributeName string `yaml:"attribute_name"`
+	// The Terraform plugin framework attribute type in the prior schema. Omit
+	// when the prior type matches the current type. Required on a "removed"
+	// node since there is no current attribute to inherit from.
+	Type LegacyAttributeTypeEnum `yaml:"type"`
+	// Preserves a historical custom string type independently of its Terraform wire type.
+	// Omission keeps renamed aliases as plain strings; it does not inherit modern semantics.
+	ValueType ValueTypeEnum `yaml:"value_type"`
+	// The schema restriction in the prior schema (required/optional/read_only).
+	// Omission inherits the current restriction; optional_computed is available. Required
+	// on a "removed" node since there is no current attribute to inherit from.
+	Restriction LegacyRestrictionEnum `yaml:"restriction"`
+	// Records the exact element type of a historical collection.
+	ElementType LegacyAttributeTypeEnum `yaml:"element_type"`
+	// Controls current exposure; omission inherits the previous explicit status:
+	//   - deprecated: legacy name still exposed, full device round-trip.
+	//   - frozen: legacy name still exposed but no device round-trip.
+	//   - removed: legacy name dropped from current schema; entry retained for
+	//     state migration only.
+	Status LegacyStatusEnum `yaml:"status"`
+	// Inner scalar attribute changes for a nested block. Same key/value
+	// semantics as StateUpgradeDefinition.Attributes.
+	Attributes map[string]AttributeUpgradeDefinition `yaml:"attributes"`
+	// Inner child class changes for a nested block. Same key/value semantics
+	// as StateUpgradeDefinition.Children.
+	Children map[string]AttributeUpgradeDefinition `yaml:"children"`
+}
+
+// validate enforces the shape rules for an attributes-bucket node. Errors are
+// accumulated on ctx.Diagnostics rather than returned so a single pass surfaces
+// every authoring mistake in one summary. The path argument carries the fully
+// qualified location of this node (e.g. "Class 'fvCtx': schema version 0:
+// attributes[\"name\"]") so each diagnostic is self-describing.
+func (n AttributeUpgradeDefinition) validate(ctx *Context, path string) {
+	if n.Status == Removed {
+		if n.AttributeName == "" {
+			ctx.Diagnostics.AddError("%s: status: removed requires attribute_name to be set", path)
+		}
+		if n.Type == UndefinedLegacyAttributeType {
+			ctx.Diagnostics.AddError("%s: status: removed requires type to be set", path)
+		}
+		if n.Restriction == UndefinedLegacyRestriction {
+			ctx.Diagnostics.AddError("%s: status: removed requires restriction to be set", path)
+		}
+	}
+}
+
+// validateChild enforces the shape rules for a children-bucket node, including
+// the scalar-wrap shape: a children entry without attribute_name is only valid
+// when at least one inner attributes entry carries attribute_name (the inner
+// attribute(s) inherit the prior flat scalar value(s)). Errors are accumulated
+// on ctx.Diagnostics, see validate for the path-prefix convention.
+func (n AttributeUpgradeDefinition) validateChild(ctx *Context, path string) {
+	if n.Status == Removed && n.AttributeName == "" {
+		ctx.Diagnostics.AddError("%s: status: removed requires attribute_name to be set", path)
+	}
+	if n.AttributeName == "" && n.Type == UndefinedLegacyAttributeType {
+		if !n.hasInnerLegacyAttribute() && len(n.Attributes) == 0 && len(n.Children) == 0 {
+			ctx.Diagnostics.AddError("%s: entry has neither attribute_name / type on the block nor any inner attributes/children annotations", path)
+		}
+	}
+	for innerProp, innerNode := range n.Attributes {
+		innerNode.validate(ctx, fmt.Sprintf("%s: attributes[%q]", path, innerProp))
+	}
+	for innerChild, innerNode := range n.Children {
+		innerNode.validateChild(ctx, fmt.Sprintf("%s: children[%q]", path, innerChild))
+	}
+}
+
+func (n AttributeUpgradeDefinition) hasInnerLegacyAttribute() bool {
+	for _, inner := range n.Attributes {
+		if inner.AttributeName != "" {
+			return true
+		}
+	}
+	for _, inner := range n.Children {
+		if inner.AttributeName != "" || inner.hasInnerLegacyAttribute() {
+			return true
+		}
+	}
+	return false
+}
+
+// ParentDnVariantDefinition pins a single (parent_class, rn_prepend,
+// wrapper_class, test_platform) tuple for a ClassDefinition.ParentDnVariants
+// entry. Each variant describes one valid placement of the class under a
+// distinct user-facing parent that reaches APIC via its own request path.
+type ParentDnVariantDefinition struct {
+	// User-facing parent class for this variant (e.g. "fvTenant"). Distinguishes
+	// system-scoped placements from wrapped tenant-scoped placements that meta
+	// `containedBy` lists as a single direct parent.
+	ParentClass string `yaml:"parent_class"`
+	// Intermediate RN segment inserted between the matched parent DN and the class
+	// RN. Generated model methods select the variant using patterns derived from
+	// ParentClass; the future resource adapter can reuse the same selection.
+	RnPrepend string `yaml:"rn_prepend"`
+	// Implicit container the request nests the resource inside (e.g. "cloudCertStore"
+	// for a tenant-scoped pkiKeyRing). Empty for variants that POST against a real,
+	// user-addressable parent.
+	WrapperClass string `yaml:"wrapper_class"`
+	// Platform profile for this variant (apic / cloud / both). Public examples use
+	// it now; future test templates can use it to gate variant-specific scenarios.
+	TestPlatform PlatformTypeEnum `yaml:"test_platform"`
+}
+
+// parseClassDefinition decodes raw YAML bytes into a ClassDefinition.
+// UnmarshalStrict rejects unknown YAML keys so renamed/typo'd fields surface
+// as a generator error instead of being silently ignored.
+func parseClassDefinition(data []byte) (ClassDefinition, error) {
+	var classDefinitionData ClassDefinition
+	err := yaml.UnmarshalStrict(data, &classDefinitionData)
+	return classDefinitionData, err
+}

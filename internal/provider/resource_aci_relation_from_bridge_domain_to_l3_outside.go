@@ -6,137 +6,33 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRsBDToOutResource{}
+var _ resource.ResourceWithConfigure = &FvRsBDToOutResource{}
+var _ resource.ResourceWithModifyPlan = &FvRsBDToOutResource{}
 var _ resource.ResourceWithImportState = &FvRsBDToOutResource{}
 
 func NewFvRsBDToOutResource() resource.Resource {
 	return &FvRsBDToOutResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_bridge_domain_to_l3_outside", NewFvRsBDToOutResource)
+}
+
 // FvRsBDToOutResource defines the resource implementation.
 type FvRsBDToOutResource struct {
 	client *client.Client
-}
-
-// FvRsBDToOutResourceModel describes the resource data model.
-type FvRsBDToOutResourceModel struct {
-	Id             types.String `tfsdk:"id"`
-	ParentDn       types.String `tfsdk:"parent_dn"`
-	Annotation     types.String `tfsdk:"annotation"`
-	TnL3extOutName types.String `tfsdk:"l3_outside_name"`
-	TagAnnotation  types.Set    `tfsdk:"annotations"`
-	TagTag         types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyFvRsBDToOutResourceModel() *FvRsBDToOutResourceModel {
-	return &FvRsBDToOutResourceModel{
-		Id:             basetypes.NewStringNull(),
-		ParentDn:       basetypes.NewStringNull(),
-		Annotation:     basetypes.NewStringNull(),
-		TnL3extOutName: basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-// TagAnnotationFvRsBDToOutResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationFvRsBDToOutResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationFvRsBDToOutResourceModel() TagAnnotationFvRsBDToOutResourceModel {
-	return TagAnnotationFvRsBDToOutResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationFvRsBDToOutType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagFvRsBDToOutResourceModel describes the resource data model for the children without relation ships.
-type TagTagFvRsBDToOutResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagFvRsBDToOutResourceModel() TagTagFvRsBDToOutResourceModel {
-	return TagTagFvRsBDToOutResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagFvRsBDToOutType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-type FvRsBDToOutIdentifier struct {
-	TnL3extOutName types.String
-}
-
-func (r *FvRsBDToOutResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if !req.Plan.Raw.IsNull() {
-		var planData, stateData *FvRsBDToOutResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TnL3extOutName.IsUnknown() {
-			setFvRsBDToOutId(ctx, planData)
-		}
-
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsBDToOut", planData.Id.ValueString())
-			if resp.Diagnostics.HasError() {
-				return
-			}
-		}
-
-		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
-	}
 }
 
 func (r *FvRsBDToOutResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -145,101 +41,9 @@ func (r *FvRsBDToOutResource) Metadata(ctx context.Context, req resource.Metadat
 	tflog.Debug(ctx, "End metadata of resource: aci_relation_from_bridge_domain_to_l3_outside")
 }
 
-func (r *FvRsBDToOutResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *FvRsBDToOutResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of resource: aci_relation_from_bridge_domain_to_l3_outside")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_from_bridge_domain_to_l3_outside resource for the 'fvRsBDToOut' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation From Bridge Domain To L3 Outside object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-				},
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation From Bridge Domain To L3 Outside object.`,
-			},
-			"l3_outside_name": schema.StringAttribute{
-				Required: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: `The name of the L3 Outside object.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.FvRsBDToOutResourceSchema(globalAnnotation)
 	tflog.Debug(ctx, "End schema of resource: aci_relation_from_bridge_domain_to_l3_outside")
 }
 
@@ -250,404 +54,218 @@ func (r *FvRsBDToOutResource) Configure(ctx context.Context, req resource.Config
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	r.client = client
+	r.client = aciClient
 	tflog.Debug(ctx, "End configure of resource: aci_relation_from_bridge_domain_to_l3_outside")
+}
+
+func (r *FvRsBDToOutResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var data models.FvRsBDToOutRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// A parent reference or naming value may only become known during apply.
+	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		return
+	}
+	if data.TnL3extOutName.IsNull() || data.TnL3extOutName.IsUnknown() {
+		return
+	}
+
+	data.SetIDFromDN(data.BuildDN())
+	if req.State.Raw.IsNull() && !globalAllowExistingOnCreate {
+		CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsBDToOut", data.ID.ValueString())
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
+	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 }
 
 func (r *FvRsBDToOutResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Start create of resource: aci_relation_from_bridge_domain_to_l3_outside")
-	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *FvRsBDToOutResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvRsBDToOutId(ctx, stateData)
+
+	var data models.FvRsBDToOutRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	getAndSetFvRsBDToOutAttributes(ctx, &resp.Diagnostics, r.client, stateData)
-	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	// Read existing children before adoption so payload construction can reconcile them.
+	priorState := models.NewFvRsBDToOutRootModelNull()
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	found, diagnostics := priorState.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if found && !globalAllowExistingOnCreate {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The fvRsBDToOut object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The fvRsBDToOut object with DN '%s' already exists.", dn),
 		)
 		return
 	}
 
-	var data *FvRsBDToOutResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.FvRsBDToOutModel, true, !globalAllowExistingOnCreate, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvRsBDToOutId(ctx, data)
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
-
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsBDToOutResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvRsBDToOutResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsBDToOutCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	// Retain the created object's DN if the subsequent read fails.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), data.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetFvRsBDToOutAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response = getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save data into Terraform state
+	found, diagnostics = data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_relation_from_bridge_domain_to_l3_outside resource",
+			fmt.Sprintf("The aci_relation_from_bridge_domain_to_l3_outside resource with id '%s' has not been found after creation", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvRsBDToOutResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of resource: aci_relation_from_bridge_domain_to_l3_outside")
-	var data *FvRsBDToOutResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.FvRsBDToOutRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
-
-	getAndSetFvRsBDToOutAttributes(ctx, &resp.Diagnostics, r.client, data)
-
-	// Save updated data into Terraform state
-	if data.Id.IsNull() {
-		var emptyData *FvRsBDToOutResourceModel
-		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
-	} else {
-		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Imports initially provide only ID; the response reconstructs the remaining fields.
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, data.ID.ValueString(), data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvRsBDToOutResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_relation_from_bridge_domain_to_l3_outside")
-	var data *FvRsBDToOutResourceModel
-	var stateData *FvRsBDToOutResourceModel
 
-	// Read Terraform plan data into the model
+	var data, priorState models.FvRsBDToOutRootModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
+	resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
-
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsBDToOutResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvRsBDToOutResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsBDToOutCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.FvRsBDToOutModel, false, false, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetFvRsBDToOutAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save updated data into Terraform state
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_relation_from_bridge_domain_to_l3_outside resource",
+			fmt.Sprintf("The aci_relation_from_bridge_domain_to_l3_outside resource with id '%s' has not been found after update", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvRsBDToOutResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Debug(ctx, "Start delete of resource: aci_relation_from_bridge_domain_to_l3_outside")
-	var data *FvRsBDToOutResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.FvRsBDToOutRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fvRsBDToOut", data.Id.ValueString())
+	payload, diagnostics := data.BuildDeletePayload(ctx)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.ID.ValueString()), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
+
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvRsBDToOutResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_from_bridge_domain_to_l3_outside")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-
-	var stateData *FvRsBDToOutResourceModel
-	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", stateData.Id.ValueString()))
-
-	tflog.Debug(ctx, "End import of state resource: aci_relation_from_bridge_domain_to_l3_outside")
-}
-
-func getAndSetFvRsBDToOutAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsBDToOutResourceModel) {
-	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
-
-	readData := getEmptyFvRsBDToOutResourceModel()
-
-	if diags.HasError() {
-		return
-	}
-	if requestData.Search("imdata").Search("fvRsBDToOut").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("fvRsBDToOut").Data().([]interface{})
-		if len(classReadInfo) == 1 {
-			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
-			for attributeName, attributeValue := range attributes {
-				if attributeName == "dn" {
-					readData.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvRsBDToOutParentDn(ctx, attributeValue.(string), readData)
-				}
-				if attributeName == "annotation" {
-					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "tnL3extOutName" {
-					readData.TnL3extOutName = basetypes.NewStringValue(attributeValue.(string))
-				}
-			}
-			TagAnnotationFvRsBDToOutList := make([]TagAnnotationFvRsBDToOutResourceModel, 0)
-			TagTagFvRsBDToOutList := make([]TagTagFvRsBDToOutResourceModel, 0)
-			_, ok := classReadInfo[0].(map[string]interface{})["children"]
-			if ok {
-				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
-				for _, child := range children {
-					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-						if childClassName == "tagAnnotation" {
-							TagAnnotationFvRsBDToOut := getEmptyTagAnnotationFvRsBDToOutResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagAnnotationFvRsBDToOut.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagAnnotationFvRsBDToOut.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationFvRsBDToOutList = append(TagAnnotationFvRsBDToOutList, TagAnnotationFvRsBDToOut)
-						}
-						if childClassName == "tagTag" {
-							TagTagFvRsBDToOut := getEmptyTagTagFvRsBDToOutResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagTagFvRsBDToOut.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagTagFvRsBDToOut.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagTagFvRsBDToOutList = append(TagTagFvRsBDToOutList, TagTagFvRsBDToOut)
-						}
-					}
-				}
-			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvRsBDToOutList)
-			readData.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvRsBDToOutList)
-			readData.TagTag = tagTagSet
-		} else {
-			diags.AddError(
-				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'fvRsBDToOut'. Please report this issue to the provider developers.", len(classReadInfo)),
-			)
-		}
-	} else {
-		readData.Id = basetypes.NewStringNull()
-	}
-	*data = *readData
-}
-
-func getFvRsBDToOutRn(ctx context.Context, data *FvRsBDToOutResourceModel) string {
-	return fmt.Sprintf("rsBDToOut-%s", data.TnL3extOutName.ValueString())
-}
-
-func setFvRsBDToOutParentDn(ctx context.Context, dn string, data *FvRsBDToOutResourceModel) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(dn) - 1; i >= 0; i-- {
-		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(dn[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
-}
-
-func setFvRsBDToOutId(ctx context.Context, data *FvRsBDToOutResourceModel) {
-	rn := getFvRsBDToOutRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-}
-
-func getFvRsBDToOutTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsBDToOutResourceModel, tagAnnotationFvRsBDToOutPlan, tagAnnotationFvRsBDToOutState []TagAnnotationFvRsBDToOutResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
-		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotationFvRsBDToOut := range tagAnnotationFvRsBDToOutPlan {
-			childMap := NewAciObject()
-			if !tagAnnotationFvRsBDToOut.Key.IsNull() && !tagAnnotationFvRsBDToOut.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagAnnotationFvRsBDToOut.Key.ValueString()
-			}
-			if !tagAnnotationFvRsBDToOut.Value.IsNull() && !tagAnnotationFvRsBDToOut.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagAnnotationFvRsBDToOut.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
-			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotationFvRsBDToOut.Key
-			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-		}
-		for _, tagAnnotation := range tagAnnotationFvRsBDToOutState {
-			delete := true
-			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagAnnotationChildMapForDelete := NewAciObject()
-				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
-				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getFvRsBDToOutTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsBDToOutResourceModel, tagTagFvRsBDToOutPlan, tagTagFvRsBDToOutState []TagTagFvRsBDToOutResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
-		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTagFvRsBDToOut := range tagTagFvRsBDToOutPlan {
-			childMap := NewAciObject()
-			if !tagTagFvRsBDToOut.Key.IsNull() && !tagTagFvRsBDToOut.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagTagFvRsBDToOut.Key.ValueString()
-			}
-			if !tagTagFvRsBDToOut.Value.IsNull() && !tagTagFvRsBDToOut.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagTagFvRsBDToOut.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
-			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTagFvRsBDToOut.Key
-			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-		}
-		for _, tagTag := range tagTagFvRsBDToOutState {
-			delete := true
-			for _, tagTagIdentifier := range tagTagIdentifiers {
-				if tagTagIdentifier.Key == tagTag.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagTagChildMapForDelete := NewAciObject()
-				tagTagChildMapForDelete.Attributes["status"] = "deleted"
-				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getFvRsBDToOutCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsBDToOutResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsBDToOutResourceModel, tagTagPlan, tagTagState []TagTagFvRsBDToOutResourceModel) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
-
-	if createType && !globalAllowExistingOnCreate {
-		payloadMap["attributes"].(map[string]string)["status"] = "created"
-	}
-	childPayloads := []map[string]interface{}{}
-
-	TagAnnotationchildPayloads := getFvRsBDToOutTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
-	if TagAnnotationchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
-
-	TagTagchildPayloads := getFvRsBDToOutTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
-	if TagTagchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagTagchildPayloads...)
-
-	payloadMap["children"] = childPayloads
-	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
-	}
-	if !data.TnL3extOutName.IsNull() && !data.TnL3extOutName.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["tnL3extOutName"] = data.TnL3extOutName.ValueString()
-	}
-	payload, err := json.Marshal(map[string]interface{}{"fvRsBDToOut": payloadMap})
-	if err != nil {
-		diags.AddError(
-			"Marshalling of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
+	tflog.Debug(ctx, "End import state of resource: aci_relation_from_bridge_domain_to_l3_outside")
 }

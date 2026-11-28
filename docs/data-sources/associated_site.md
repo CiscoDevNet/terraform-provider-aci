@@ -35,12 +35,8 @@ Data source for ACI Associated Site
 
 ```hcl
 
-data "aci_associated_site" "example_application_epg" {
+data "aci_associated_site" "example" {
   parent_dn = aci_application_epg.example.id
-}
-
-data "aci_associated_site" "example_bridge_domain" {
-  parent_dn = aci_bridge_domain.example.id
 }
 
 ```
@@ -54,7 +50,7 @@ data "aci_associated_site" "example_bridge_domain" {
   - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
   - [aci_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_epg) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [vnsEpgDefXlate](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsEpgDefXlate/overview)
 
 

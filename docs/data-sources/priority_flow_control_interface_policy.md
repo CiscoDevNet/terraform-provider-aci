@@ -31,7 +31,7 @@ Data source for ACI Priority Flow Control Interface Policy
 ```hcl
 
 data "aci_priority_flow_control_interface_policy" "example" {
-  name = "test_name"
+  name = "priority_flow_control_interface_policy"
 }
 
 ```

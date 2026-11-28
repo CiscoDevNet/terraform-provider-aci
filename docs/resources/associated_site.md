@@ -16,7 +16,6 @@ Manages ACI Associated Site
 
   -> This resource should only be used to accomplish multi-site orchestration.
 
-
 ## API Information ##
 
 * Class: [fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview)
@@ -40,114 +39,63 @@ The configuration snippet below creates a Associated Site with only required att
 
 ```hcl
 
-resource "aci_associated_site" "example_application_epg" {
+resource "aci_associated_site" "example" {
   parent_dn = aci_application_epg.example.id
 }
 
-resource "aci_associated_site" "example_bridge_domain" {
-  parent_dn = aci_bridge_domain.example.id
-}
-
 ```
+
 The configuration snippet below shows all possible attributes of the Associated Site.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_associated_site" "full_example_application_epg" {
+resource "aci_associated_site" "full_example" {
   parent_dn   = aci_application_epg.example.id
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "name_1"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  annotation  = "example_annotation"
+  description = "Example Associated Site"
+  name        = "associated_site"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   site_id     = "0"
   remote_sites = [
     {
-      annotation        = "annotation_1"
-      description       = "description_1"
-      name              = "name_1"
-      name_alias        = "name_alias_1"
-      owner_key         = "owner_key_1"
-      owner_tag         = "owner_tag_1"
+      annotation        = "example_annotation"
+      description       = "Example Remote Site"
+      name              = "remote_site"
+      name_alias        = "example_name_alias"
+      owner_key         = "example_owner_key"
+      owner_tag         = "example_owner_tag"
       remote_vrf_pc_tag = "any"
       remote_pc_tag     = "16386"
       site_id           = "0"
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-}
-
-resource "aci_associated_site" "full_example_bridge_domain" {
-  parent_dn   = aci_bridge_domain.example.id
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "name_1"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
-  site_id     = "0"
-  remote_sites = [
-    {
-      annotation        = "annotation_1"
-      description       = "description_1"
-      name              = "name_1"
-      name_alias        = "name_alias_1"
-      owner_key         = "owner_key_1"
-      owner_tag         = "owner_tag_1"
-      remote_vrf_pc_tag = "any"
-      remote_pc_tag     = "16386"
-      site_id           = "0"
-      annotations = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-      tags = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-    }
-  ]
-  annotations = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -164,7 +112,7 @@ All examples for the Associated Site resource can be found in the [examples](htt
   - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
   - [aci_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_epg) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [vnsEpgDefXlate](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsEpgDefXlate/overview)
 
 
@@ -183,12 +131,12 @@ All examples for the Associated Site resource can be found in the [examples](htt
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `site_id` (siteId) - (string) The primary/local site identifier associated with the object as an integer.
   - Default: `"0"`
-* `remote_sites` - (list) A list of Remote Sites (ACI object [fvRemoteId](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRemoteId/overview)). Remote Sites can also be configured using a separate [aci_remote_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/remote_site) resource.
+* `remote_sites` - (list) A list of Remote Sites (ACI object [fvRemoteId](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRemoteId/overview)) which can also be configured using a separate [aci_remote_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/remote_site) resource.
   #### Required ####
-  
+
     * `site_id` (siteId) - (string) The remote site identifier that is associated with the object of the primary/local site as an integer.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Remote Site object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Remote Site object.
@@ -197,25 +145,26 @@ All examples for the Associated Site resource can be found in the [examples](htt
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
     * `remote_vrf_pc_tag` (remoteCtxPcTag) - (string) The policy class tag (pcTag) of the remote VRF. This attribute can only be present when the object for site association is a VRF.
+      - Default: `"any"`
     * `remote_pc_tag` (remotePcTag) - (string) The policy class tag (pcTag) of the remote object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -224,7 +173,7 @@ All examples for the Associated Site resource can be found in the [examples](htt
 An existing Associated Site can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_associated_site.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/stAsc
+terraform import aci_associated_site.example uni/tn-{name}/ap-{name}/epg-{name}/stAsc
 ```
 
 Starting in Terraform version 1.5, an existing Associated Site can be imported
@@ -233,6 +182,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/stAsc"
-  to = aci_associated_site.example_application_epg
+  to = aci_associated_site.example
 }
 ```

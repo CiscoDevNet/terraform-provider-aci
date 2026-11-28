@@ -30,9 +30,9 @@ Data source for ACI First Hop Security Policy
 
 ```hcl
 
-data "aci_first_hop_security_policy" "example_tenant" {
+data "aci_first_hop_security_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "first_hop_security_policy"
 }
 
 ```

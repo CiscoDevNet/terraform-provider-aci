@@ -1,0 +1,25 @@
+# Test limitation: strictSecurityOnApicOOBSubnet is excluded from acceptance tests.
+# This is a legacy exclusion whose original reason was not recorded.
+# TODO: Reassess coverage after the generator refactor; metadata marks it configurable.
+
+documentation:
+  sub_category: Fabric Policies
+  ui_locations:
+  - Fabric -> Fabric Policies -> Policies -> Pod -> Management Access
+properties:
+  strictSecurityOnApicOOBSubnet:
+    default_values:
+      "no": ""
+    documentation:
+      description: Removes implicit access permissions from any APIC out-of-band (OOB)
+        subnet IP address.
+    example_config:
+      full:
+      - value: "no"
+    test_config:
+      ignore_in_test: true
+resource_name: management_access_policy
+rn_prepend: fabric
+test_config:
+  post_test_delay_seconds: 15
+  run_serially: true

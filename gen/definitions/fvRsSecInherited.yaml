@@ -1,0 +1,94 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]
+  - uni/tn-{name}/ap-{name}/esg-{name}/rssecInherited-[{tDn}]
+  - uni/tn-{name}/out-{name}/instP-{name}/rssecInherited-[{tDn}]
+  - uni/tn-{name}/l2out-{name}/instP-{name}/rssecInherited-[{tDn}]
+  - Too many DN formats to display, see model documentation for all possible parents
+    of [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview).
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs
+  - Tenants -> Application Profiles -> Endpoint Security Groups
+  - Tenants -> Networking -> L3Outs -> External EPGs
+  - Tenants -> Networking -> L2Outs -> External EPGs
+example_parent_class: fvAEPg
+properties:
+  tDn:
+    test_config:
+      datasource_missing:
+      - config_value: uni/tn-name_1/ap-name_1/epg-name_2_not_existing
+relation_info:
+  to_classes:
+  - fvAEPg
+  - fvESg
+  - l3extInstP
+resource_name: relation_to_contract_master
+test_config:
+  dependencies:
+  - class_name: fvAEPg
+    dependencies:
+    - class_name: fvAp
+    role: parent
+    target_classes:
+    - fvAEPg
+  - class_name: fvESg
+    dependencies:
+    - class_name: fvAp
+    role: parent
+    target_classes:
+    - fvESg
+  - class_name: l3extInstP
+    dependencies:
+    - class_name: l3extOut
+      config_overrides:
+        name: name_1
+        relation_l3ext_rs_ectx: aci_vrf.test.id
+        tenant_dn: aci_tenant.test.id
+      dependencies:
+      - class_name: fvTenant
+      - class_name: fvCtx
+        config_overrides:
+          parent_dn: aci_tenant.test.id
+        dependencies:
+        - class_name: fvTenant
+      reference: aci_l3_outside.test.id
+    role: parent
+    target_classes:
+    - l3extInstP
+  - class_name: fvESg
+    dependencies:
+    - class_name: fvAp
+    reference: aci_endpoint_security_group.test_endpoint_security_group_0.id
+    role: target
+  - class_name: fvESg
+    dependencies:
+    - class_name: fvAp
+    reference: aci_endpoint_security_group.test_endpoint_security_group_1.id
+    role: target
+  - class_name: fvAEPg
+    config_overrides:
+      name: contract_master_1
+    dependencies:
+    - class_name: fvAp
+    reference: aci_application_epg.test_application_epg_0.id
+    role: target
+  - class_name: fvAEPg
+    config_overrides:
+      name: contract_master_2
+    dependencies:
+    - class_name: fvAp
+    reference: aci_application_epg.test_application_epg_1.id
+    role: target
+  - class_name: l3extInstP
+    dependencies:
+    - class_name: l3extOut
+      reference: aci_l3_outside.test.id
+    reference: aci_external_epg.test_external_epg_0.id
+    role: target
+  - class_name: l3extInstP
+    dependencies:
+    - class_name: l3extOut
+      reference: aci_l3_outside.test.id
+    reference: aci_external_epg.test_external_epg_1.id
+    role: target

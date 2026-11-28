@@ -6,269 +6,34 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &VzTabooResource{}
+var _ resource.ResourceWithConfigure = &VzTabooResource{}
+var _ resource.ResourceWithModifyPlan = &VzTabooResource{}
 var _ resource.ResourceWithImportState = &VzTabooResource{}
+var _ resource.ResourceWithUpgradeState = &VzTabooResource{}
 
 func NewVzTabooResource() resource.Resource {
 	return &VzTabooResource{}
 }
 
+func init() {
+	registerResource("aci_taboo_contract", NewVzTabooResource)
+}
+
 // VzTabooResource defines the resource implementation.
 type VzTabooResource struct {
 	client *client.Client
-}
-
-// VzTabooResourceModel describes the resource data model.
-type VzTabooResourceModel struct {
-	Id                 types.String `tfsdk:"id"`
-	ParentDn           types.String `tfsdk:"parent_dn"`
-	Annotation         types.String `tfsdk:"annotation"`
-	Descr              types.String `tfsdk:"description"`
-	Name               types.String `tfsdk:"name"`
-	NameAlias          types.String `tfsdk:"name_alias"`
-	OwnerKey           types.String `tfsdk:"owner_key"`
-	OwnerTag           types.String `tfsdk:"owner_tag"`
-	TagAnnotation      types.Set    `tfsdk:"annotations"`
-	TagTag             types.Set    `tfsdk:"tags"`
-	DeprecatedParentDn types.String `tfsdk:"tenant_dn"`
-}
-
-func getEmptyVzTabooResourceModel() *VzTabooResourceModel {
-	return &VzTabooResourceModel{
-		Id:         basetypes.NewStringNull(),
-		ParentDn:   basetypes.NewStringNull(),
-		Annotation: basetypes.NewStringNull(),
-		Descr:      basetypes.NewStringNull(),
-		Name:       basetypes.NewStringNull(),
-		NameAlias:  basetypes.NewStringNull(),
-		OwnerKey:   basetypes.NewStringNull(),
-		OwnerTag:   basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		DeprecatedParentDn: types.String{},
-	}
-}
-
-// TagAnnotationVzTabooResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationVzTabooResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationVzTabooResourceModel() TagAnnotationVzTabooResourceModel {
-	return TagAnnotationVzTabooResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationVzTabooType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagVzTabooResourceModel describes the resource data model for the children without relation ships.
-type TagTagVzTabooResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagVzTabooResourceModel() TagTagVzTabooResourceModel {
-	return TagTagVzTabooResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagVzTabooType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-type VzTabooIdentifier struct {
-	Name types.String
-}
-
-type VzTabooResourceModelV1 struct {
-	Annotation types.String `tfsdk:"annotation"`
-	Descr      types.String `tfsdk:"description"`
-	Id         types.String `tfsdk:"id"`
-	Name       types.String `tfsdk:"name"`
-	NameAlias  types.String `tfsdk:"name_alias"`
-	ParentDn   types.String `tfsdk:"tenant_dn"`
-}
-
-func (r *VzTabooResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
-	return map[int64]resource.StateUpgrader{
-		1: {
-			PriorSchema: &schema.Schema{
-				Attributes: map[string]schema.Attribute{
-					"annotation": schema.StringAttribute{
-						Required: false,
-						Optional: true,
-						Computed: true,
-					},
-					"description": schema.StringAttribute{
-						Required: false,
-						Optional: true,
-						Computed: true,
-					},
-					"id": schema.StringAttribute{
-						Required: false,
-						Optional: true,
-						Computed: true,
-					},
-					"name": schema.StringAttribute{
-						Required: true,
-						Optional: false,
-						Computed: false,
-					},
-					"name_alias": schema.StringAttribute{
-						Required: false,
-						Optional: true,
-						Computed: true,
-					},
-					"tenant_dn": schema.StringAttribute{
-						Required: true,
-						Optional: false,
-						Computed: false,
-					},
-				},
-				Blocks: map[string]schema.Block{},
-			},
-			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
-				var priorStateData VzTabooResourceModelV1
-
-				resp.Diagnostics.Append(req.State.Get(ctx, &priorStateData)...)
-
-				if resp.Diagnostics.HasError() {
-					return
-				}
-
-				upgradedStateData := VzTabooResourceModel{
-					Id:                 priorStateData.Id,
-					ParentDn:           priorStateData.ParentDn,
-					Annotation:         priorStateData.Annotation,
-					Descr:              priorStateData.Descr,
-					Name:               priorStateData.Name,
-					NameAlias:          priorStateData.NameAlias,
-					OwnerKey:           basetypes.NewStringNull(),
-					OwnerTag:           basetypes.NewStringNull(),
-					DeprecatedParentDn: priorStateData.ParentDn,
-				}
-
-				upgradedStateData.TagAnnotation = types.SetNull(
-					types.ObjectType{
-						AttrTypes: map[string]attr.Type{
-							"key":   basetypes.StringType{},
-							"value": basetypes.StringType{},
-						},
-					},
-				)
-
-				upgradedStateData.TagTag = types.SetNull(
-					types.ObjectType{
-						AttrTypes: map[string]attr.Type{
-							"key":   basetypes.StringType{},
-							"value": basetypes.StringType{},
-						},
-					},
-				)
-
-				resp.Diagnostics.Append(resp.State.Set(ctx, upgradedStateData)...)
-			},
-		},
-	}
-}
-
-func setVzTabooLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *VzTabooResourceModel, classReadInfo []interface{}) {
-	data.DeprecatedParentDn = data.ParentDn
-}
-
-func (r *VzTabooResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if !req.Plan.Raw.IsNull() {
-		var planData, stateData, configData *VzTabooResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-		resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...)
-
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setVzTabooId(ctx, planData)
-		}
-
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "vzTaboo", planData.Id.ValueString())
-			if resp.Diagnostics.HasError() {
-				return
-			}
-		}
-
-		if !configData.DeprecatedParentDn.IsNull() {
-			planData.ParentDn = configData.DeprecatedParentDn
-		}
-
-		// Workaround to compare the state with plan to avoid plan changes with only known after apply
-		if stateData != nil {
-			avoidVzTabooPlanChangeForKnownAfterApplyOnly(ctx, planData, stateData, configData)
-		}
-
-		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
-	}
-}
-
-func avoidVzTabooPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, stateData, configData *VzTabooResourceModel) {
-	// Set read-only and deprecated attributes in planData from stateData
-	if configData.DeprecatedParentDn.IsNull() {
-		planData.DeprecatedParentDn = stateData.DeprecatedParentDn
-	}
-
-	// Compare the string representation of the planData and stateData because structs cannot be compared directly
-	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
-		if configData.DeprecatedParentDn.IsNull() {
-			planData.DeprecatedParentDn = basetypes.NewStringUnknown()
-		}
-	}
 }
 
 func (r *VzTabooResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -277,157 +42,9 @@ func (r *VzTabooResource) Metadata(ctx context.Context, req resource.MetadataReq
 	tflog.Debug(ctx, "End metadata of resource: aci_taboo_contract")
 }
 
-func (r *VzTabooResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *VzTabooResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of resource: aci_taboo_contract")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The taboo_contract resource for the 'vzTaboo' class",
-		Version:             2,
-
-		Attributes: map[string]schema.Attribute{
-			// Deprecated attributes
-			"tenant_dn": schema.StringAttribute{
-				Optional:           true,
-				Computed:           true,
-				DeprecationMessage: "Attribute 'tenant_dn' is deprecated, please refer to 'parent_dn' instead. The attribute will be removed in the next major version of the provider.",
-				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("parent_dn"),
-					}...),
-				},
-			},
-			// End of deprecated attributes
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Taboo Contract object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-				},
-			},
-			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					stringplanmodifier.RequiresReplace(),
-				},
-				Validators: []validator.String{
-					stringvalidator.AtLeastOneOf(path.Expressions{
-						path.MatchRoot("tenant_dn"),
-					}...),
-				},
-			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Taboo Contract object.`,
-			},
-			"description": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The description of the Taboo Contract object.`,
-			},
-			"name": schema.StringAttribute{
-				Required: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: `The name of the Taboo Contract object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The name alias of the Taboo Contract object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-		Blocks: map[string]schema.Block{},
-	}
+	resp.Schema = models.VzTabooResourceSchema(globalAnnotation)
 	tflog.Debug(ctx, "End schema of resource: aci_taboo_contract")
 }
 
@@ -438,429 +55,276 @@ func (r *VzTabooResource) Configure(ctx context.Context, req resource.ConfigureR
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	r.client = client
+	r.client = aciClient
 	tflog.Debug(ctx, "End configure of resource: aci_taboo_contract")
+}
+
+func (r *VzTabooResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var data models.VzTabooRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var config models.VzTabooRootModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	var priorState *models.VzTabooRootModel
+	if !req.State.Raw.IsNull() {
+		priorState = &models.VzTabooRootModel{}
+		resp.Diagnostics.Append(req.State.Get(ctx, priorState)...)
+	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	resp.Diagnostics.Append(data.SetFromLegacyConfig(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// A parent reference or naming value may only become known during apply.
+	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
+		return
+	}
+	if data.Name.IsNull() || data.Name.IsUnknown() {
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
+		return
+	}
+
+	data.SetIDFromDN(data.BuildDN())
+	if req.State.Raw.IsNull() && !globalAllowExistingOnCreate {
+		CheckDn(ctx, &resp.Diagnostics, r.client, "vzTaboo", data.ID.ValueString())
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromState(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 }
 
 func (r *VzTabooResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Start create of resource: aci_taboo_contract")
-	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *VzTabooResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setVzTabooId(ctx, stateData)
+
+	var data models.VzTabooRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	getAndSetVzTabooAttributes(ctx, &resp.Diagnostics, r.client, stateData)
-	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	// Read existing children before adoption so payload construction can reconcile them.
+	priorState := models.NewVzTabooRootModelNull()
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	found, diagnostics := priorState.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if found && !globalAllowExistingOnCreate {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The vzTaboo object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The vzTaboo object with DN '%s' already exists.", dn),
 		)
 		return
 	}
 
-	var data *VzTabooResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.VzTabooModel, true, !globalAllowExistingOnCreate, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setVzTabooId(ctx, data)
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_taboo_contract with id '%s'", data.Id.ValueString()))
-
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzTabooResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagVzTabooResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getVzTabooCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	// Retain the created object's DN if the subsequent read fails.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), data.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetVzTabooAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response = getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save data into Terraform state
+	found, diagnostics = data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_taboo_contract resource",
+			fmt.Sprintf("The aci_taboo_contract resource with id '%s' has not been found after creation", dn),
+		)
+		return
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_taboo_contract with id '%s'", data.ID.ValueString()))
 }
 
 func (r *VzTabooResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of resource: aci_taboo_contract")
-	var data *VzTabooResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.VzTabooRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_taboo_contract with id '%s'", data.Id.ValueString()))
-
-	getAndSetVzTabooAttributes(ctx, &resp.Diagnostics, r.client, data)
-
-	// Save updated data into Terraform state
-	if data.Id.IsNull() {
-		var emptyData *VzTabooResourceModel
-		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
-	} else {
-		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Imports initially provide only ID; the response reconstructs the remaining fields.
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, data.ID.ValueString(), data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_taboo_contract with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_taboo_contract with id '%s'", data.ID.ValueString()))
 }
 
 func (r *VzTabooResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_taboo_contract")
-	var data *VzTabooResourceModel
-	var stateData *VzTabooResourceModel
 
-	// Read Terraform plan data into the model
+	var data, priorState models.VzTabooRootModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
+	resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_taboo_contract with id '%s'", data.Id.ValueString()))
-
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzTabooResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagVzTabooResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getVzTabooCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.VzTabooModel, false, false, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetVzTabooAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save updated data into Terraform state
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_taboo_contract resource",
+			fmt.Sprintf("The aci_taboo_contract resource with id '%s' has not been found after update", dn),
+		)
+		return
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_taboo_contract with id '%s'", data.ID.ValueString()))
 }
 
 func (r *VzTabooResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Debug(ctx, "Start delete of resource: aci_taboo_contract")
-	var data *VzTabooResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.VzTabooRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_taboo_contract with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "vzTaboo", data.Id.ValueString())
+	payload, diagnostics := data.BuildDeletePayload(ctx)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.ID.ValueString()), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_taboo_contract with id '%s'", data.Id.ValueString()))
+
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_taboo_contract with id '%s'", data.ID.ValueString()))
 }
 
 func (r *VzTabooResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_taboo_contract")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-
-	var stateData *VzTabooResourceModel
-	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_taboo_contract with id '%s'", stateData.Id.ValueString()))
-
-	tflog.Debug(ctx, "End import of state resource: aci_taboo_contract")
+	tflog.Debug(ctx, "End import state of resource: aci_taboo_contract")
 }
 
-func getAndSetVzTabooAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzTabooResourceModel) {
-	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
-
-	readData := getEmptyVzTabooResourceModel()
-
-	if diags.HasError() {
-		return
-	}
-	if requestData.Search("imdata").Search("vzTaboo").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("vzTaboo").Data().([]interface{})
-		if len(classReadInfo) == 1 {
-			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
-			for attributeName, attributeValue := range attributes {
-				if attributeName == "dn" {
-					readData.Id = basetypes.NewStringValue(attributeValue.(string))
-					setVzTabooParentDn(ctx, attributeValue.(string), readData)
+func (r *VzTabooResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
+	return map[int64]resource.StateUpgrader{
+		1: {
+			PriorSchema: models.VzTabooResourceSchemaV1(),
+			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
+				var priorState models.VzTabooRootModelV1
+				resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
 				}
-				if attributeName == "annotation" {
-					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
+				var data models.VzTabooRootModel
+				resp.Diagnostics.Append(data.UpgradeFromV1(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
 				}
-				if attributeName == "descr" {
-					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "name" {
-					readData.Name = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "nameAlias" {
-					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerKey" {
-					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerTag" {
-					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
-				}
-			}
-			TagAnnotationVzTabooList := make([]TagAnnotationVzTabooResourceModel, 0)
-			TagTagVzTabooList := make([]TagTagVzTabooResourceModel, 0)
-			_, ok := classReadInfo[0].(map[string]interface{})["children"]
-			if ok {
-				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
-				for _, child := range children {
-					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-						if childClassName == "tagAnnotation" {
-							TagAnnotationVzTaboo := getEmptyTagAnnotationVzTabooResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagAnnotationVzTaboo.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagAnnotationVzTaboo.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationVzTabooList = append(TagAnnotationVzTabooList, TagAnnotationVzTaboo)
-						}
-						if childClassName == "tagTag" {
-							TagTagVzTaboo := getEmptyTagTagVzTabooResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagTagVzTaboo.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagTagVzTaboo.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagTagVzTabooList = append(TagTagVzTabooList, TagTagVzTaboo)
-						}
-					}
-				}
-			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationVzTabooList)
-			readData.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagVzTabooList)
-			readData.TagTag = tagTagSet
-			setVzTabooLegacyAttributes(ctx, diags, readData, data, classReadInfo)
-		} else {
-			diags.AddError(
-				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'vzTaboo'. Please report this issue to the provider developers.", len(classReadInfo)),
-			)
-		}
-	} else {
-		readData.Id = basetypes.NewStringNull()
+				resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+			},
+		},
 	}
-	*data = *readData
-}
-
-func getVzTabooRn(ctx context.Context, data *VzTabooResourceModel) string {
-	return fmt.Sprintf("taboo-%s", data.Name.ValueString())
-}
-
-func setVzTabooParentDn(ctx context.Context, dn string, data *VzTabooResourceModel) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(dn) - 1; i >= 0; i-- {
-		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(dn[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
-}
-
-func setVzTabooId(ctx context.Context, data *VzTabooResourceModel) {
-	rn := getVzTabooRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-}
-
-func getVzTabooTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *VzTabooResourceModel, tagAnnotationVzTabooPlan, tagAnnotationVzTabooState []TagAnnotationVzTabooResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
-		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotationVzTaboo := range tagAnnotationVzTabooPlan {
-			childMap := NewAciObject()
-			if !tagAnnotationVzTaboo.Key.IsNull() && !tagAnnotationVzTaboo.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagAnnotationVzTaboo.Key.ValueString()
-			}
-			if !tagAnnotationVzTaboo.Value.IsNull() && !tagAnnotationVzTaboo.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagAnnotationVzTaboo.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
-			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotationVzTaboo.Key
-			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-		}
-		for _, tagAnnotation := range tagAnnotationVzTabooState {
-			delete := true
-			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagAnnotationChildMapForDelete := NewAciObject()
-				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
-				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getVzTabooTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *VzTabooResourceModel, tagTagVzTabooPlan, tagTagVzTabooState []TagTagVzTabooResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
-		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTagVzTaboo := range tagTagVzTabooPlan {
-			childMap := NewAciObject()
-			if !tagTagVzTaboo.Key.IsNull() && !tagTagVzTaboo.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagTagVzTaboo.Key.ValueString()
-			}
-			if !tagTagVzTaboo.Value.IsNull() && !tagTagVzTaboo.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagTagVzTaboo.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
-			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTagVzTaboo.Key
-			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-		}
-		for _, tagTag := range tagTagVzTabooState {
-			delete := true
-			for _, tagTagIdentifier := range tagTagIdentifiers {
-				if tagTagIdentifier.Key == tagTag.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagTagChildMapForDelete := NewAciObject()
-				tagTagChildMapForDelete.Attributes["status"] = "deleted"
-				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getVzTabooCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *VzTabooResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationVzTabooResourceModel, tagTagPlan, tagTagState []TagTagVzTabooResourceModel) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
-
-	if createType && !globalAllowExistingOnCreate {
-		payloadMap["attributes"].(map[string]string)["status"] = "created"
-	}
-	childPayloads := []map[string]interface{}{}
-
-	TagAnnotationchildPayloads := getVzTabooTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
-	if TagAnnotationchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
-
-	TagTagchildPayloads := getVzTabooTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
-	if TagTagchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagTagchildPayloads...)
-
-	payloadMap["children"] = childPayloads
-	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
-	}
-	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
-	}
-	if !data.Name.IsNull() && !data.Name.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()
-	}
-	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
-	}
-	if !data.OwnerKey.IsNull() && !data.OwnerKey.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerKey"] = data.OwnerKey.ValueString()
-	}
-	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
-	}
-	payload, err := json.Marshal(map[string]interface{}{"vzTaboo": payloadMap})
-	if err != nil {
-		diags.AddError(
-			"Marshalling of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
 }

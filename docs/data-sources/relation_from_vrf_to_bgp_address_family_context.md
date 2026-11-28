@@ -30,7 +30,7 @@ Data source for ACI Relation From VRF To BGP Address Family Context
 
 ```hcl
 
-data "aci_relation_from_vrf_to_bgp_address_family_context" "example_vrf" {
+data "aci_relation_from_vrf_to_bgp_address_family_context" "example" {
   parent_dn                       = aci_vrf.example.id
   address_family                  = "ipv4-ucast"
   bgp_address_family_context_name = aci_bgp_address_family_context.example.name
@@ -46,7 +46,7 @@ data "aci_relation_from_vrf_to_bgp_address_family_context" "example_vrf" {
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
 * `address_family` (af) - (string) The type of address family for the Relation From VRF To BGP Address Family Context.
   - Valid Values: `ipv4-ucast`, `ipv6-ucast`.
-* `bgp_address_family_context_name` (tnBgpCtxAfPolName) - (string) The name of the BGP Address Family Context. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context) with `aci_bgp_address_family_context.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bgp_address_family_context) with `data.aci_bgp_address_family_context.example.name`.
+* `bgp_address_family_context_name` (tnBgpCtxAfPolName) - (string) The name of the BGP Address Family Context.
 
 ### Read-Only ###
 

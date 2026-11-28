@@ -31,7 +31,7 @@ Data source for ACI IP Address Pool
 ```hcl
 
 data "aci_ip_address_pool" "example" {
-  name = "test_name"
+  name = "ip_address_pool"
 }
 
 ```

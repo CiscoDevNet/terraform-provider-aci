@@ -1,0 +1,38 @@
+package data
+
+const (
+	// The path to the definition files.
+	constDefinitionsPath = "./gen/definitions"
+	// The path to the global definition file.
+	constGlobalDefinitionFilePath = "./gen/definitions/global.yaml"
+	// Determine if the meta data in the meta directory should be refreshed from remote location
+	// The default is to not refresh the meta data.
+	constEnvMetaRefresh = "GEN_ACI_TF_META_REFRESH_ALL"
+	// The host from which the meta data is retrieved, when not set, the default is the DevNet base URL.
+	constEnvMetaHost = "GEN_ACI_TF_META_HOST"
+	// The environment variable that contains the list of classes to be retrieved.
+	// This can be used to retrieve the meta data for classes that are not available in the meta directory.
+	// This can be used to retrieve the meta data for classes that are available in the meta directory and require a refresh.
+	// The classes are separated by a comma, ex "fvTenant,fvAp".
+	// When GEN_ACI_TF_META_CLASSES is not set, no meta data is retrieved.
+	constEnvMetaClasses   = "GEN_ACI_TF_META_CLASSES"
+	constPubhubDevnetHost = "pubhub.devnetcloud.com/media/model-doc-latest/docs"
+	constMetaFileUrl      = "https://%s/doc/jsonmeta/%s/%s.json"
+	// Refresh the list of configurable APIC classes that do not expose annotation.
+	constEnvAnnotationUnsupported      = "GEN_ANNOTATION_UNSUPPORTED"
+	constAnnotationUnsupportedMetaFile = "https://%s/doc/jsonmeta/aci-meta.json"
+	// The Terraform provider name used in documentation links and resource name prefixes (e.g., "aci_tenant").
+	constProviderName = "aci"
+	// The base URL for the Terraform Registry resource documentation pages for this provider.
+	constRegistryResourceBaseUrl = "https://registry.terraform.io/providers/CiscoDevNet/" + constProviderName + "/latest/docs/resources"
+	// The base URL for the Terraform Registry datasource documentation pages for this provider.
+	constRegistryDatasourceBaseUrl = "https://registry.terraform.io/providers/CiscoDevNet/" + constProviderName + "/latest/docs/data-sources"
+	// The path to the meta data files.
+	constMetaPath = "./gen/meta"
+	// The maximum number of DN formats rendered in the documentation. When the source
+	// list exceeds this, a notice line is prepended and only the first N entries are kept.
+	constMaxDnFormatsToDisplay = 5
+	// The maximum number of possible parent objects rendered in the documentation.
+	// Beyond this, resource-backed parents are prioritized and a notice follows the sample.
+	constMaxParentDnsToDisplay = 20
+)

@@ -30,9 +30,9 @@ Data source for ACI Imported Logical Device
 
 ```hcl
 
-data "aci_imported_logical_device" "example_tenant" {
+data "aci_imported_logical_device" "example" {
   parent_dn      = aci_tenant.example.id
-  logical_device = aci_l4_l7_device.example_in_another_tenant.id
+  logical_device = aci_l4_l7_device.example.id
 }
 
 ```
@@ -43,7 +43,7 @@ data "aci_imported_logical_device" "example_tenant" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `logical_device` (ldev) - (string) The distinguished name (DN) of the Logical Device to import (ACI object [vnsLDevVip](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsLDevVip/overview). The Logical Device can be configured using [aci_l4_l7_device](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l4_l7_devices) resource).
+* `logical_device` (ldev) - (string) The distinguished name (DN) of the Logical Device to import (ACI object [vnsLDevVip](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsLDevVip/overview). The Logical Device can be configured using [aci_l4_l7_device](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l4_l7_devices) resource). The referenced Logical Device must belong to a different tenant from the Imported Logical Device.
 
 ### Read-Only ###
 

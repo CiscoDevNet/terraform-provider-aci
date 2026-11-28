@@ -30,9 +30,9 @@ Data source for ACI External Management Network Subnet
 
 ```hcl
 
-data "aci_external_management_network_subnet" "example_external_management_network_instance_profile" {
+data "aci_external_management_network_subnet" "example" {
   parent_dn = aci_external_management_network_instance_profile.example.id
-  ip        = "1.1.1.0/24"
+  ip        = "192.0.2.0/24"
 }
 
 ```

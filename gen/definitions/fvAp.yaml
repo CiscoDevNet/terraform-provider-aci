@@ -1,0 +1,22 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles
+resource_name: application_profile
+schema_version: 2
+state_upgrades:
+  1:
+    attributes:
+      parentDn:
+        attribute_name: tenant_dn
+        status: deprecated
+      prio:
+        attribute_name: prio
+        status: deprecated
+    children:
+      fvRsApMonPol:
+        attributes:
+          tnMonEPGPolName:
+            attribute_name: relation_fv_rs_ap_mon_pol
+            status: deprecated
+    source: sdkv2

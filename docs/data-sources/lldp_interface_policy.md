@@ -31,7 +31,7 @@ Data source for ACI LLDP Interface Policy
 ```hcl
 
 data "aci_lldp_interface_policy" "example" {
-  name = "test_name"
+  name = "lldp_interface_policy"
 }
 
 ```

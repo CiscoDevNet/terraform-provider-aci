@@ -6,324 +6,33 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &InfraHPathSResource{}
+var _ resource.ResourceWithConfigure = &InfraHPathSResource{}
+var _ resource.ResourceWithModifyPlan = &InfraHPathSResource{}
 var _ resource.ResourceWithImportState = &InfraHPathSResource{}
 
 func NewInfraHPathSResource() resource.Resource {
 	return &InfraHPathSResource{}
 }
 
+func init() {
+	registerResource("aci_access_interface_override", NewInfraHPathSResource)
+}
+
 // InfraHPathSResource defines the resource implementation.
 type InfraHPathSResource struct {
 	client *client.Client
-}
-
-// InfraHPathSResourceModel describes the resource data model.
-type InfraHPathSResourceModel struct {
-	Id                      types.String `tfsdk:"id"`
-	ParentDn                types.String `tfsdk:"parent_dn"`
-	Annotation              types.String `tfsdk:"annotation"`
-	Descr                   types.String `tfsdk:"description"`
-	Name                    types.String `tfsdk:"name"`
-	NameAlias               types.String `tfsdk:"name_alias"`
-	OwnerKey                types.String `tfsdk:"owner_key"`
-	OwnerTag                types.String `tfsdk:"owner_tag"`
-	InfraRsHPathAtt         types.Object `tfsdk:"relation_to_host_path"`
-	InfraRsPathToAccBaseGrp types.Object `tfsdk:"relation_to_access_interface_policy_group"`
-	TagAnnotation           types.Set    `tfsdk:"annotations"`
-	TagTag                  types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyInfraHPathSResourceModel() *InfraHPathSResourceModel {
-	return &InfraHPathSResourceModel{
-		Id:         basetypes.NewStringNull(),
-		ParentDn:   basetypes.NewStringNull(),
-		Annotation: basetypes.NewStringNull(),
-		Descr:      basetypes.NewStringNull(),
-		Name:       basetypes.NewStringNull(),
-		NameAlias:  basetypes.NewStringNull(),
-		OwnerKey:   basetypes.NewStringNull(),
-		OwnerTag:   basetypes.NewStringNull(),
-		InfraRsHPathAtt: types.ObjectNull(map[string]attr.Type{
-			"annotation":  types.StringType,
-			"target_dn":   types.StringType,
-			"annotations": types.SetType{ElemType: TagAnnotationInfraRsHPathAttInfraHPathSType},
-			"tags":        types.SetType{ElemType: TagTagInfraRsHPathAttInfraHPathSType},
-		}),
-		InfraRsPathToAccBaseGrp: types.ObjectNull(map[string]attr.Type{
-			"annotation":  types.StringType,
-			"target_dn":   types.StringType,
-			"annotations": types.SetType{ElemType: TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSType},
-			"tags":        types.SetType{ElemType: TagTagInfraRsPathToAccBaseGrpInfraHPathSType},
-		}),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-// InfraRsHPathAttInfraHPathSResourceModel describes the resource data model for the children without relation ships.
-type InfraRsHPathAttInfraHPathSResourceModel struct {
-	Annotation    types.String `tfsdk:"annotation"`
-	TDn           types.String `tfsdk:"target_dn"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyInfraRsHPathAttInfraHPathSResourceModel() InfraRsHPathAttInfraHPathSResourceModel {
-	return InfraRsHPathAttInfraHPathSResourceModel{
-		Annotation: basetypes.NewStringNull(),
-		TDn:        basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-var InfraRsHPathAttInfraHPathSType = map[string]attr.Type{
-	"annotation":  types.StringType,
-	"target_dn":   types.StringType,
-	"annotations": types.SetType{ElemType: TagAnnotationInfraRsHPathAttInfraHPathSType},
-	"tags":        types.SetType{ElemType: TagTagInfraRsHPathAttInfraHPathSType},
-}
-
-// TagAnnotationInfraRsHPathAttInfraHPathSResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationInfraRsHPathAttInfraHPathSResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationInfraRsHPathAttInfraHPathSResourceModel() TagAnnotationInfraRsHPathAttInfraHPathSResourceModel {
-	return TagAnnotationInfraRsHPathAttInfraHPathSResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationInfraRsHPathAttInfraHPathSType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagInfraRsHPathAttInfraHPathSResourceModel describes the resource data model for the children without relation ships.
-type TagTagInfraRsHPathAttInfraHPathSResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagInfraRsHPathAttInfraHPathSResourceModel() TagTagInfraRsHPathAttInfraHPathSResourceModel {
-	return TagTagInfraRsHPathAttInfraHPathSResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagInfraRsHPathAttInfraHPathSType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// InfraRsPathToAccBaseGrpInfraHPathSResourceModel describes the resource data model for the children without relation ships.
-type InfraRsPathToAccBaseGrpInfraHPathSResourceModel struct {
-	Annotation    types.String `tfsdk:"annotation"`
-	TDn           types.String `tfsdk:"target_dn"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyInfraRsPathToAccBaseGrpInfraHPathSResourceModel() InfraRsPathToAccBaseGrpInfraHPathSResourceModel {
-	return InfraRsPathToAccBaseGrpInfraHPathSResourceModel{
-		Annotation: basetypes.NewStringNull(),
-		TDn:        basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-var InfraRsPathToAccBaseGrpInfraHPathSType = map[string]attr.Type{
-	"annotation":  types.StringType,
-	"target_dn":   types.StringType,
-	"annotations": types.SetType{ElemType: TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSType},
-	"tags":        types.SetType{ElemType: TagTagInfraRsPathToAccBaseGrpInfraHPathSType},
-}
-
-// TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationInfraRsPathToAccBaseGrpInfraHPathSResourceModel() TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSResourceModel {
-	return TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagInfraRsPathToAccBaseGrpInfraHPathSResourceModel describes the resource data model for the children without relation ships.
-type TagTagInfraRsPathToAccBaseGrpInfraHPathSResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagInfraRsPathToAccBaseGrpInfraHPathSResourceModel() TagTagInfraRsPathToAccBaseGrpInfraHPathSResourceModel {
-	return TagTagInfraRsPathToAccBaseGrpInfraHPathSResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagInfraRsPathToAccBaseGrpInfraHPathSType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagAnnotationInfraHPathSResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationInfraHPathSResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationInfraHPathSResourceModel() TagAnnotationInfraHPathSResourceModel {
-	return TagAnnotationInfraHPathSResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationInfraHPathSType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagInfraHPathSResourceModel describes the resource data model for the children without relation ships.
-type TagTagInfraHPathSResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagInfraHPathSResourceModel() TagTagInfraHPathSResourceModel {
-	return TagTagInfraHPathSResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagInfraHPathSType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-type InfraHPathSIdentifier struct {
-	Name types.String
-}
-
-func (r *InfraHPathSResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if !req.Plan.Raw.IsNull() {
-		var planData, stateData, configData *InfraHPathSResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-		resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...)
-
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setInfraHPathSId(ctx, planData)
-		}
-
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "infraHPathS", planData.Id.ValueString())
-			if resp.Diagnostics.HasError() {
-				return
-			}
-		}
-
-		if !configData.InfraRsHPathAtt.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.InfraRsHPathAtt.Attributes()) {
-				InfraRsHPathAttObject, _ := types.ObjectValueFrom(ctx, InfraRsHPathAttInfraHPathSType, getEmptyInfraRsHPathAttInfraHPathSResourceModel())
-				planData.InfraRsHPathAtt = InfraRsHPathAttObject
-			}
-		}
-
-		if !configData.InfraRsPathToAccBaseGrp.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.InfraRsPathToAccBaseGrp.Attributes()) {
-				InfraRsPathToAccBaseGrpObject, _ := types.ObjectValueFrom(ctx, InfraRsPathToAccBaseGrpInfraHPathSType, getEmptyInfraRsPathToAccBaseGrpInfraHPathSResourceModel())
-				planData.InfraRsPathToAccBaseGrp = InfraRsPathToAccBaseGrpObject
-			}
-		}
-
-		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
-	}
 }
 
 func (r *InfraHPathSResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -332,298 +41,9 @@ func (r *InfraHPathSResource) Metadata(ctx context.Context, req resource.Metadat
 	tflog.Debug(ctx, "End metadata of resource: aci_access_interface_override")
 }
 
-func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *InfraHPathSResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of resource: aci_access_interface_override")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The access_interface_override resource for the 'infraHPathS' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Access Interface Override object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-				},
-			},
-			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				Default:             stringdefault.StaticString("uni/infra"),
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Access Interface Override object.`,
-			},
-			"description": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The description of the Access Interface Override object.`,
-			},
-			"name": schema.StringAttribute{
-				Required: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: `The name of the Access Interface Override object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The name alias of the Access Interface Override object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"relation_to_host_path": schema.SingleNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseNonNullStateForUnknown(),
-				},
-				Validators: []validator.Object{
-					MakeSingleNestedAttributeRequiredAttributesNotProvidedValidator("relation_to_host_path", []string{"target_dn"}),
-				},
-				Attributes: map[string]schema.Attribute{
-					"annotation": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The annotation of the Relation To Host Path object.`,
-					},
-					"target_dn": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The distinguished name of the target.`,
-					},
-					"annotations": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-					"tags": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_access_interface_policy_group": schema.SingleNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseNonNullStateForUnknown(),
-				},
-				Attributes: map[string]schema.Attribute{
-					"annotation": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The annotation of the Relation To Access Interface Policy Group object.`,
-					},
-					"target_dn": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The distinguished name of the target.`,
-					},
-					"annotations": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-					"tags": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-				},
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.InfraHPathSResourceSchema(globalAnnotation)
 	tflog.Debug(ctx, "End schema of resource: aci_access_interface_override")
 }
 
@@ -634,775 +54,218 @@ func (r *InfraHPathSResource) Configure(ctx context.Context, req resource.Config
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	r.client = client
+	r.client = aciClient
 	tflog.Debug(ctx, "End configure of resource: aci_access_interface_override")
+}
+
+func (r *InfraHPathSResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var data models.InfraHPathSRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// A parent reference or naming value may only become known during apply.
+	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		return
+	}
+	if data.Name.IsNull() || data.Name.IsUnknown() {
+		return
+	}
+
+	data.SetIDFromDN(data.BuildDN())
+	if req.State.Raw.IsNull() && !globalAllowExistingOnCreate {
+		CheckDn(ctx, &resp.Diagnostics, r.client, "infraHPathS", data.ID.ValueString())
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
+	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 }
 
 func (r *InfraHPathSResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Start create of resource: aci_access_interface_override")
-	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *InfraHPathSResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setInfraHPathSId(ctx, stateData)
+
+	var data models.InfraHPathSRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	getAndSetInfraHPathSAttributes(ctx, &resp.Diagnostics, r.client, stateData)
-	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	// Read existing children before adoption so payload construction can reconcile them.
+	priorState := models.NewInfraHPathSRootModelNull()
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	found, diagnostics := priorState.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if found && !globalAllowExistingOnCreate {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The infraHPathS object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The infraHPathS object with DN '%s' already exists.", dn),
 		)
 		return
 	}
 
-	var data *InfraHPathSResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.InfraHPathSModel, true, !globalAllowExistingOnCreate, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setInfraHPathSId(ctx, data)
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
-
-	var infraRsHPathAttPlan, infraRsHPathAttState InfraRsHPathAttInfraHPathSResourceModel
-	data.InfraRsHPathAtt.As(ctx, &infraRsHPathAttPlan, basetypes.ObjectAsOptions{})
-	stateData.InfraRsHPathAtt.As(ctx, &infraRsHPathAttState, basetypes.ObjectAsOptions{})
-	var infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState InfraRsPathToAccBaseGrpInfraHPathSResourceModel
-	data.InfraRsPathToAccBaseGrp.As(ctx, &infraRsPathToAccBaseGrpPlan, basetypes.ObjectAsOptions{})
-	stateData.InfraRsPathToAccBaseGrp.As(ctx, &infraRsPathToAccBaseGrpState, basetypes.ObjectAsOptions{})
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationInfraHPathSResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagInfraHPathSResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getInfraHPathSCreateJsonPayload(ctx, &resp.Diagnostics, true, data, infraRsHPathAttPlan, infraRsHPathAttState, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	// Retain the created object's DN if the subsequent read fails.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), data.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetInfraHPathSAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response = getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save data into Terraform state
+	found, diagnostics = data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_access_interface_override resource",
+			fmt.Sprintf("The aci_access_interface_override resource with id '%s' has not been found after creation", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_access_interface_override with id '%s'", data.ID.ValueString()))
 }
 
 func (r *InfraHPathSResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of resource: aci_access_interface_override")
-	var data *InfraHPathSResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.InfraHPathSRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
-
-	getAndSetInfraHPathSAttributes(ctx, &resp.Diagnostics, r.client, data)
-
-	// Save updated data into Terraform state
-	if data.Id.IsNull() {
-		var emptyData *InfraHPathSResourceModel
-		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
-	} else {
-		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Imports initially provide only ID; the response reconstructs the remaining fields.
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, data.ID.ValueString(), data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_access_interface_override with id '%s'", data.ID.ValueString()))
 }
 
 func (r *InfraHPathSResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_access_interface_override")
-	var data *InfraHPathSResourceModel
-	var stateData *InfraHPathSResourceModel
 
-	// Read Terraform plan data into the model
+	var data, priorState models.InfraHPathSRootModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
+	resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
-
-	var infraRsHPathAttPlan, infraRsHPathAttState InfraRsHPathAttInfraHPathSResourceModel
-	data.InfraRsHPathAtt.As(ctx, &infraRsHPathAttPlan, basetypes.ObjectAsOptions{})
-	stateData.InfraRsHPathAtt.As(ctx, &infraRsHPathAttState, basetypes.ObjectAsOptions{})
-	var infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState InfraRsPathToAccBaseGrpInfraHPathSResourceModel
-	data.InfraRsPathToAccBaseGrp.As(ctx, &infraRsPathToAccBaseGrpPlan, basetypes.ObjectAsOptions{})
-	stateData.InfraRsPathToAccBaseGrp.As(ctx, &infraRsPathToAccBaseGrpState, basetypes.ObjectAsOptions{})
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationInfraHPathSResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagInfraHPathSResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getInfraHPathSCreateJsonPayload(ctx, &resp.Diagnostics, false, data, infraRsHPathAttPlan, infraRsHPathAttState, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.InfraHPathSModel, false, false, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetInfraHPathSAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save updated data into Terraform state
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_access_interface_override resource",
+			fmt.Sprintf("The aci_access_interface_override resource with id '%s' has not been found after update", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_access_interface_override with id '%s'", data.ID.ValueString()))
 }
 
 func (r *InfraHPathSResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Debug(ctx, "Start delete of resource: aci_access_interface_override")
-	var data *InfraHPathSResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.InfraHPathSRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "infraHPathS", data.Id.ValueString())
+	payload, diagnostics := data.BuildDeletePayload(ctx)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.ID.ValueString()), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
+
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_access_interface_override with id '%s'", data.ID.ValueString()))
 }
 
 func (r *InfraHPathSResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_access_interface_override")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-
-	var stateData *InfraHPathSResourceModel
-	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_access_interface_override with id '%s'", stateData.Id.ValueString()))
-
-	tflog.Debug(ctx, "End import of state resource: aci_access_interface_override")
-}
-
-func getAndSetInfraHPathSAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *InfraHPathSResourceModel) {
-	childClasses := getChildClassesForGetRequest([]string{"infraRsHPathAtt", "infraRsPathToAccBaseGrp", "tagAnnotation", "tagTag"})
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
-
-	readData := getEmptyInfraHPathSResourceModel()
-
-	if diags.HasError() {
-		return
-	}
-	if requestData.Search("imdata").Search("infraHPathS").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("infraHPathS").Data().([]interface{})
-		if len(classReadInfo) == 1 {
-			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
-			for attributeName, attributeValue := range attributes {
-				if attributeName == "dn" {
-					readData.Id = basetypes.NewStringValue(attributeValue.(string))
-					setInfraHPathSParentDn(ctx, attributeValue.(string), readData)
-				}
-				if attributeName == "annotation" {
-					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "descr" {
-					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "name" {
-					readData.Name = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "nameAlias" {
-					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerKey" {
-					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerTag" {
-					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
-				}
-			}
-			InfraRsHPathAttInfraHPathSList := make([]InfraRsHPathAttInfraHPathSResourceModel, 0)
-			InfraRsPathToAccBaseGrpInfraHPathSList := make([]InfraRsPathToAccBaseGrpInfraHPathSResourceModel, 0)
-			TagAnnotationInfraHPathSList := make([]TagAnnotationInfraHPathSResourceModel, 0)
-			TagTagInfraHPathSList := make([]TagTagInfraHPathSResourceModel, 0)
-			_, ok := classReadInfo[0].(map[string]interface{})["children"]
-			if ok {
-				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
-				for _, child := range children {
-					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-						if childClassName == "infraRsHPathAtt" {
-							InfraRsHPathAttInfraHPathS := getEmptyInfraRsHPathAttInfraHPathSResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "annotation" {
-									InfraRsHPathAttInfraHPathS.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "tDn" {
-									InfraRsHPathAttInfraHPathS.TDn = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationInfraRsHPathAttInfraHPathSList := make([]TagAnnotationInfraRsHPathAttInfraHPathSResourceModel, 0)
-							TagTagInfraRsHPathAttInfraHPathSList := make([]TagTagInfraRsHPathAttInfraHPathSResourceModel, 0)
-							childrenOfInfraRsHPathAttInfraHPathS, childrenOfInfraRsHPathAttInfraHPathSExist := childClassDetails.(map[string]interface{})["children"]
-							if childrenOfInfraRsHPathAttInfraHPathSExist {
-								for _, childInfraRsHPathAttInfraHPathS := range childrenOfInfraRsHPathAttInfraHPathS.([]interface{}) {
-									for childClassNameInfraRsHPathAttInfraHPathS, childClassDetailsInfraRsHPathAttInfraHPathS := range childInfraRsHPathAttInfraHPathS.(map[string]interface{}) {
-										if childClassNameInfraRsHPathAttInfraHPathS == "tagAnnotation" {
-											TagAnnotationInfraRsHPathAttInfraHPathS := getEmptyTagAnnotationInfraRsHPathAttInfraHPathSResourceModel()
-											tagAnnotationchildAttributeValue := childClassDetailsInfraRsHPathAttInfraHPathS.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
-												if childAttributeName == "key" {
-													TagAnnotationInfraRsHPathAttInfraHPathS.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagAnnotationInfraRsHPathAttInfraHPathS.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagAnnotationInfraRsHPathAttInfraHPathSList = append(TagAnnotationInfraRsHPathAttInfraHPathSList, TagAnnotationInfraRsHPathAttInfraHPathS)
-										}
-										if childClassNameInfraRsHPathAttInfraHPathS == "tagTag" {
-											TagTagInfraRsHPathAttInfraHPathS := getEmptyTagTagInfraRsHPathAttInfraHPathSResourceModel()
-											tagTagchildAttributeValue := childClassDetailsInfraRsHPathAttInfraHPathS.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
-												if childAttributeName == "key" {
-													TagTagInfraRsHPathAttInfraHPathS.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagTagInfraRsHPathAttInfraHPathS.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagTagInfraRsHPathAttInfraHPathSList = append(TagTagInfraRsHPathAttInfraHPathSList, TagTagInfraRsHPathAttInfraHPathS)
-										}
-									}
-								}
-							}
-							TagAnnotationInfraRsHPathAttInfraHPathSSet, _ := types.SetValueFrom(ctx, TagAnnotationInfraRsHPathAttInfraHPathSType, TagAnnotationInfraRsHPathAttInfraHPathSList)
-							InfraRsHPathAttInfraHPathS.TagAnnotation = TagAnnotationInfraRsHPathAttInfraHPathSSet
-							TagTagInfraRsHPathAttInfraHPathSSet, _ := types.SetValueFrom(ctx, TagTagInfraRsHPathAttInfraHPathSType, TagTagInfraRsHPathAttInfraHPathSList)
-							InfraRsHPathAttInfraHPathS.TagTag = TagTagInfraRsHPathAttInfraHPathSSet
-							InfraRsHPathAttInfraHPathSList = append(InfraRsHPathAttInfraHPathSList, InfraRsHPathAttInfraHPathS)
-						}
-						if childClassName == "infraRsPathToAccBaseGrp" {
-							InfraRsPathToAccBaseGrpInfraHPathS := getEmptyInfraRsPathToAccBaseGrpInfraHPathSResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "annotation" {
-									InfraRsPathToAccBaseGrpInfraHPathS.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "tDn" {
-									InfraRsPathToAccBaseGrpInfraHPathS.TDn = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSList := make([]TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSResourceModel, 0)
-							TagTagInfraRsPathToAccBaseGrpInfraHPathSList := make([]TagTagInfraRsPathToAccBaseGrpInfraHPathSResourceModel, 0)
-							childrenOfInfraRsPathToAccBaseGrpInfraHPathS, childrenOfInfraRsPathToAccBaseGrpInfraHPathSExist := childClassDetails.(map[string]interface{})["children"]
-							if childrenOfInfraRsPathToAccBaseGrpInfraHPathSExist {
-								for _, childInfraRsPathToAccBaseGrpInfraHPathS := range childrenOfInfraRsPathToAccBaseGrpInfraHPathS.([]interface{}) {
-									for childClassNameInfraRsPathToAccBaseGrpInfraHPathS, childClassDetailsInfraRsPathToAccBaseGrpInfraHPathS := range childInfraRsPathToAccBaseGrpInfraHPathS.(map[string]interface{}) {
-										if childClassNameInfraRsPathToAccBaseGrpInfraHPathS == "tagAnnotation" {
-											TagAnnotationInfraRsPathToAccBaseGrpInfraHPathS := getEmptyTagAnnotationInfraRsPathToAccBaseGrpInfraHPathSResourceModel()
-											tagAnnotationchildAttributeValue := childClassDetailsInfraRsPathToAccBaseGrpInfraHPathS.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
-												if childAttributeName == "key" {
-													TagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSList = append(TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSList, TagAnnotationInfraRsPathToAccBaseGrpInfraHPathS)
-										}
-										if childClassNameInfraRsPathToAccBaseGrpInfraHPathS == "tagTag" {
-											TagTagInfraRsPathToAccBaseGrpInfraHPathS := getEmptyTagTagInfraRsPathToAccBaseGrpInfraHPathSResourceModel()
-											tagTagchildAttributeValue := childClassDetailsInfraRsPathToAccBaseGrpInfraHPathS.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
-												if childAttributeName == "key" {
-													TagTagInfraRsPathToAccBaseGrpInfraHPathS.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagTagInfraRsPathToAccBaseGrpInfraHPathS.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagTagInfraRsPathToAccBaseGrpInfraHPathSList = append(TagTagInfraRsPathToAccBaseGrpInfraHPathSList, TagTagInfraRsPathToAccBaseGrpInfraHPathS)
-										}
-									}
-								}
-							}
-							TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSSet, _ := types.SetValueFrom(ctx, TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSType, TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSList)
-							InfraRsPathToAccBaseGrpInfraHPathS.TagAnnotation = TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSSet
-							TagTagInfraRsPathToAccBaseGrpInfraHPathSSet, _ := types.SetValueFrom(ctx, TagTagInfraRsPathToAccBaseGrpInfraHPathSType, TagTagInfraRsPathToAccBaseGrpInfraHPathSList)
-							InfraRsPathToAccBaseGrpInfraHPathS.TagTag = TagTagInfraRsPathToAccBaseGrpInfraHPathSSet
-							InfraRsPathToAccBaseGrpInfraHPathSList = append(InfraRsPathToAccBaseGrpInfraHPathSList, InfraRsPathToAccBaseGrpInfraHPathS)
-						}
-						if childClassName == "tagAnnotation" {
-							TagAnnotationInfraHPathS := getEmptyTagAnnotationInfraHPathSResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagAnnotationInfraHPathS.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagAnnotationInfraHPathS.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationInfraHPathSList = append(TagAnnotationInfraHPathSList, TagAnnotationInfraHPathS)
-						}
-						if childClassName == "tagTag" {
-							TagTagInfraHPathS := getEmptyTagTagInfraHPathSResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagTagInfraHPathS.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagTagInfraHPathS.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagTagInfraHPathSList = append(TagTagInfraHPathSList, TagTagInfraHPathS)
-						}
-					}
-				}
-			}
-			if len(InfraRsHPathAttInfraHPathSList) == 1 {
-				infraRsHPathAttObject, _ := types.ObjectValueFrom(ctx, InfraRsHPathAttInfraHPathSType, InfraRsHPathAttInfraHPathSList[0])
-				readData.InfraRsHPathAtt = infraRsHPathAttObject
-			} else {
-				infraRsHPathAttObject, _ := types.ObjectValueFrom(ctx, InfraRsHPathAttInfraHPathSType, getEmptyInfraRsHPathAttInfraHPathSResourceModel())
-				readData.InfraRsHPathAtt = infraRsHPathAttObject
-			}
-			if len(InfraRsPathToAccBaseGrpInfraHPathSList) == 1 {
-				infraRsPathToAccBaseGrpObject, _ := types.ObjectValueFrom(ctx, InfraRsPathToAccBaseGrpInfraHPathSType, InfraRsPathToAccBaseGrpInfraHPathSList[0])
-				readData.InfraRsPathToAccBaseGrp = infraRsPathToAccBaseGrpObject
-			} else {
-				infraRsPathToAccBaseGrpObject, _ := types.ObjectValueFrom(ctx, InfraRsPathToAccBaseGrpInfraHPathSType, getEmptyInfraRsPathToAccBaseGrpInfraHPathSResourceModel())
-				readData.InfraRsPathToAccBaseGrp = infraRsPathToAccBaseGrpObject
-			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationInfraHPathSList)
-			readData.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagInfraHPathSList)
-			readData.TagTag = tagTagSet
-		} else {
-			diags.AddError(
-				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'infraHPathS'. Please report this issue to the provider developers.", len(classReadInfo)),
-			)
-		}
-	} else {
-		readData.Id = basetypes.NewStringNull()
-	}
-	*data = *readData
-}
-
-func getInfraHPathSRn(ctx context.Context, data *InfraHPathSResourceModel) string {
-	return fmt.Sprintf("hpaths-%s", data.Name.ValueString())
-}
-
-func setInfraHPathSParentDn(ctx context.Context, dn string, data *InfraHPathSResourceModel) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(dn) - 1; i >= 0; i-- {
-		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(dn[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
-}
-
-func setInfraHPathSId(ctx context.Context, data *InfraHPathSResourceModel) {
-	rn := getInfraHPathSRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-}
-
-func getInfraHPathSInfraRsHPathAttChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *InfraHPathSResourceModel, infraRsHPathAttInfraHPathSPlan, infraRsHPathAttInfraHPathSState InfraRsHPathAttInfraHPathSResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.InfraRsHPathAtt.IsNull() && !data.InfraRsHPathAtt.IsUnknown() {
-		InfraRsHPathAttInfraHPathSChildren := make([]map[string]interface{}, 0)
-		childMap := NewAciObject()
-		if !IsEmptySingleNestedAttribute(data.InfraRsHPathAtt.Attributes()) {
-			if !infraRsHPathAttInfraHPathSPlan.Annotation.IsUnknown() && !infraRsHPathAttInfraHPathSPlan.Annotation.IsNull() {
-				childMap.Attributes["annotation"] = infraRsHPathAttInfraHPathSPlan.Annotation.ValueString()
-			} else {
-				childMap.Attributes["annotation"] = globalAnnotation
-			}
-			if !infraRsHPathAttInfraHPathSPlan.TDn.IsUnknown() && !infraRsHPathAttInfraHPathSPlan.TDn.IsNull() {
-				childMap.Attributes["tDn"] = infraRsHPathAttInfraHPathSPlan.TDn.ValueString()
-			}
-
-			var tagAnnotationInfraRsHPathAttInfraHPathSPlan, tagAnnotationInfraRsHPathAttInfraHPathSState []TagAnnotationInfraRsHPathAttInfraHPathSResourceModel
-			infraRsHPathAttInfraHPathSPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationInfraRsHPathAttInfraHPathSPlan, false)
-			if !infraRsHPathAttInfraHPathSState.TagAnnotation.IsNull() {
-				infraRsHPathAttInfraHPathSState.TagAnnotation.ElementsAs(ctx, &tagAnnotationInfraRsHPathAttInfraHPathSState, false)
-			}
-			if !infraRsHPathAttInfraHPathSPlan.TagAnnotation.IsNull() && !infraRsHPathAttInfraHPathSPlan.TagAnnotation.IsUnknown() {
-				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-				for _, tagAnnotationInfraRsHPathAttInfraHPathS := range tagAnnotationInfraRsHPathAttInfraHPathSPlan {
-					tagAnnotationInfraRsHPathAttInfraHPathSChildMap := NewAciObject()
-					if !tagAnnotationInfraRsHPathAttInfraHPathS.Key.IsNull() && !tagAnnotationInfraRsHPathAttInfraHPathS.Key.IsUnknown() {
-						tagAnnotationInfraRsHPathAttInfraHPathSChildMap.Attributes["key"] = tagAnnotationInfraRsHPathAttInfraHPathS.Key.ValueString()
-					}
-					if !tagAnnotationInfraRsHPathAttInfraHPathS.Value.IsNull() && !tagAnnotationInfraRsHPathAttInfraHPathS.Value.IsUnknown() {
-						tagAnnotationInfraRsHPathAttInfraHPathSChildMap.Attributes["value"] = tagAnnotationInfraRsHPathAttInfraHPathS.Value.ValueString()
-					}
-					InfraRsHPathAttInfraHPathSChildren = append(InfraRsHPathAttInfraHPathSChildren, map[string]interface{}{"tagAnnotation": tagAnnotationInfraRsHPathAttInfraHPathSChildMap})
-					tagAnnotationIdentifier := TagAnnotationIdentifier{}
-					tagAnnotationIdentifier.Key = tagAnnotationInfraRsHPathAttInfraHPathS.Key
-					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-				}
-				for _, tagAnnotationInfraRsHPathAttInfraHPathS := range tagAnnotationInfraRsHPathAttInfraHPathSState {
-					delete := true
-					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-						if tagAnnotationIdentifier.Key == tagAnnotationInfraRsHPathAttInfraHPathS.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagAnnotationInfraRsHPathAttInfraHPathSChildMapForDelete := NewAciObject()
-						tagAnnotationInfraRsHPathAttInfraHPathSChildMapForDelete.Attributes["status"] = "deleted"
-						tagAnnotationInfraRsHPathAttInfraHPathSChildMapForDelete.Attributes["key"] = tagAnnotationInfraRsHPathAttInfraHPathS.Key.ValueString()
-						InfraRsHPathAttInfraHPathSChildren = append(InfraRsHPathAttInfraHPathSChildren, map[string]interface{}{"tagAnnotation": tagAnnotationInfraRsHPathAttInfraHPathSChildMapForDelete})
-					}
-				}
-			}
-
-			var tagTagInfraRsHPathAttInfraHPathSPlan, tagTagInfraRsHPathAttInfraHPathSState []TagTagInfraRsHPathAttInfraHPathSResourceModel
-			infraRsHPathAttInfraHPathSPlan.TagTag.ElementsAs(ctx, &tagTagInfraRsHPathAttInfraHPathSPlan, false)
-			if !infraRsHPathAttInfraHPathSState.TagTag.IsNull() {
-				infraRsHPathAttInfraHPathSState.TagTag.ElementsAs(ctx, &tagTagInfraRsHPathAttInfraHPathSState, false)
-			}
-			if !infraRsHPathAttInfraHPathSPlan.TagTag.IsNull() && !infraRsHPathAttInfraHPathSPlan.TagTag.IsUnknown() {
-				tagTagIdentifiers := []TagTagIdentifier{}
-				for _, tagTagInfraRsHPathAttInfraHPathS := range tagTagInfraRsHPathAttInfraHPathSPlan {
-					tagTagInfraRsHPathAttInfraHPathSChildMap := NewAciObject()
-					if !tagTagInfraRsHPathAttInfraHPathS.Key.IsNull() && !tagTagInfraRsHPathAttInfraHPathS.Key.IsUnknown() {
-						tagTagInfraRsHPathAttInfraHPathSChildMap.Attributes["key"] = tagTagInfraRsHPathAttInfraHPathS.Key.ValueString()
-					}
-					if !tagTagInfraRsHPathAttInfraHPathS.Value.IsNull() && !tagTagInfraRsHPathAttInfraHPathS.Value.IsUnknown() {
-						tagTagInfraRsHPathAttInfraHPathSChildMap.Attributes["value"] = tagTagInfraRsHPathAttInfraHPathS.Value.ValueString()
-					}
-					InfraRsHPathAttInfraHPathSChildren = append(InfraRsHPathAttInfraHPathSChildren, map[string]interface{}{"tagTag": tagTagInfraRsHPathAttInfraHPathSChildMap})
-					tagTagIdentifier := TagTagIdentifier{}
-					tagTagIdentifier.Key = tagTagInfraRsHPathAttInfraHPathS.Key
-					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-				}
-				for _, tagTagInfraRsHPathAttInfraHPathS := range tagTagInfraRsHPathAttInfraHPathSState {
-					delete := true
-					for _, tagTagIdentifier := range tagTagIdentifiers {
-						if tagTagIdentifier.Key == tagTagInfraRsHPathAttInfraHPathS.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagTagInfraRsHPathAttInfraHPathSChildMapForDelete := NewAciObject()
-						tagTagInfraRsHPathAttInfraHPathSChildMapForDelete.Attributes["status"] = "deleted"
-						tagTagInfraRsHPathAttInfraHPathSChildMapForDelete.Attributes["key"] = tagTagInfraRsHPathAttInfraHPathS.Key.ValueString()
-						InfraRsHPathAttInfraHPathSChildren = append(InfraRsHPathAttInfraHPathSChildren, map[string]interface{}{"tagTag": tagTagInfraRsHPathAttInfraHPathSChildMapForDelete})
-					}
-				}
-			}
-			childMap.Children = InfraRsHPathAttInfraHPathSChildren
-		} else {
-			childMap.Attributes["tDn"] = infraRsHPathAttInfraHPathSState.TDn.ValueString()
-			childMap.Attributes["status"] = "deleted"
-		}
-		childPayloads = append(childPayloads, map[string]interface{}{"infraRsHPathAtt": childMap})
-	} else {
-		InfraRsHPathAttObject, _ := types.ObjectValueFrom(ctx, InfraRsHPathAttInfraHPathSType, getEmptyInfraRsHPathAttInfraHPathSResourceModel())
-		data.InfraRsHPathAtt = InfraRsHPathAttObject
-	}
-
-	return childPayloads
-}
-
-func getInfraHPathSInfraRsPathToAccBaseGrpChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *InfraHPathSResourceModel, infraRsPathToAccBaseGrpInfraHPathSPlan, infraRsPathToAccBaseGrpInfraHPathSState InfraRsPathToAccBaseGrpInfraHPathSResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.InfraRsPathToAccBaseGrp.IsNull() && !data.InfraRsPathToAccBaseGrp.IsUnknown() {
-		InfraRsPathToAccBaseGrpInfraHPathSChildren := make([]map[string]interface{}, 0)
-		childMap := NewAciObject()
-		if !IsEmptySingleNestedAttribute(data.InfraRsPathToAccBaseGrp.Attributes()) {
-			if !infraRsPathToAccBaseGrpInfraHPathSPlan.Annotation.IsUnknown() && !infraRsPathToAccBaseGrpInfraHPathSPlan.Annotation.IsNull() {
-				childMap.Attributes["annotation"] = infraRsPathToAccBaseGrpInfraHPathSPlan.Annotation.ValueString()
-			} else {
-				childMap.Attributes["annotation"] = globalAnnotation
-			}
-			if !infraRsPathToAccBaseGrpInfraHPathSPlan.TDn.IsUnknown() && !infraRsPathToAccBaseGrpInfraHPathSPlan.TDn.IsNull() {
-				childMap.Attributes["tDn"] = infraRsPathToAccBaseGrpInfraHPathSPlan.TDn.ValueString()
-			}
-
-			var tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSPlan, tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSState []TagAnnotationInfraRsPathToAccBaseGrpInfraHPathSResourceModel
-			infraRsPathToAccBaseGrpInfraHPathSPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSPlan, false)
-			if !infraRsPathToAccBaseGrpInfraHPathSState.TagAnnotation.IsNull() {
-				infraRsPathToAccBaseGrpInfraHPathSState.TagAnnotation.ElementsAs(ctx, &tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSState, false)
-			}
-			if !infraRsPathToAccBaseGrpInfraHPathSPlan.TagAnnotation.IsNull() && !infraRsPathToAccBaseGrpInfraHPathSPlan.TagAnnotation.IsUnknown() {
-				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-				for _, tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS := range tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSPlan {
-					tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSChildMap := NewAciObject()
-					if !tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Key.IsNull() && !tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Key.IsUnknown() {
-						tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSChildMap.Attributes["key"] = tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Key.ValueString()
-					}
-					if !tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Value.IsNull() && !tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Value.IsUnknown() {
-						tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSChildMap.Attributes["value"] = tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Value.ValueString()
-					}
-					InfraRsPathToAccBaseGrpInfraHPathSChildren = append(InfraRsPathToAccBaseGrpInfraHPathSChildren, map[string]interface{}{"tagAnnotation": tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSChildMap})
-					tagAnnotationIdentifier := TagAnnotationIdentifier{}
-					tagAnnotationIdentifier.Key = tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Key
-					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-				}
-				for _, tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS := range tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSState {
-					delete := true
-					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-						if tagAnnotationIdentifier.Key == tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSChildMapForDelete := NewAciObject()
-						tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSChildMapForDelete.Attributes["status"] = "deleted"
-						tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSChildMapForDelete.Attributes["key"] = tagAnnotationInfraRsPathToAccBaseGrpInfraHPathS.Key.ValueString()
-						InfraRsPathToAccBaseGrpInfraHPathSChildren = append(InfraRsPathToAccBaseGrpInfraHPathSChildren, map[string]interface{}{"tagAnnotation": tagAnnotationInfraRsPathToAccBaseGrpInfraHPathSChildMapForDelete})
-					}
-				}
-			}
-
-			var tagTagInfraRsPathToAccBaseGrpInfraHPathSPlan, tagTagInfraRsPathToAccBaseGrpInfraHPathSState []TagTagInfraRsPathToAccBaseGrpInfraHPathSResourceModel
-			infraRsPathToAccBaseGrpInfraHPathSPlan.TagTag.ElementsAs(ctx, &tagTagInfraRsPathToAccBaseGrpInfraHPathSPlan, false)
-			if !infraRsPathToAccBaseGrpInfraHPathSState.TagTag.IsNull() {
-				infraRsPathToAccBaseGrpInfraHPathSState.TagTag.ElementsAs(ctx, &tagTagInfraRsPathToAccBaseGrpInfraHPathSState, false)
-			}
-			if !infraRsPathToAccBaseGrpInfraHPathSPlan.TagTag.IsNull() && !infraRsPathToAccBaseGrpInfraHPathSPlan.TagTag.IsUnknown() {
-				tagTagIdentifiers := []TagTagIdentifier{}
-				for _, tagTagInfraRsPathToAccBaseGrpInfraHPathS := range tagTagInfraRsPathToAccBaseGrpInfraHPathSPlan {
-					tagTagInfraRsPathToAccBaseGrpInfraHPathSChildMap := NewAciObject()
-					if !tagTagInfraRsPathToAccBaseGrpInfraHPathS.Key.IsNull() && !tagTagInfraRsPathToAccBaseGrpInfraHPathS.Key.IsUnknown() {
-						tagTagInfraRsPathToAccBaseGrpInfraHPathSChildMap.Attributes["key"] = tagTagInfraRsPathToAccBaseGrpInfraHPathS.Key.ValueString()
-					}
-					if !tagTagInfraRsPathToAccBaseGrpInfraHPathS.Value.IsNull() && !tagTagInfraRsPathToAccBaseGrpInfraHPathS.Value.IsUnknown() {
-						tagTagInfraRsPathToAccBaseGrpInfraHPathSChildMap.Attributes["value"] = tagTagInfraRsPathToAccBaseGrpInfraHPathS.Value.ValueString()
-					}
-					InfraRsPathToAccBaseGrpInfraHPathSChildren = append(InfraRsPathToAccBaseGrpInfraHPathSChildren, map[string]interface{}{"tagTag": tagTagInfraRsPathToAccBaseGrpInfraHPathSChildMap})
-					tagTagIdentifier := TagTagIdentifier{}
-					tagTagIdentifier.Key = tagTagInfraRsPathToAccBaseGrpInfraHPathS.Key
-					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-				}
-				for _, tagTagInfraRsPathToAccBaseGrpInfraHPathS := range tagTagInfraRsPathToAccBaseGrpInfraHPathSState {
-					delete := true
-					for _, tagTagIdentifier := range tagTagIdentifiers {
-						if tagTagIdentifier.Key == tagTagInfraRsPathToAccBaseGrpInfraHPathS.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagTagInfraRsPathToAccBaseGrpInfraHPathSChildMapForDelete := NewAciObject()
-						tagTagInfraRsPathToAccBaseGrpInfraHPathSChildMapForDelete.Attributes["status"] = "deleted"
-						tagTagInfraRsPathToAccBaseGrpInfraHPathSChildMapForDelete.Attributes["key"] = tagTagInfraRsPathToAccBaseGrpInfraHPathS.Key.ValueString()
-						InfraRsPathToAccBaseGrpInfraHPathSChildren = append(InfraRsPathToAccBaseGrpInfraHPathSChildren, map[string]interface{}{"tagTag": tagTagInfraRsPathToAccBaseGrpInfraHPathSChildMapForDelete})
-					}
-				}
-			}
-			childMap.Children = InfraRsPathToAccBaseGrpInfraHPathSChildren
-		} else {
-			childMap.Attributes["status"] = "deleted"
-		}
-		childPayloads = append(childPayloads, map[string]interface{}{"infraRsPathToAccBaseGrp": childMap})
-	} else {
-		InfraRsPathToAccBaseGrpObject, _ := types.ObjectValueFrom(ctx, InfraRsPathToAccBaseGrpInfraHPathSType, getEmptyInfraRsPathToAccBaseGrpInfraHPathSResourceModel())
-		data.InfraRsPathToAccBaseGrp = InfraRsPathToAccBaseGrpObject
-	}
-
-	return childPayloads
-}
-
-func getInfraHPathSTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *InfraHPathSResourceModel, tagAnnotationInfraHPathSPlan, tagAnnotationInfraHPathSState []TagAnnotationInfraHPathSResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
-		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotationInfraHPathS := range tagAnnotationInfraHPathSPlan {
-			childMap := NewAciObject()
-			if !tagAnnotationInfraHPathS.Key.IsNull() && !tagAnnotationInfraHPathS.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagAnnotationInfraHPathS.Key.ValueString()
-			}
-			if !tagAnnotationInfraHPathS.Value.IsNull() && !tagAnnotationInfraHPathS.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagAnnotationInfraHPathS.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
-			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotationInfraHPathS.Key
-			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-		}
-		for _, tagAnnotation := range tagAnnotationInfraHPathSState {
-			delete := true
-			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagAnnotationChildMapForDelete := NewAciObject()
-				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
-				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getInfraHPathSTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *InfraHPathSResourceModel, tagTagInfraHPathSPlan, tagTagInfraHPathSState []TagTagInfraHPathSResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
-		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTagInfraHPathS := range tagTagInfraHPathSPlan {
-			childMap := NewAciObject()
-			if !tagTagInfraHPathS.Key.IsNull() && !tagTagInfraHPathS.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagTagInfraHPathS.Key.ValueString()
-			}
-			if !tagTagInfraHPathS.Value.IsNull() && !tagTagInfraHPathS.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagTagInfraHPathS.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
-			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTagInfraHPathS.Key
-			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-		}
-		for _, tagTag := range tagTagInfraHPathSState {
-			delete := true
-			for _, tagTagIdentifier := range tagTagIdentifiers {
-				if tagTagIdentifier.Key == tagTag.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagTagChildMapForDelete := NewAciObject()
-				tagTagChildMapForDelete.Attributes["status"] = "deleted"
-				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getInfraHPathSCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *InfraHPathSResourceModel, infraRsHPathAttPlan, infraRsHPathAttState InfraRsHPathAttInfraHPathSResourceModel, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState InfraRsPathToAccBaseGrpInfraHPathSResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationInfraHPathSResourceModel, tagTagPlan, tagTagState []TagTagInfraHPathSResourceModel) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
-
-	if createType && !globalAllowExistingOnCreate {
-		payloadMap["attributes"].(map[string]string)["status"] = "created"
-	}
-	childPayloads := []map[string]interface{}{}
-
-	InfraRsHPathAttchildPayloads := getInfraHPathSInfraRsHPathAttChildPayloads(ctx, diags, data, infraRsHPathAttPlan, infraRsHPathAttState)
-	if InfraRsHPathAttchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, InfraRsHPathAttchildPayloads...)
-
-	InfraRsPathToAccBaseGrpchildPayloads := getInfraHPathSInfraRsPathToAccBaseGrpChildPayloads(ctx, diags, data, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState)
-	if InfraRsPathToAccBaseGrpchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, InfraRsPathToAccBaseGrpchildPayloads...)
-
-	TagAnnotationchildPayloads := getInfraHPathSTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
-	if TagAnnotationchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
-
-	TagTagchildPayloads := getInfraHPathSTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
-	if TagTagchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagTagchildPayloads...)
-
-	payloadMap["children"] = childPayloads
-	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
-	}
-	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
-	}
-	if !data.Name.IsNull() && !data.Name.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()
-	}
-	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
-	}
-	if !data.OwnerKey.IsNull() && !data.OwnerKey.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerKey"] = data.OwnerKey.ValueString()
-	}
-	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
-	}
-	payload, err := json.Marshal(map[string]interface{}{"infraHPathS": payloadMap})
-	if err != nil {
-		diags.AddError(
-			"Marshalling of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
+	tflog.Debug(ctx, "End import state of resource: aci_access_interface_override")
 }

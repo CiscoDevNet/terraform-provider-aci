@@ -30,10 +30,10 @@ Data source for ACI Endpoint Tag IP
 
 ```hcl
 
-data "aci_endpoint_tag_ip" "example_tenant" {
+data "aci_endpoint_tag_ip" "example" {
   parent_dn = aci_tenant.example.id
-  vrf_name  = "test_ctx_name"
-  ip        = "10.0.0.2"
+  vrf_name  = aci_vrf.example.name
+  ip        = "192.0.2.2"
 }
 
 ```
@@ -54,9 +54,9 @@ data "aci_endpoint_tag_ip" "example_tenant" {
 * `id_attribute` (id) - (string) The identifier of the Endpoint Tag IP object.
 * `name` (name) - (string) The name of the Endpoint Tag IP object.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag IP object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

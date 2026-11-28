@@ -30,9 +30,9 @@ Data source for ACI VRF
 
 ```hcl
 
-data "aci_vrf" "example_tenant" {
+data "aci_vrf" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "vrf"
 }
 
 ```
@@ -125,13 +125,13 @@ data "aci_vrf" "example_tenant" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_wan_vpn` - (map) A map of Relation From VRF To WAN VPN (ACI object [fvRsCtxToSDWanVpn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToSDWanVpn/overview)) pointing to  (ACI Object [extdevSDWanVpnEntry](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/extdevSDWanVpnEntry/overview)). This attribute is supported in ACI versions: 4.2(1i) and later.
+* `relation_to_wan_vpn` - (map) A map of Relation From VRF To WAN VPN (ACI object [fvRsCtxToSDWanVpn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToSDWanVpn/overview)) pointing to WAN VPN (ACI Object [extdevSDWanVpnEntry](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/extdevSDWanVpnEntry/overview)). This attribute is supported in ACI versions: 4.2(1i) and later.
     * `annotation` (annotation) - (string) The annotation of the Relation From VRF To WAN VPN object.
-    * `target_dn` (tDn) - (string) The distinguished name of the target.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_ospf_timers` - (map) A map of Relation To OSPF Timers (ACI object [fvRsOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOspfCtxPol/overview)) pointing to OSPF Timers (ACI Object [ospfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ospfCtxPol/overview)).

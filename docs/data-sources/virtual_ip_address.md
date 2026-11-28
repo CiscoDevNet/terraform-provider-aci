@@ -30,9 +30,9 @@ Data source for ACI Virtual IP Address
 
 ```hcl
 
-data "aci_virtual_ip_address" "example_application_epg" {
+data "aci_virtual_ip_address" "example" {
   parent_dn = aci_application_epg.example.id
-  ip        = "1.1.1.4"
+  ip        = "192.0.2.4"
 }
 
 ```

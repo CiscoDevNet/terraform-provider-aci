@@ -30,9 +30,9 @@ Data source for ACI Trust Control Policy
 
 ```hcl
 
-data "aci_trust_control_policy" "example_tenant" {
+data "aci_trust_control_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "trust_control_policy"
 }
 
 ```

@@ -1,0 +1,15 @@
+properties:
+  tnMonEPGPolName:
+    documentation:
+      description: The name of the monitoring policy.
+resource_name: relation_from_application_epg_to_monitoring_policy
+test_config:
+  dependencies:
+  - class_name: monEPGPol
+    config_overrides:
+      name: name_1
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_monitoring_policy.test_monitoring_policy_0.id
+    role: target

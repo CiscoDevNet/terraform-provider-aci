@@ -1,0 +1,15 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> Policy -> Fallback Route Group
+include_children:
+- fvFBRMember
+- fvFBRoute
+properties:
+  name:
+    test_config:
+      create:
+      - config_value: fallback_route_group
+      datasource_missing:
+      - config_value: fallback_route_group_non_existing
+resource_name: vrf_fallback_route_group

@@ -31,7 +31,7 @@ Data source for ACI L2 Interface Policy
 ```hcl
 
 data "aci_l2_interface_policy" "example" {
-  name = "test_name"
+  name = "l2_interface_policy"
 }
 
 ```

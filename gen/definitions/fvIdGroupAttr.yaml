@@ -1,0 +1,17 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes
+properties:
+  selector:
+    documentation:
+      description: The selector of the %s object. Represents the DN or expression
+        to select an identity group.
+    test_config:
+      create:
+      - config_value: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng
+      datasource_missing:
+      - config_value: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng_non_existing
+      update:
+      - config_value: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng_2
+resource_name: epg_useg_ad_group_attribute

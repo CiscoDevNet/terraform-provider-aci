@@ -1,0 +1,115 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Endpoint Security Groups
+exclude_children:
+- fvRsProtBy
+- fvRsCustQosPol
+properties:
+  floodOnEncap:
+    restriction: exclude
+  pcEnfPref:
+    attribute_name: intra_esg_isolation
+    documentation:
+      description: Parameter used to determine whether communication between endpoints
+        within the ESG is blocked.
+  pcTag:
+    remove_valid_values:
+    - any
+    restriction: read_only
+  prefGrMemb:
+    attribute_name: preferred_group_member
+    documentation:
+      description: Parameter used to determine whether the ESG is part of the preferred
+        group. Members of this group are allowed to communicate without contracts.
+  prio:
+    restriction: exclude
+  scope:
+    documentation:
+      description: The scope ID (L3-VNI) of the %s object.
+    restriction: read_only
+  shutdown:
+    attribute_name: admin_state
+    default_values:
+      "no": ""
+    documentation:
+      description: Withdraw the ESG configuration from all nodes in the fabric.
+schema_version: 2
+state_upgrades:
+  1:
+    attributes:
+      matchT:
+        attribute_name: match_t
+        status: deprecated
+      parentDn:
+        attribute_name: application_profile_dn
+        status: deprecated
+      pcEnfPref:
+        attribute_name: pc_enf_pref
+        status: deprecated
+      prefGrMemb:
+        attribute_name: pref_gr_memb
+        status: deprecated
+      relation_fv_rs_cust_qos_pol:
+        restriction: optional
+        status: frozen
+        type: string_attribute
+      relation_fv_rs_prot_by:
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+        type: set_attribute
+    children:
+      fvRsCons:
+        attribute_name: relation_fv_rs_cons
+        attributes:
+          prio:
+            attribute_name: prio
+            restriction: optional
+          tnVzBrCPName:
+            attribute_name: target_dn
+        status: deprecated
+      fvRsConsIf:
+        attribute_name: relation_fv_rs_cons_if
+        attributes:
+          prio:
+            attribute_name: prio
+            restriction: optional
+          tnVzCPIfName:
+            attribute_name: target_dn
+        status: deprecated
+      fvRsIntraEpg:
+        attributes:
+          tnVzBrCPName:
+            attribute_name: relation_fv_rs_intra_epg
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsProv:
+        attribute_name: relation_fv_rs_prov
+        attributes:
+          matchT:
+            attribute_name: match_t
+            restriction: optional
+          prio:
+            attribute_name: prio
+            restriction: optional
+          tnVzBrCPName:
+            attribute_name: target_dn
+        status: deprecated
+      fvRsScope:
+        attributes:
+          tnFvCtxName:
+            attribute_name: relation_fv_rs_scope
+            restriction: optional
+            status: deprecated
+      fvRsSecInherited:
+        attributes:
+          tDn:
+            attribute_name: relation_fv_rs_sec_inherited
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+    source: sdkv2

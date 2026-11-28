@@ -35,7 +35,7 @@ Data source for ACI Remote Site
 
 ```hcl
 
-data "aci_remote_site" "example_associated_site" {
+data "aci_remote_site" "example" {
   parent_dn = aci_associated_site.example.id
   site_id   = "0"
 }

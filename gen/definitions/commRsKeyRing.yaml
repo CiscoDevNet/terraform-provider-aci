@@ -1,0 +1,8 @@
+properties:
+  tnPkiKeyRingName:
+    test_config:
+      create:
+      - config_value: default
+      update:
+      - config_value: default
+resource_name_nested: key_ring

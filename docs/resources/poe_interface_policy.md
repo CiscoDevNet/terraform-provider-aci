@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI PoE Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [poeIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/poeIfPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a PoE Interface Policy with only require
 ```hcl
 
 resource "aci_poe_interface_policy" "example" {
-  name = "test_name"
+  name = "poe_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the PoE Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -47,44 +46,44 @@ The configuration snippet below shows all possible attributes of the PoE Interfa
 
 resource "aci_poe_interface_policy" "full_example" {
   admin_state        = "disabled"
-  annotation         = "annotation"
-  description        = "description_1"
+  annotation         = "example_annotation"
+  description        = "Example PoE Interface Policy"
   maximum_power      = "15400"
   host_mode          = "never"
-  name               = "test_name"
-  name_alias         = "name_alias_1"
-  owner_key          = "owner_key_1"
-  owner_tag          = "owner_tag_1"
+  name               = "poe_interface_policy"
+  name_alias         = "example_name_alias"
+  owner_key          = "example_owner_key"
+  owner_tag          = "example_owner_tag"
   poe_vlan           = "vlan-200"
   policing_action    = "log"
   port_priority_high = "yes"
   relation_to_application_epg = {
-    annotation = "annotation_1"
-    target_dn  = aci_application_epg.test_application_epg_0.id
+    annotation = "example_annotation"
+    target_dn  = aci_application_epg.example.id
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -128,28 +127,28 @@ All examples for the PoE Interface Policy resource can be found in the [examples
   - Valid Values: `"no"`, `"yes"`.
 * `relation_to_application_epg` - (map) A map of Relation To Application EPG (ACI object [poeRsPoeEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/poeRsPoeEpg/overview)) pointing to Application EPG (ACI Object [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview)) which can be configured using the [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) resource. This attribute is supported in ACI versions: 4.0(1h) and later.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To Application EPG object.
       - Default: `"orchestrator:terraform"`
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the EPG object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

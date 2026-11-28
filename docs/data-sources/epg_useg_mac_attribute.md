@@ -30,9 +30,9 @@ Data source for ACI EPG uSeg MAC Attribute
 
 ```hcl
 
-data "aci_epg_useg_mac_attribute" "example_epg_useg_block_statement" {
+data "aci_epg_useg_mac_attribute" "example" {
   parent_dn = aci_epg_useg_block_statement.example.id
-  name      = "mac_attr"
+  name      = "mac_attribute"
 }
 
 ```

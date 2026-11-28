@@ -30,7 +30,7 @@ Data source for ACI Any
 
 ```hcl
 
-data "aci_any" "example_vrf" {
+data "aci_any" "example" {
   parent_dn = aci_vrf.example.id
 }
 

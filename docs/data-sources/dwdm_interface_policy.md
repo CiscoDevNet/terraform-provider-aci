@@ -31,7 +31,7 @@ Data source for ACI DWDM Interface Policy
 ```hcl
 
 data "aci_dwdm_interface_policy" "example" {
-  name = "test_name"
+  name = "dwdm_interface_policy"
 }
 
 ```

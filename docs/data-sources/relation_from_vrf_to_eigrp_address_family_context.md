@@ -30,7 +30,7 @@ Data source for ACI Relation From VRF To EIGRP Address Family Context
 
 ```hcl
 
-data "aci_relation_from_vrf_to_eigrp_address_family_context" "example_vrf" {
+data "aci_relation_from_vrf_to_eigrp_address_family_context" "example" {
   parent_dn                         = aci_vrf.example.id
   address_family                    = "ipv4-ucast"
   eigrp_address_family_context_name = aci_eigrp_address_family_context.example.name
@@ -46,7 +46,7 @@ data "aci_relation_from_vrf_to_eigrp_address_family_context" "example_vrf" {
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
 * `address_family` (af) - (string) The type of address family for the Relation From VRF To EIGRP Address Family Context.
   - Valid Values: `ipv4-ucast`, `ipv6-ucast`.
-* `eigrp_address_family_context_name` (tnEigrpCtxAfPolName) - (string) The name of the EIGRP Address Family Context. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/eigrp_address_family_context) with `aci_eigrp_address_family_context.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/eigrp_address_family_context) with `data.aci_eigrp_address_family_context.example.name`.
+* `eigrp_address_family_context_name` (tnEigrpCtxAfPolName) - (string) The name of the EIGRP Address Family Context.
 
 ### Read-Only ###
 

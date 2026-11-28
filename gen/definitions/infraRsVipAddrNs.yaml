@@ -1,0 +1,8 @@
+resource_name: relation_to_ip_address_pool
+test_config:
+  dependencies:
+  - class_name: fvnsAddrInst
+    config_overrides:
+      gateway_address: 192.0.2.1/24
+    reference: aci_ip_address_pool.test_ip_address_pool_0.id
+    role: target

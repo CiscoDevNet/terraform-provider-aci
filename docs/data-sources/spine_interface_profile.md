@@ -31,7 +31,7 @@ Data source for ACI Spine Interface Profile
 ```hcl
 
 data "aci_spine_interface_profile" "example" {
-  name = "test_name"
+  name = "spine_interface_profile"
 }
 
 ```

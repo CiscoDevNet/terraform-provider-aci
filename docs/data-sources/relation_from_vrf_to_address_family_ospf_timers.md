@@ -30,7 +30,7 @@ Data source for ACI Relation From VRF To Address Family OSPF Timers
 
 ```hcl
 
-data "aci_relation_from_vrf_to_address_family_ospf_timers" "example_vrf" {
+data "aci_relation_from_vrf_to_address_family_ospf_timers" "example" {
   parent_dn        = aci_vrf.example.id
   address_family   = "ipv4-ucast"
   ospf_timers_name = aci_ospf_timers.example.name
@@ -46,7 +46,7 @@ data "aci_relation_from_vrf_to_address_family_ospf_timers" "example_vrf" {
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
 * `address_family` (af) - (string) The type of address family for the Relation From VRF To Address Family OSPF Timers.
   - Valid Values: `ipv4-ucast`, `ipv6-ucast`.
-* `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) with `aci_ospf_timers.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/ospf_timers) with `data.aci_ospf_timers.example.name`.
+* `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this object.
 
 ### Read-Only ###
 

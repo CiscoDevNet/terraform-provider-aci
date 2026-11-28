@@ -1,0 +1,20 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Global -> Attachable Access Entity Profiles
+exclude_parents:
+- infraInfra
+rn_prepend: infra
+schema_version: 2
+state_upgrades:
+  1:
+    children:
+      infraRsDomP:
+        attributes:
+          tDn:
+            attribute_name: relation_infra_rs_dom_p
+            element_type: string_attribute
+            restriction: optional_computed
+            status: deprecated
+            type: set_attribute
+    source: sdkv2

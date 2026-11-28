@@ -1,0 +1,14 @@
+documentation:
+  resource:
+    warnings:
+    - When upgrading from an SDKv2-based provider release, refer to the [migration
+      guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration)
+      for configuration and state compatibility considerations.
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Profiles
+exclude_parents:
+- infraInfra
+resource_name: spine_interface_profile
+rn_prepend: infra
+schema_version: 1

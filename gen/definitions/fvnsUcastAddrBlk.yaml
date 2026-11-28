@@ -1,0 +1,45 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/addrinst-{name}/fromaddr-[{from}]-toaddr-[{to}]
+  - uni/tn-{name}/ap-{name}/epg-{name}/CtrlrAddrInst-{name}/fromaddr-[{from}]-toaddr-[{to}]
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants (mgmt) -> IP Address Pools -> Address Blocks
+  - Tenants -> Application Profiles -> Application EPGs -> L4-L7 IP Address Pools
+    -> Address Blocks
+properties:
+  from:
+    test_config:
+      create:
+      - config_value: 192.0.2.6
+      datasource_missing:
+      - config_value: 192.0.4.2
+      default:
+      - config_value: 192.0.2.2
+      update:
+      - config_value: 192.0.2.2
+    value_type: string
+  to:
+    test_config:
+      create:
+      - config_value: 192.0.2.13
+      datasource_missing:
+      - config_value: 192.0.4.4
+      default:
+      - config_value: 192.0.2.5
+      update:
+      - config_value: 192.0.2.5
+    value_type: string
+resource_name: ip_address_block
+test_config:
+  embedded_instances:
+  - properties:
+      from:
+      - config_value: 192.0.2.2
+      to:
+      - config_value: 192.0.2.5
+  - properties:
+      from:
+      - config_value: 192.0.2.6
+      to:
+      - config_value: 192.0.2.13

@@ -1,0 +1,264 @@
+# Datasource test limitation: arpLearning can be returned as "" instead of "disabled".
+# Its custom type preserves the raw value while treating these values as semantically equal.
+# Exact datasource assertions do not perform that semantic comparison.
+# TODO: Reassess datasource coverage and assertions after the generator refactor.
+
+documentation:
+  sub_category: Virtual Networking
+  ui_locations:
+  - Virtual Networking -> Provider -> Domain
+properties:
+  accessMode:
+    documentation:
+      description: The access mode of the %s object.
+    test_config:
+      include_in:
+      - minimum
+  arpLearning:
+    default_values:
+      disabled: ""
+    documentation:
+      description: Enable ARP learning for the the %s object, this attribute is only
+        applicable for Application Virtual Switch (AVS).
+    test_config:
+      create:
+      - config_value: disabled
+      default:
+      - config_value: disabled
+      ignore_in_datasource_test: true
+      update:
+      - config_value: disabled
+    value_type: vmm_arp_learning
+  aveTimeOut:
+    documentation:
+      description: The timeout in seconds that the Cisco ACI Virtual Edge (AVE), the
+        virtual switch for ACI, can remain in a non-working state before vCenter takes
+        action.
+  configInfraPg:
+    attribute_name: configure_infra_port_groups
+    default_values:
+      "no": ""
+    documentation:
+      description: Configure port groups for the virtual APIC.
+  ctrlKnob:
+    attribute_name: endpoint_data_path_verification
+    documentation:
+      description: This mechanism allows disabling endpoint verification, prevents
+        the un-deployment of an EPG while processing an endpoint detach when the fabric
+        is still receiving traffic for the endpoint.
+    value_type: string
+  customSwitchName:
+    default_values:
+      "": ""
+    documentation:
+      description: The custom vSwitch name.
+    test_config:
+      create:
+      - config_value: ""
+      update:
+      - config_value: ""
+  delimiter:
+    default_values:
+      "": ""
+    documentation:
+      description: The delimiter of the %s object.
+    test_config:
+      create:
+      - config_value: '@'
+  enableAVE:
+    attribute_name: enable_ave_mode
+    default_values:
+      "no": ""
+    documentation:
+      description: Enable Cisco ACI Virtual Edge (AVE) mode on the %s object.
+  enableTag:
+    attribute_name: enable_tag_collection
+    default_values:
+      "no": ""
+    documentation:
+      description: Enable Tag data retrieval for the %s object.
+  enableVmFolder:
+    attribute_name: enable_vm_folder_data_retrieval
+    default_values:
+      "no": ""
+    documentation:
+      description: Enable VM Folder data retrieval for the %s object.
+  encapMode:
+    documentation:
+      description: The encapsulation mode of the %s object. When default_encapsulation_mode
+        is not specified, the encapsulation_mode is automatically set based on the
+        encapsulation blocks associated with the domain.
+  enfPref:
+    attribute_name: switching_enforcement_preference
+    documentation:
+      description: The switching enforcement preference of the %s object. This determines
+        whether switching is done within the virtual switch (Local Switching) or whether
+        all switched traffic must go through the fabric (No Local Switching).
+  epInventoryType:
+    attribute_name: endpoint_inventory_type
+    documentation:
+      description: The endpoint inventory type of the %s object. When set to on-link
+        type the inventory will contain all endpoints that share a fabric uplink.
+  epRetTime:
+    attribute_name: endpoint_retention_time
+    documentation:
+      description: The endpoint retention time of the %s object.
+  hvAvailMonitor:
+    attribute_name: host_availability_assurance
+    default_values:
+      "no": ""
+    documentation:
+      description: Enable host availability assurance, which creates a vSphere Proactive
+        HA provider object that resides in VMware vCenter. The object enables VMware
+        vCenter to quarantine a host with a nonworking Cisco Application Centric Infrastructure
+        Virtual Edge and move its VMs.
+  mcastAddr:
+    attribute_name: multicast_address
+    default_values:
+      0.0.0.0: ""
+    documentation:
+      description: The multicast address of the %s object.
+    test_config:
+      create:
+      - config_value: 224.0.1.0
+      update:
+      - config_value: 224.0.1.1
+    value_type: string
+  mode:
+    attribute_name: switch_type
+    documentation:
+      description: The switch type of the %s object.
+    example_config:
+      full:
+      - value: cf
+    test_config:
+      create:
+      - config_value: default
+      update:
+      - config_value: default
+  parentDn:
+    add_valid_values:
+    - uni/vmmp-VMware
+    - uni/vmmp-Microsoft
+    - uni/vmmp-CloudFoundry
+    - uni/vmmp-OpenShift
+    - uni/vmmp-OpenStack
+    - uni/vmmp-Kubernetes
+    - uni/vmmp-Redhat
+    - uni/vmmp-Nutanix
+    default_values:
+      uni/vmmp-VMWare: ""
+    test_config:
+      create:
+      - config_value: uni/vmmp-VMware
+  prefEncapMode:
+    attribute_name: default_encapsulation_mode
+    documentation:
+      description: The default encapsulation mode of the %s object.
+resource_name: vmm_domain
+schema_version: 2
+state_upgrades:
+  1:
+    attributes:
+      configInfraPg:
+        attribute_name: config_infra_pg
+        status: deprecated
+      ctrlKnob:
+        attribute_name: ctrl_knob
+        status: deprecated
+      enableAVE:
+        attribute_name: enable_ave
+        status: deprecated
+      enableTag:
+        attribute_name: enable_tag
+        status: deprecated
+      enableVmFolder:
+        attribute_name: enable_vm_folder
+        status: deprecated
+      encapMode:
+        attribute_name: encap_mode
+        status: deprecated
+      enfPref:
+        attribute_name: enf_pref
+        status: deprecated
+      epInventoryType:
+        attribute_name: ep_inventory_type
+        status: deprecated
+      epRetTime:
+        attribute_name: ep_ret_time
+        status: deprecated
+      hvAvailMonitor:
+        attribute_name: hv_avail_monitor
+        status: deprecated
+      mcastAddr:
+        attribute_name: mcast_addr
+        status: deprecated
+      mode:
+        attribute_name: mode
+        status: deprecated
+      parentDn:
+        attribute_name: provider_profile_dn
+        status: deprecated
+      prefEncapMode:
+        attribute_name: pref_encap_mode
+        status: deprecated
+      relation_infra_rs_dom_vxlan_ns_def:
+        restriction: optional
+        status: frozen
+        type: string_attribute
+      relation_infra_rs_vlan_ns_def:
+        restriction: optional
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_cdp_if_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_fw_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_l2_inst_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_lacp_lag_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_lldp_if_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_stp_if_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+    children:
+      infraRsVipAddrNs:
+        attributes:
+          tDn:
+            attribute_name: relation_infra_rs_vip_addr_ns
+            restriction: optional
+            status: deprecated
+      infraRsVlanNs:
+        attributes:
+          tDn:
+            attribute_name: relation_infra_rs_vlan_ns
+            restriction: optional
+            status: deprecated
+      vmmRsDomMcastAddrNs:
+        attributes:
+          tDn:
+            attribute_name: relation_vmm_rs_dom_mcast_addr_ns
+            restriction: optional
+            status: deprecated
+      vmmRsPrefEnhancedLagPol:
+        attributes:
+          tDn:
+            attribute_name: relation_vmm_rs_pref_enhanced_lag_pol
+            restriction: optional
+            status: deprecated
+    source: sdkv2
+test_config:
+  ignore_import_state_verify: true

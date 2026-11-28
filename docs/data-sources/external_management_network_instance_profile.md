@@ -31,7 +31,7 @@ Data source for ACI External Management Network Instance Profile
 ```hcl
 
 data "aci_external_management_network_instance_profile" "example" {
-  name = "test_name"
+  name = "external_management_network_instance_profile"
 }
 
 ```

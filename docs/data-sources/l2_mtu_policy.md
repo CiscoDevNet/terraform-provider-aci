@@ -31,7 +31,7 @@ Data source for ACI L2 MTU Policy
 ```hcl
 
 data "aci_l2_mtu_policy" "example" {
-  name = "test_name"
+  name = "l2_mtu_policy"
 }
 
 ```

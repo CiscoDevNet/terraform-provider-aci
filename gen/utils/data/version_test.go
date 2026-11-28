@@ -1,0 +1,762 @@
+package data
+
+import (
+	"testing"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/apicversion"
+	"github.com/stretchr/testify/assert"
+)
+
+type newVersionRangeExpected struct {
+	Raw             string
+	Min             *apicversion.Version
+	Max             *apicversion.Version
+	IsSingleVersion bool
+	String          string
+	Error           bool
+	ErrorMsg        string
+}
+
+func TestNewVersionRange(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:  "test_single_version_with_tag",
+			Input: "4.2(7f)",
+			Expected: newVersionRangeExpected{
+				Raw:             "4.2(7f)",
+				Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				IsSingleVersion: true,
+				String:          "4.2(7f)",
+			},
+		},
+		{
+			Name:  "test_single_version_without_tag",
+			Input: "4.2(7)",
+			Expected: newVersionRangeExpected{
+				Raw:             "4.2(7)",
+				Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
+				Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
+				IsSingleVersion: true,
+				String:          "4.2(7)",
+			},
+		},
+		{
+			Name:  "test_bounded_range",
+			Input: "4.2(7f)-4.2(7w)",
+			Expected: newVersionRangeExpected{
+				Raw:             "4.2(7f)-4.2(7w)",
+				Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				IsSingleVersion: false,
+				String:          "4.2(7f) to 4.2(7w)",
+			},
+		},
+		{
+			Name:  "test_unbounded_upper",
+			Input: "4.2(7f)-",
+			Expected: newVersionRangeExpected{
+				Raw:             "4.2(7f)-",
+				Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				Max:             nil,
+				IsSingleVersion: false,
+				String:          "4.2(7f) and later",
+			},
+		},
+		{
+			Name:  "test_unbounded_lower",
+			Input: "-4.2(7w)",
+			Expected: newVersionRangeExpected{
+				Raw:             "-4.2(7w)",
+				Min:             nil,
+				Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				IsSingleVersion: false,
+				String:          "up to 4.2(7w)",
+			},
+		},
+		{
+			Name:  "test_error_invalid_version",
+			Input: "invalid",
+			Expected: newVersionRangeExpected{
+				Error:    true,
+				ErrorMsg: "invalid version 'invalid': unknown",
+			},
+		},
+		{
+			Name:  "test_error_invalid_min_version",
+			Input: "invalid-4.2(7w)",
+			Expected: newVersionRangeExpected{
+				Error:    true,
+				ErrorMsg: "invalid minimum version 'invalid': unknown",
+			},
+		},
+		{
+			Name:  "test_error_invalid_max_version",
+			Input: "4.2(7f)-invalid",
+			Expected: newVersionRangeExpected{
+				Error:    true,
+				ErrorMsg: "invalid maximum version 'invalid': unknown",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			expected := testCase.Expected.(newVersionRangeExpected)
+			versionRange, err := NewVersionRange(testCase.Input.(string))
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+			} else {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Equal(t, expected.Raw, versionRange.Raw(), test.MessageEqual(expected.Raw, versionRange.Raw(), testCase.Name))
+				assert.Equal(t, expected.Min, versionRange.Min(), test.MessageEqual(expected.Min, versionRange.Min(), testCase.Name))
+				assert.Equal(t, expected.Max, versionRange.Max(), test.MessageEqual(expected.Max, versionRange.Max(), testCase.Name))
+				assert.Equal(t, expected.IsSingleVersion, versionRange.IsSingleVersion(), test.MessageEqual(expected.IsSingleVersion, versionRange.IsSingleVersion(), testCase.Name))
+				assert.Equal(t, expected.String, versionRange.String(), test.MessageEqual(expected.String, versionRange.String(), testCase.Name))
+			}
+		})
+	}
+}
+
+type newVersionsExpected struct {
+	Raw         string
+	RangeCount  int
+	String      string
+	RangeValues []newVersionRangeExpected
+	Error       bool
+	ErrorMsg    string
+}
+
+func TestNewVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:  "test_single_version",
+			Input: "4.2(7f)",
+			Expected: newVersionsExpected{
+				Raw:        "4.2(7f)",
+				RangeCount: 1,
+				String:     "4.2(7f)",
+				RangeValues: []newVersionRangeExpected{
+					{
+						Raw:             "4.2(7f)",
+						Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+						Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+						IsSingleVersion: true,
+						String:          "4.2(7f)",
+					},
+				},
+			},
+		},
+		{
+			Name:  "test_unbounded_range",
+			Input: "4.2(7f)-",
+			Expected: newVersionsExpected{
+				Raw:        "4.2(7f)-",
+				RangeCount: 1,
+				String:     "4.2(7f) and later",
+				RangeValues: []newVersionRangeExpected{
+					{
+						Raw:             "4.2(7f)-",
+						Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+						Max:             nil,
+						IsSingleVersion: false,
+						String:          "4.2(7f) and later",
+					},
+				},
+			},
+		},
+		{
+			Name:  "test_multiple_ranges",
+			Input: "3.2(10e)-3.2(10g),4.2(7f)-",
+			Expected: newVersionsExpected{
+				Raw:        "3.2(10e)-3.2(10g),4.2(7f)-",
+				RangeCount: 2,
+				String:     "3.2(10e) to 3.2(10g), 4.2(7f) and later",
+				RangeValues: []newVersionRangeExpected{
+					{
+						Raw:             "3.2(10e)-3.2(10g)",
+						Min:             &apicversion.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('e')},
+						Max:             &apicversion.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('g')},
+						IsSingleVersion: false,
+						String:          "3.2(10e) to 3.2(10g)",
+					},
+					{
+						Raw:             "4.2(7f)-",
+						Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+						Max:             nil,
+						IsSingleVersion: false,
+						String:          "4.2(7f) and later",
+					},
+				},
+			},
+		},
+		{
+			Name:  "test_multiple_ranges_sorted",
+			Input: "5.2(1g)-,3.2(10e)-3.2(10g)",
+			Expected: newVersionsExpected{
+				Raw:        "5.2(1g)-,3.2(10e)-3.2(10g)",
+				RangeCount: 2,
+				String:     "3.2(10e) to 3.2(10g), 5.2(1g) and later",
+				RangeValues: []newVersionRangeExpected{
+					{
+						Raw:             "3.2(10e)-3.2(10g)",
+						Min:             &apicversion.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('e')},
+						Max:             &apicversion.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('g')},
+						IsSingleVersion: false,
+						String:          "3.2(10e) to 3.2(10g)",
+					},
+					{
+						Raw:             "5.2(1g)-",
+						Min:             &apicversion.Version{Major: 5, Minor: 2, Patch: 1, Tag: int('g')},
+						Max:             nil,
+						IsSingleVersion: false,
+						String:          "5.2(1g) and later",
+					},
+				},
+			},
+		},
+		{
+			Name:  "test_three_ranges_sorted",
+			Input: "5.0(1a)-,3.0(1a)-3.0(1z),4.0(1a)-4.0(1z)",
+			Expected: newVersionsExpected{
+				Raw:        "5.0(1a)-,3.0(1a)-3.0(1z),4.0(1a)-4.0(1z)",
+				RangeCount: 3,
+				String:     "3.0(1a) to 3.0(1z), 4.0(1a) to 4.0(1z), 5.0(1a) and later",
+				RangeValues: []newVersionRangeExpected{
+					{
+						Raw:             "3.0(1a)-3.0(1z)",
+						Min:             &apicversion.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('a')},
+						Max:             &apicversion.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('z')},
+						IsSingleVersion: false,
+						String:          "3.0(1a) to 3.0(1z)",
+					},
+					{
+						Raw:             "4.0(1a)-4.0(1z)",
+						Min:             &apicversion.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('a')},
+						Max:             &apicversion.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('z')},
+						IsSingleVersion: false,
+						String:          "4.0(1a) to 4.0(1z)",
+					},
+					{
+						Raw:             "5.0(1a)-",
+						Min:             &apicversion.Version{Major: 5, Minor: 0, Patch: 1, Tag: int('a')},
+						Max:             nil,
+						IsSingleVersion: false,
+						String:          "5.0(1a) and later",
+					},
+				},
+			},
+		},
+		{
+			Name:  "test_error_invalid_version",
+			Input: "invalid",
+			Expected: newVersionsExpected{
+				Error:    true,
+				ErrorMsg: "invalid version 'invalid': unknown",
+			},
+		},
+		{
+			Name:  "test_error_invalid_version_in_multiple",
+			Input: "4.2(7f)-,invalid",
+			Expected: newVersionsExpected{
+				Error:    true,
+				ErrorMsg: "invalid version 'invalid': unknown",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			expected := testCase.Expected.(newVersionsExpected)
+			versions, err := NewVersions(testCase.Input.(string))
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+			} else {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Equal(t, expected.Raw, versions.Raw(), test.MessageEqual(expected.Raw, versions.Raw(), testCase.Name))
+				assert.Equal(t, expected.RangeCount, len(versions.Ranges()), test.MessageEqual(expected.RangeCount, len(versions.Ranges()), testCase.Name))
+				assert.Equal(t, expected.String, versions.String(), test.MessageEqual(expected.String, versions.String(), testCase.Name))
+
+				// Verify each range
+				for i, expectedRange := range expected.RangeValues {
+					actualRange := versions.Ranges()[i]
+					assert.Equal(t, expectedRange.Raw, actualRange.Raw(), test.MessageEqual(expectedRange.Raw, actualRange.Raw(), testCase.Name))
+					assert.Equal(t, expectedRange.Min, actualRange.Min(), test.MessageEqual(expectedRange.Min, actualRange.Min(), testCase.Name))
+					assert.Equal(t, expectedRange.Max, actualRange.Max(), test.MessageEqual(expectedRange.Max, actualRange.Max(), testCase.Name))
+					assert.Equal(t, expectedRange.IsSingleVersion, actualRange.IsSingleVersion(), test.MessageEqual(expectedRange.IsSingleVersion, actualRange.IsSingleVersion(), testCase.Name))
+					assert.Equal(t, expectedRange.String, actualRange.String(), test.MessageEqual(expectedRange.String, actualRange.String(), testCase.Name))
+				}
+			}
+		})
+	}
+}
+
+type versionsCoverInput struct {
+	Supported string
+	Required  string
+}
+
+func TestVersionsCovers(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_same_range",
+			Input: versionsCoverInput{
+				Supported: "1.0(1e)-",
+				Required:  "1.0(1e)-",
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_earlier_start_covers",
+			Input: versionsCoverInput{
+				Supported: "1.0(1e)-",
+				Required:  "1.1(1j)-",
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_later_start_does_not_cover",
+			Input: versionsCoverInput{
+				Supported: "2.0(1a)-",
+				Required:  "1.0(1e)-",
+			},
+			Expected: false,
+		},
+		{
+			Name: "test_earlier_end_does_not_cover",
+			Input: versionsCoverInput{
+				Supported: "1.0(1e)-5.2(1g)",
+				Required:  "1.0(1e)-",
+			},
+			Expected: false,
+		},
+		{
+			Name: "test_unbounded_lower_covers_bounded",
+			Input: versionsCoverInput{
+				Supported: "-5.2(1g)",
+				Required:  "1.0(1e)-4.2(7f)",
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_each_required_range_is_covered",
+			Input: versionsCoverInput{
+				Supported: "1.0(1e)-2.0(1a),4.0(1a)-",
+				Required:  "1.1(1j)-1.2(1i),5.0(1a)-",
+			},
+			Expected: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(versionsCoverInput)
+			expected := testCase.Expected.(bool)
+
+			supported, err := NewVersions(input.Supported)
+			assert.NoError(t, err)
+			required, err := NewVersions(input.Required)
+			assert.NoError(t, err)
+
+			assert.Equal(t, expected, supported.Covers(required), test.MessageEqual(expected, supported.Covers(required), testCase.Name))
+		})
+	}
+}
+
+type sortVersionsExpected struct {
+	Result int
+}
+
+type sortVersionsInput struct {
+	A          *apicversion.Version
+	B          *apicversion.Version
+	IsMinBound bool
+}
+
+func TestSortVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_both_nil_min_bound",
+			Input: sortVersionsInput{
+				A:          nil,
+				B:          nil,
+				IsMinBound: true,
+			},
+			Expected: sortVersionsExpected{Result: 0},
+		},
+		{
+			Name: "test_both_nil_max_bound",
+			Input: sortVersionsInput{
+				A:          nil,
+				B:          nil,
+				IsMinBound: false,
+			},
+			Expected: sortVersionsExpected{Result: 0},
+		},
+		{
+			Name: "test_a_nil_min_bound",
+			Input: sortVersionsInput{
+				A:          nil,
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				IsMinBound: true,
+			},
+			Expected: sortVersionsExpected{Result: -1},
+		},
+		{
+			Name: "test_a_nil_max_bound",
+			Input: sortVersionsInput{
+				A:          nil,
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				IsMinBound: false,
+			},
+			Expected: sortVersionsExpected{Result: 1},
+		},
+		{
+			Name: "test_b_nil_min_bound",
+			Input: sortVersionsInput{
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          nil,
+				IsMinBound: true,
+			},
+			Expected: sortVersionsExpected{Result: 1},
+		},
+		{
+			Name: "test_b_nil_max_bound",
+			Input: sortVersionsInput{
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          nil,
+				IsMinBound: false,
+			},
+			Expected: sortVersionsExpected{Result: -1},
+		},
+		{
+			Name: "test_equal_versions",
+			Input: sortVersionsInput{
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				IsMinBound: true,
+			},
+			Expected: sortVersionsExpected{Result: 0},
+		},
+		{
+			Name: "test_a_less_than_b_major",
+			Input: sortVersionsInput{
+				A:          &apicversion.Version{Major: 3, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				IsMinBound: true,
+			},
+			Expected: sortVersionsExpected{Result: -1},
+		},
+		{
+			Name: "test_a_greater_than_b_major",
+			Input: sortVersionsInput{
+				A:          &apicversion.Version{Major: 5, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				IsMinBound: true,
+			},
+			Expected: sortVersionsExpected{Result: 1},
+		},
+		{
+			Name: "test_a_less_than_b_minor",
+			Input: sortVersionsInput{
+				A:          &apicversion.Version{Major: 4, Minor: 1, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				IsMinBound: true,
+			},
+			Expected: sortVersionsExpected{Result: -1},
+		},
+		{
+			Name: "test_a_less_than_b_patch",
+			Input: sortVersionsInput{
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 6, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				IsMinBound: true,
+			},
+			Expected: sortVersionsExpected{Result: -1},
+		},
+		{
+			Name: "test_a_less_than_b_tag",
+			Input: sortVersionsInput{
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('e')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				IsMinBound: true,
+			},
+			Expected: sortVersionsExpected{Result: -1},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(sortVersionsInput)
+			expected := testCase.Expected.(sortVersionsExpected)
+			result := sortVersions(input.A, input.B, input.IsMinBound)
+
+			assert.Equal(t, expected.Result, result, test.MessageEqual(expected.Result, result, testCase.Name))
+		})
+	}
+}
+
+type sortVersionRangesExpected struct {
+	Result int
+}
+
+type sortVersionRangesInput struct {
+	A VersionRange
+	B VersionRange
+}
+
+func TestSortVersionRanges(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_equal_ranges",
+			Input: sortVersionRangesInput{
+				A: VersionRange{
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				},
+				B: VersionRange{
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				},
+			},
+			Expected: sortVersionRangesExpected{Result: 0},
+		},
+		{
+			Name: "test_a_min_less_than_b_min",
+			Input: sortVersionRangesInput{
+				A: VersionRange{
+					min: &apicversion.Version{Major: 3, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 3, Minor: 2, Patch: 7, Tag: int('w')},
+				},
+				B: VersionRange{
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				},
+			},
+			Expected: sortVersionRangesExpected{Result: -1},
+		},
+		{
+			Name: "test_same_min_a_max_less_than_b_max",
+			Input: sortVersionRangesInput{
+				A: VersionRange{
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('g')},
+				},
+				B: VersionRange{
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				},
+			},
+			Expected: sortVersionRangesExpected{Result: -1},
+		},
+		{
+			Name: "test_same_min_a_unbounded_max",
+			Input: sortVersionRangesInput{
+				A: VersionRange{
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: nil,
+				},
+				B: VersionRange{
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				},
+			},
+			Expected: sortVersionRangesExpected{Result: 1},
+		},
+		{
+			Name: "test_a_unbounded_min",
+			Input: sortVersionRangesInput{
+				A: VersionRange{
+					min: nil,
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				},
+				B: VersionRange{
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				},
+			},
+			Expected: sortVersionRangesExpected{Result: -1},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(sortVersionRangesInput)
+			expected := testCase.Expected.(sortVersionRangesExpected)
+			result := sortVersionRanges(input.A, input.B)
+
+			assert.Equal(t, expected.Result, result, test.MessageEqual(expected.Result, result, testCase.Name))
+		})
+	}
+}
+
+func TestVersionsSort(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	// Create unsorted versions
+	versions := &Versions{
+		raw: "5.0(1a)-,3.0(1a)-3.0(1z),4.0(1a)-4.0(1z)",
+		ranges: []VersionRange{
+			{
+				raw: "5.0(1a)-",
+				min: &apicversion.Version{Major: 5, Minor: 0, Patch: 1, Tag: int('a')},
+				max: nil,
+			},
+			{
+				raw: "3.0(1a)-3.0(1z)",
+				min: &apicversion.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('a')},
+				max: &apicversion.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('z')},
+			},
+			{
+				raw: "4.0(1a)-4.0(1z)",
+				min: &apicversion.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('a')},
+				max: &apicversion.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('z')},
+			},
+		},
+	}
+
+	// Sort
+	versions.Sort()
+
+	// Verify order
+	assert.Equal(t, 3, versions.Ranges()[0].Min().Major, "First range should have Major=3")
+	assert.Equal(t, 4, versions.Ranges()[1].Min().Major, "Second range should have Major=4")
+	assert.Equal(t, 5, versions.Ranges()[2].Min().Major, "Third range should have Major=5")
+}
+
+func TestVersionRangeString(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_single_version",
+			Input: VersionRange{
+				min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+			},
+			Expected: "4.2(7f)",
+		},
+		{
+			Name: "test_single_version_no_tag",
+			Input: VersionRange{
+				min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
+				max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
+			},
+			Expected: "4.2(7)",
+		},
+		{
+			Name: "test_bounded_range",
+			Input: VersionRange{
+				min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+			},
+			Expected: "4.2(7f) to 4.2(7w)",
+		},
+		{
+			Name: "test_unbounded_upper",
+			Input: VersionRange{
+				min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				max: nil,
+			},
+			Expected: "4.2(7f) and later",
+		},
+		{
+			Name: "test_unbounded_lower",
+			Input: VersionRange{
+				min: nil,
+				max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+			},
+			Expected: "up to 4.2(7w)",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			versionRange := testCase.Input.(VersionRange)
+			expected := testCase.Expected.(string)
+
+			assert.Equal(t, expected, versionRange.String(), test.MessageEqual(expected, versionRange.String(), testCase.Name))
+		})
+	}
+}
+
+func testVersionRanges(raw ...string) []*Versions {
+	var result []*Versions
+	for _, value := range raw {
+		versions, err := NewVersions(value)
+		if err != nil {
+			panic(err)
+		}
+		result = append(result, versions)
+	}
+	return result
+}
+
+func TestDerivedVersionBoundaries(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	supported := testVersionRanges("4.2(0)-")[0]
+	hidden := testVersionRanges("6.2(1)-")[0]
+	normalized := supported.Exclude(hidden)
+	inclusive := testVersionRanges("4.2(0)-6.2(1)")[0]
+	assert.False(t, normalized.Equal(inclusive))
+	assert.False(t, normalized.Covers(inclusive))
+	assert.True(t, inclusive.Covers(normalized))
+	assert.Contains(t, normalized.TestExpression(), `"<", "6.2(1)"`)
+	assert.Contains(t, normalized.Go(), `Max: "6.2(1)", MaxExclusive: true`)
+	assert.NotContains(t, normalized.TestExpression(), `"<=", "6.2(1)"`)
+	assert.Equal(t, "4.2(0) up to, but excluding, 6.2(1)", documentationVersions(normalized))
+	assert.Equal(t, "false", supported.Exclude(supported).TestExpression())
+	assert.Equal(t, "[]apicversion.VersionRange{}", supported.Exclude(supported).Go())
+}
+
+func TestVersionCheckRepresentation(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "ordinary_open_range", Input: testVersionRanges("3.2(1l)-")[0], Expected: false},
+		{Name: "ordinary_bounded_range", Input: testVersionRanges("3.2(1l)-6.1(1e)")[0], Expected: false},
+		{Name: "ordinary_multiple_ranges", Input: testVersionRanges("3.2(1l)-4.2(7w),5.2(1g)-")[0], Expected: false},
+		{Name: "derived_inclusive_range", Input: testVersionRanges("3.2(1l)-")[0].Intersect(testVersionRanges("1.0(1e)-6.1(1e)")[0]), Expected: false},
+		{Name: "exclusive_cutoff", Input: testVersionRanges("3.2(1l)-")[0].Exclude(testVersionRanges("6.2(1)-")[0]), Expected: true},
+		{Name: "unbounded_lower", Input: testVersionRanges("-6.2(1)")[0], Expected: true},
+		{Name: "empty_availability", Input: testVersionRanges("3.2(1l)-")[0].Exclude(testVersionRanges("3.2(1l)-")[0]), Expected: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			versions := testCase.Input.(*Versions)
+			assert.Equal(t, testCase.Expected, versions.NeedsBounds())
+			if testCase.Name == "derived_inclusive_range" {
+				assert.Equal(t, "3.2(1l)-6.1(1e)", versions.Raw())
+				assert.Contains(t, versions.TestExpression(), `"inside", "3.2(1l)-6.1(1e)"`)
+			}
+		})
+	}
+}

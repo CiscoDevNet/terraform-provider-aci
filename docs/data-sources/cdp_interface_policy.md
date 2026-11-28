@@ -31,7 +31,7 @@ Data source for ACI CDP Interface Policy
 ```hcl
 
 data "aci_cdp_interface_policy" "example" {
-  name = "test_name"
+  name = "cdp_interface_policy"
 }
 
 ```

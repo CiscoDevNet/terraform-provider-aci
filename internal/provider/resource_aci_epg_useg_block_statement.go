@@ -6,149 +6,33 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvCrtrnResource{}
+var _ resource.ResourceWithConfigure = &FvCrtrnResource{}
+var _ resource.ResourceWithModifyPlan = &FvCrtrnResource{}
 var _ resource.ResourceWithImportState = &FvCrtrnResource{}
 
 func NewFvCrtrnResource() resource.Resource {
 	return &FvCrtrnResource{}
 }
 
+func init() {
+	registerResource("aci_epg_useg_block_statement", NewFvCrtrnResource)
+}
+
 // FvCrtrnResource defines the resource implementation.
 type FvCrtrnResource struct {
 	client *client.Client
-}
-
-// FvCrtrnResourceModel describes the resource data model.
-type FvCrtrnResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Match         types.String `tfsdk:"match"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	OwnerKey      types.String `tfsdk:"owner_key"`
-	OwnerTag      types.String `tfsdk:"owner_tag"`
-	Prec          types.String `tfsdk:"precedence"`
-	Scope         types.String `tfsdk:"scope"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyFvCrtrnResourceModel() *FvCrtrnResourceModel {
-	return &FvCrtrnResourceModel{
-		Id:         basetypes.NewStringNull(),
-		ParentDn:   basetypes.NewStringNull(),
-		Annotation: basetypes.NewStringNull(),
-		Descr:      basetypes.NewStringNull(),
-		Match:      basetypes.NewStringNull(),
-		Name:       basetypes.NewStringNull(),
-		NameAlias:  basetypes.NewStringNull(),
-		OwnerKey:   basetypes.NewStringNull(),
-		OwnerTag:   basetypes.NewStringNull(),
-		Prec:       basetypes.NewStringNull(),
-		Scope:      basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-// TagAnnotationFvCrtrnResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationFvCrtrnResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationFvCrtrnResourceModel() TagAnnotationFvCrtrnResourceModel {
-	return TagAnnotationFvCrtrnResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationFvCrtrnType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagFvCrtrnResourceModel describes the resource data model for the children without relation ships.
-type TagTagFvCrtrnResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagFvCrtrnResourceModel() TagTagFvCrtrnResourceModel {
-	return TagTagFvCrtrnResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagFvCrtrnType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-func (r *FvCrtrnResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if !req.Plan.Raw.IsNull() {
-		var planData, stateData *FvCrtrnResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() {
-			setFvCrtrnId(ctx, planData)
-		}
-
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvCrtrn", planData.Id.ValueString())
-			if resp.Diagnostics.HasError() {
-				return
-			}
-		}
-
-		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
-	}
 }
 
 func (r *FvCrtrnResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -157,170 +41,9 @@ func (r *FvCrtrnResource) Metadata(ctx context.Context, req resource.MetadataReq
 	tflog.Debug(ctx, "End metadata of resource: aci_epg_useg_block_statement")
 }
 
-func (r *FvCrtrnResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *FvCrtrnResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of resource: aci_epg_useg_block_statement")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The epg_useg_block_statement resource for the 'fvCrtrn' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the EPG uSeg Block Statement object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-				},
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the EPG uSeg Block Statement object.`,
-			},
-			"description": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The description of the EPG uSeg Block Statement object.`,
-			},
-			"match": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("all", "any"),
-				},
-				MarkdownDescription: `The Matching Rule Type of the EPG uSeg Block Statement object.`,
-			},
-			"name": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The name of the EPG uSeg Block Statement object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The name alias of the EPG uSeg Block Statement object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"precedence": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The precedence of the EPG uSeg Block Statement object.`,
-			},
-			"scope": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("scope-bd", "scope-vrf"),
-				},
-				MarkdownDescription: `The scope of the EPG uSeg Block Statement object.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.FvCrtrnResourceSchema(globalAnnotation)
 	tflog.Debug(ctx, "End schema of resource: aci_epg_useg_block_statement")
 }
 
@@ -331,446 +54,215 @@ func (r *FvCrtrnResource) Configure(ctx context.Context, req resource.ConfigureR
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	r.client = client
+	r.client = aciClient
 	tflog.Debug(ctx, "End configure of resource: aci_epg_useg_block_statement")
+}
+
+func (r *FvCrtrnResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var data models.FvCrtrnRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// A parent reference or naming value may only become known during apply.
+	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		return
+	}
+
+	data.SetIDFromDN(data.BuildDN())
+	if req.State.Raw.IsNull() && !globalAllowExistingOnCreate {
+		CheckDn(ctx, &resp.Diagnostics, r.client, "fvCrtrn", data.ID.ValueString())
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
+	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 }
 
 func (r *FvCrtrnResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Start create of resource: aci_epg_useg_block_statement")
-	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *FvCrtrnResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvCrtrnId(ctx, stateData)
+
+	var data models.FvCrtrnRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	getAndSetFvCrtrnAttributes(ctx, &resp.Diagnostics, r.client, stateData)
-	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	// Read existing children before adoption so payload construction can reconcile them.
+	priorState := models.NewFvCrtrnRootModelNull()
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	found, diagnostics := priorState.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if found && !globalAllowExistingOnCreate {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The fvCrtrn object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The fvCrtrn object with DN '%s' already exists.", dn),
 		)
 		return
 	}
 
-	var data *FvCrtrnResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.FvCrtrnModel, true, !globalAllowExistingOnCreate, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvCrtrnId(ctx, data)
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
-
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvCrtrnResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	// Retain the created object's DN if the subsequent read fails.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), data.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetFvCrtrnAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response = getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save data into Terraform state
+	found, diagnostics = data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_epg_useg_block_statement resource",
+			fmt.Sprintf("The aci_epg_useg_block_statement resource with id '%s' has not been found after creation", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_epg_useg_block_statement with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvCrtrnResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of resource: aci_epg_useg_block_statement")
-	var data *FvCrtrnResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.FvCrtrnRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
-
-	getAndSetFvCrtrnAttributes(ctx, &resp.Diagnostics, r.client, data)
-
-	// Save updated data into Terraform state
-	if data.Id.IsNull() {
-		var emptyData *FvCrtrnResourceModel
-		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
-	} else {
-		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Imports initially provide only ID; the response reconstructs the remaining fields.
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, data.ID.ValueString(), data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_epg_useg_block_statement with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvCrtrnResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_epg_useg_block_statement")
-	var data *FvCrtrnResourceModel
-	var stateData *FvCrtrnResourceModel
 
-	// Read Terraform plan data into the model
+	var data, priorState models.FvCrtrnRootModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
+	resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
-
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvCrtrnResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.FvCrtrnModel, false, false, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetFvCrtrnAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save updated data into Terraform state
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_epg_useg_block_statement resource",
+			fmt.Sprintf("The aci_epg_useg_block_statement resource with id '%s' has not been found after update", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_epg_useg_block_statement with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvCrtrnResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Debug(ctx, "Start delete of resource: aci_epg_useg_block_statement")
-	var data *FvCrtrnResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.FvCrtrnRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fvCrtrn", data.Id.ValueString())
+	payload, diagnostics := data.BuildDeletePayload(ctx)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.ID.ValueString()), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
+
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_epg_useg_block_statement with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvCrtrnResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_epg_useg_block_statement")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-
-	var stateData *FvCrtrnResourceModel
-	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_epg_useg_block_statement with id '%s'", stateData.Id.ValueString()))
-
-	tflog.Debug(ctx, "End import of state resource: aci_epg_useg_block_statement")
-}
-
-func getAndSetFvCrtrnAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvCrtrnResourceModel) {
-	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
-
-	readData := getEmptyFvCrtrnResourceModel()
-
-	if diags.HasError() {
-		return
-	}
-	if requestData.Search("imdata").Search("fvCrtrn").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("fvCrtrn").Data().([]interface{})
-		if len(classReadInfo) == 1 {
-			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
-			for attributeName, attributeValue := range attributes {
-				if attributeName == "dn" {
-					readData.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvCrtrnParentDn(ctx, attributeValue.(string), readData)
-				}
-				if attributeName == "annotation" {
-					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "descr" {
-					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "match" {
-					readData.Match = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "name" {
-					readData.Name = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "nameAlias" {
-					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerKey" {
-					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerTag" {
-					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "prec" {
-					readData.Prec = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "scope" {
-					readData.Scope = basetypes.NewStringValue(attributeValue.(string))
-				}
-			}
-			TagAnnotationFvCrtrnList := make([]TagAnnotationFvCrtrnResourceModel, 0)
-			TagTagFvCrtrnList := make([]TagTagFvCrtrnResourceModel, 0)
-			_, ok := classReadInfo[0].(map[string]interface{})["children"]
-			if ok {
-				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
-				for _, child := range children {
-					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-						if childClassName == "tagAnnotation" {
-							TagAnnotationFvCrtrn := getEmptyTagAnnotationFvCrtrnResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagAnnotationFvCrtrn.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagAnnotationFvCrtrn.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationFvCrtrnList = append(TagAnnotationFvCrtrnList, TagAnnotationFvCrtrn)
-						}
-						if childClassName == "tagTag" {
-							TagTagFvCrtrn := getEmptyTagTagFvCrtrnResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagTagFvCrtrn.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagTagFvCrtrn.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagTagFvCrtrnList = append(TagTagFvCrtrnList, TagTagFvCrtrn)
-						}
-					}
-				}
-			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvCrtrnList)
-			readData.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvCrtrnList)
-			readData.TagTag = tagTagSet
-		} else {
-			diags.AddError(
-				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'fvCrtrn'. Please report this issue to the provider developers.", len(classReadInfo)),
-			)
-		}
-	} else {
-		readData.Id = basetypes.NewStringNull()
-	}
-	*data = *readData
-}
-
-func getFvCrtrnRn(ctx context.Context, data *FvCrtrnResourceModel) string {
-	return fmt.Sprintf("crtrn")
-}
-
-func setFvCrtrnParentDn(ctx context.Context, dn string, data *FvCrtrnResourceModel) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(dn) - 1; i >= 0; i-- {
-		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(dn[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
-}
-
-func setFvCrtrnId(ctx context.Context, data *FvCrtrnResourceModel) {
-	rn := getFvCrtrnRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-}
-
-func getFvCrtrnTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvCrtrnResourceModel, tagAnnotationFvCrtrnPlan, tagAnnotationFvCrtrnState []TagAnnotationFvCrtrnResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
-		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotationFvCrtrn := range tagAnnotationFvCrtrnPlan {
-			childMap := NewAciObject()
-			if !tagAnnotationFvCrtrn.Key.IsNull() && !tagAnnotationFvCrtrn.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagAnnotationFvCrtrn.Key.ValueString()
-			}
-			if !tagAnnotationFvCrtrn.Value.IsNull() && !tagAnnotationFvCrtrn.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagAnnotationFvCrtrn.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
-			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotationFvCrtrn.Key
-			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-		}
-		for _, tagAnnotation := range tagAnnotationFvCrtrnState {
-			delete := true
-			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagAnnotationChildMapForDelete := NewAciObject()
-				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
-				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getFvCrtrnTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvCrtrnResourceModel, tagTagFvCrtrnPlan, tagTagFvCrtrnState []TagTagFvCrtrnResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
-		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTagFvCrtrn := range tagTagFvCrtrnPlan {
-			childMap := NewAciObject()
-			if !tagTagFvCrtrn.Key.IsNull() && !tagTagFvCrtrn.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagTagFvCrtrn.Key.ValueString()
-			}
-			if !tagTagFvCrtrn.Value.IsNull() && !tagTagFvCrtrn.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagTagFvCrtrn.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
-			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTagFvCrtrn.Key
-			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-		}
-		for _, tagTag := range tagTagFvCrtrnState {
-			delete := true
-			for _, tagTagIdentifier := range tagTagIdentifiers {
-				if tagTagIdentifier.Key == tagTag.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagTagChildMapForDelete := NewAciObject()
-				tagTagChildMapForDelete.Attributes["status"] = "deleted"
-				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getFvCrtrnCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvCrtrnResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvCrtrnResourceModel, tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
-
-	if createType && !globalAllowExistingOnCreate {
-		payloadMap["attributes"].(map[string]string)["status"] = "created"
-	}
-	childPayloads := []map[string]interface{}{}
-
-	TagAnnotationchildPayloads := getFvCrtrnTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
-	if TagAnnotationchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
-
-	TagTagchildPayloads := getFvCrtrnTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
-	if TagTagchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagTagchildPayloads...)
-
-	payloadMap["children"] = childPayloads
-	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
-	}
-	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
-	}
-	if !data.Match.IsNull() && !data.Match.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["match"] = data.Match.ValueString()
-	}
-	if !data.Name.IsNull() && !data.Name.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()
-	}
-	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
-	}
-	if !data.OwnerKey.IsNull() && !data.OwnerKey.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerKey"] = data.OwnerKey.ValueString()
-	}
-	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
-	}
-	if !data.Prec.IsNull() && !data.Prec.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["prec"] = data.Prec.ValueString()
-	}
-	if !data.Scope.IsNull() && !data.Scope.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["scope"] = data.Scope.ValueString()
-	}
-	payload, err := json.Marshal(map[string]interface{}{"fvCrtrn": payloadMap})
-	if err != nil {
-		diags.AddError(
-			"Marshalling of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
+	tflog.Debug(ctx, "End import state of resource: aci_epg_useg_block_statement")
 }

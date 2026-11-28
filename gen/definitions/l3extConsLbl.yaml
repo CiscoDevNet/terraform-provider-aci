@@ -1,0 +1,44 @@
+documentation:
+  sub_category: L3Out
+  ui_locations:
+  - Tenants -> Networking -> L3Outs -> Consumer Label
+  - Tenants -> Networking -> SR MPLS VRF L3Outs -> SR-MPLS Infra L3Outs
+properties:
+  parentDn:
+    example_config:
+      minimum:
+      - reference:
+          class_name: l3extOut
+  tag:
+    default_values:
+      yellow-green: ""
+    test_config:
+      create:
+      - config_value: lemon-chiffon
+resource_name: l3out_consumer_label
+test_config:
+  dependencies:
+  - class_name: l3extOut
+    config_overrides:
+      name: name_1
+      relation_l3ext_rs_ectx: aci_vrf.test.id
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+    - class_name: fvCtx
+      config_overrides:
+        parent_dn: aci_tenant.test.id
+      dependencies:
+      - class_name: fvTenant
+    reference: aci_l3_outside.test.id
+    role: parent
+  - class_name: l3extOut
+    config_overrides:
+      name: name_2
+      relation_l3ext_rs_ectx: aci_vrf.test.id
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+    - class_name: fvCtx
+    reference: aci_l3_outside.test_2.id
+    role: parent

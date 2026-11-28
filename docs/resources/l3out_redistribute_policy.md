@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI L3Out Redistribute Policy
 
-
-
 ## API Information ##
 
 * Class: [l3extRsRedistributePol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsRedistributePol/overview)
@@ -34,35 +32,36 @@ The configuration snippet below creates a L3Out Redistribute Policy with only re
 
 ```hcl
 
-resource "aci_l3out_redistribute_policy" "example_l3_outside" {
+resource "aci_l3out_redistribute_policy" "example" {
   parent_dn                  = aci_l3_outside.example.id
   source                     = "direct"
   route_control_profile_name = aci_route_control_profile.example.name
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the L3Out Redistribute Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_l3out_redistribute_policy" "full_example_l3_outside" {
+resource "aci_l3out_redistribute_policy" "full_example" {
   parent_dn                  = aci_l3_outside.example.id
-  annotation                 = "annotation"
+  annotation                 = "example_annotation"
   source                     = "direct"
   route_control_profile_name = aci_route_control_profile.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -76,6 +75,7 @@ All examples for the L3Out Redistribute Policy resource can be found in the [exa
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
+
 * `source` (src) - (string) The source of the L3Out Redistribute Policy object.
   - Valid Values: `"attached-host"`, `"direct"`, `"static"`.
 * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) with `aci_route_control_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/route_control_profile) with `data.aci_route_control_profile.example.name`.
@@ -88,14 +88,14 @@ All examples for the L3Out Redistribute Policy resource can be found in the [exa
 
 * `annotation` (annotation) - (string) The annotation of the L3Out Redistribute Policy object.
   - Default: `"orchestrator:terraform"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -104,7 +104,7 @@ All examples for the L3Out Redistribute Policy resource can be found in the [exa
 An existing L3Out Redistribute Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_l3out_redistribute_policy.example_l3_outside uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}
+terraform import aci_l3out_redistribute_policy.example uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}
 ```
 
 Starting in Terraform version 1.5, an existing L3Out Redistribute Policy can be imported
@@ -113,6 +113,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}"
-  to = aci_l3out_redistribute_policy.example_l3_outside
+  to = aci_l3out_redistribute_policy.example
 }
 ```

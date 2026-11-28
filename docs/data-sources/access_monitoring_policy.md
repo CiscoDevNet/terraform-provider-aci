@@ -31,7 +31,7 @@ Data source for ACI Access Monitoring Policy
 ```hcl
 
 data "aci_access_monitoring_policy" "example" {
-  name = "test_name"
+  name = "access_monitoring_policy"
 }
 
 ```

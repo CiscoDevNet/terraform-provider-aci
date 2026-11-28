@@ -30,9 +30,9 @@ Data source for ACI Neighbor Discovery Interface Policy
 
 ```hcl
 
-data "aci_neighbor_discovery_interface_policy" "example_tenant" {
+data "aci_neighbor_discovery_interface_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "neighbor_discovery_interface_policy"
 }
 
 ```

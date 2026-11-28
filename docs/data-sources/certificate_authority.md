@@ -35,13 +35,7 @@ Data source for ACI Certificate Authority
 ```hcl
 
 data "aci_certificate_authority" "example" {
-  name = "test_name"
-}
-
-// This example is only applicable to Cisco Cloud Network Controller
-data "aci_certificate_authority" "example_tenant" {
-  parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name = "certificate_authority"
 }
 
 ```
@@ -55,7 +49,10 @@ data "aci_certificate_authority" "example_tenant" {
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
+    - [pkiEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiEp/overview)
+
   - Default: `uni/userext/pkiext`
 
 ### Read-Only ###

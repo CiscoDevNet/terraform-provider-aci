@@ -31,7 +31,7 @@ Data source for ACI Port Security Interface Policy
 ```hcl
 
 data "aci_port_security_interface_policy" "example" {
-  name = "test_name"
+  name = "port_security_interface_policy"
 }
 
 ```

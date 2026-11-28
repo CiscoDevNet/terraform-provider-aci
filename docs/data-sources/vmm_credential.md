@@ -30,9 +30,9 @@ Data source for ACI VMM Credential
 
 ```hcl
 
-data "aci_vmm_credential" "example_vmm_domain" {
+data "aci_vmm_credential" "example" {
   parent_dn = aci_vmm_domain.example.id
-  name      = "test_name"
+  name      = "vmm_credential"
 }
 
 ```

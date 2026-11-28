@@ -6,287 +6,33 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FhsBDPolResource{}
+var _ resource.ResourceWithConfigure = &FhsBDPolResource{}
+var _ resource.ResourceWithModifyPlan = &FhsBDPolResource{}
 var _ resource.ResourceWithImportState = &FhsBDPolResource{}
 
 func NewFhsBDPolResource() resource.Resource {
 	return &FhsBDPolResource{}
 }
 
+func init() {
+	registerResource("aci_first_hop_security_policy", NewFhsBDPolResource)
+}
+
 // FhsBDPolResource defines the resource implementation.
 type FhsBDPolResource struct {
 	client *client.Client
-}
-
-// FhsBDPolResourceModel describes the resource data model.
-type FhsBDPolResourceModel struct {
-	Id               types.String `tfsdk:"id"`
-	ParentDn         types.String `tfsdk:"parent_dn"`
-	Annotation       types.String `tfsdk:"annotation"`
-	Descr            types.String `tfsdk:"description"`
-	IpInspectAdminSt types.String `tfsdk:"ip_inspection"`
-	Name             types.String `tfsdk:"name"`
-	NameAlias        types.String `tfsdk:"name_alias"`
-	OwnerKey         types.String `tfsdk:"owner_key"`
-	OwnerTag         types.String `tfsdk:"owner_tag"`
-	RaGuardAdminSt   types.String `tfsdk:"router_advertisement"`
-	SrcGuardAdminSt  types.String `tfsdk:"source_guard"`
-	FhsRaGuardPol    types.Object `tfsdk:"route_advertisement_guard_policy"`
-	TagAnnotation    types.Set    `tfsdk:"annotations"`
-	TagTag           types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyFhsBDPolResourceModel() *FhsBDPolResourceModel {
-	return &FhsBDPolResourceModel{
-		Id:               basetypes.NewStringNull(),
-		ParentDn:         basetypes.NewStringNull(),
-		Annotation:       basetypes.NewStringNull(),
-		Descr:            basetypes.NewStringNull(),
-		IpInspectAdminSt: basetypes.NewStringNull(),
-		Name:             basetypes.NewStringNull(),
-		NameAlias:        basetypes.NewStringNull(),
-		OwnerKey:         basetypes.NewStringNull(),
-		OwnerTag:         basetypes.NewStringNull(),
-		RaGuardAdminSt:   basetypes.NewStringNull(),
-		SrcGuardAdminSt:  basetypes.NewStringNull(),
-		FhsRaGuardPol: types.ObjectNull(map[string]attr.Type{
-			"annotation":            types.StringType,
-			"description":           types.StringType,
-			"managed_config_check":  types.StringType,
-			"managed_config_flag":   types.StringType,
-			"max_hop_limit":         types.StringType,
-			"max_router_preference": types.StringType,
-			"min_hop_limit":         types.StringType,
-			"name":                  types.StringType,
-			"name_alias":            types.StringType,
-			"other_config_check":    types.StringType,
-			"other_config_flag":     types.StringType,
-			"owner_key":             types.StringType,
-			"owner_tag":             types.StringType,
-			"annotations":           types.SetType{ElemType: TagAnnotationFhsRaGuardPolFhsBDPolType},
-			"tags":                  types.SetType{ElemType: TagTagFhsRaGuardPolFhsBDPolType},
-		}),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-// FhsRaGuardPolFhsBDPolResourceModel describes the resource data model for the children without relation ships.
-type FhsRaGuardPolFhsBDPolResourceModel struct {
-	Annotation         types.String `tfsdk:"annotation"`
-	Descr              types.String `tfsdk:"description"`
-	ManagedConfigCheck types.String `tfsdk:"managed_config_check"`
-	ManagedConfigFlag  types.String `tfsdk:"managed_config_flag"`
-	MaxHopLimit        types.String `tfsdk:"max_hop_limit"`
-	MaxRouterPref      types.String `tfsdk:"max_router_preference"`
-	MinHopLimit        types.String `tfsdk:"min_hop_limit"`
-	Name               types.String `tfsdk:"name"`
-	NameAlias          types.String `tfsdk:"name_alias"`
-	OtherConfigCheck   types.String `tfsdk:"other_config_check"`
-	OtherConfigFlag    types.String `tfsdk:"other_config_flag"`
-	OwnerKey           types.String `tfsdk:"owner_key"`
-	OwnerTag           types.String `tfsdk:"owner_tag"`
-	TagAnnotation      types.Set    `tfsdk:"annotations"`
-	TagTag             types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyFhsRaGuardPolFhsBDPolResourceModel() FhsRaGuardPolFhsBDPolResourceModel {
-	return FhsRaGuardPolFhsBDPolResourceModel{
-		Annotation:         basetypes.NewStringNull(),
-		Descr:              basetypes.NewStringNull(),
-		ManagedConfigCheck: basetypes.NewStringNull(),
-		ManagedConfigFlag:  basetypes.NewStringNull(),
-		MaxHopLimit:        basetypes.NewStringNull(),
-		MaxRouterPref:      basetypes.NewStringNull(),
-		MinHopLimit:        basetypes.NewStringNull(),
-		Name:               basetypes.NewStringNull(),
-		NameAlias:          basetypes.NewStringNull(),
-		OtherConfigCheck:   basetypes.NewStringNull(),
-		OtherConfigFlag:    basetypes.NewStringNull(),
-		OwnerKey:           basetypes.NewStringNull(),
-		OwnerTag:           basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-var FhsRaGuardPolFhsBDPolType = map[string]attr.Type{
-	"annotation":            types.StringType,
-	"description":           types.StringType,
-	"managed_config_check":  types.StringType,
-	"managed_config_flag":   types.StringType,
-	"max_hop_limit":         types.StringType,
-	"max_router_preference": types.StringType,
-	"min_hop_limit":         types.StringType,
-	"name":                  types.StringType,
-	"name_alias":            types.StringType,
-	"other_config_check":    types.StringType,
-	"other_config_flag":     types.StringType,
-	"owner_key":             types.StringType,
-	"owner_tag":             types.StringType,
-	"annotations":           types.SetType{ElemType: TagAnnotationFhsRaGuardPolFhsBDPolType},
-	"tags":                  types.SetType{ElemType: TagTagFhsRaGuardPolFhsBDPolType},
-}
-
-// TagAnnotationFhsRaGuardPolFhsBDPolResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationFhsRaGuardPolFhsBDPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationFhsRaGuardPolFhsBDPolResourceModel() TagAnnotationFhsRaGuardPolFhsBDPolResourceModel {
-	return TagAnnotationFhsRaGuardPolFhsBDPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationFhsRaGuardPolFhsBDPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagFhsRaGuardPolFhsBDPolResourceModel describes the resource data model for the children without relation ships.
-type TagTagFhsRaGuardPolFhsBDPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagFhsRaGuardPolFhsBDPolResourceModel() TagTagFhsRaGuardPolFhsBDPolResourceModel {
-	return TagTagFhsRaGuardPolFhsBDPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagFhsRaGuardPolFhsBDPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagAnnotationFhsBDPolResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationFhsBDPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationFhsBDPolResourceModel() TagAnnotationFhsBDPolResourceModel {
-	return TagAnnotationFhsBDPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationFhsBDPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagFhsBDPolResourceModel describes the resource data model for the children without relation ships.
-type TagTagFhsBDPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagFhsBDPolResourceModel() TagTagFhsBDPolResourceModel {
-	return TagTagFhsBDPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagFhsBDPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-type FhsBDPolIdentifier struct {
-	Name types.String
-}
-
-func (r *FhsBDPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if !req.Plan.Raw.IsNull() {
-		var planData, stateData, configData *FhsBDPolResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-		resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...)
-
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setFhsBDPolId(ctx, planData)
-		}
-
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fhsBDPol", planData.Id.ValueString())
-			if resp.Diagnostics.HasError() {
-				return
-			}
-		}
-
-		if !configData.FhsRaGuardPol.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FhsRaGuardPol.Attributes()) {
-				FhsRaGuardPolObject, _ := types.ObjectValueFrom(ctx, FhsRaGuardPolFhsBDPolType, getEmptyFhsRaGuardPolFhsBDPolResourceModel())
-				planData.FhsRaGuardPol = FhsRaGuardPolObject
-			}
-		}
-
-		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
-	}
 }
 
 func (r *FhsBDPolResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -295,354 +41,9 @@ func (r *FhsBDPolResource) Metadata(ctx context.Context, req resource.MetadataRe
 	tflog.Debug(ctx, "End metadata of resource: aci_first_hop_security_policy")
 }
 
-func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *FhsBDPolResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of resource: aci_first_hop_security_policy")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The first_hop_security_policy resource for the 'fhsBDPol' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the First Hop Security Policy object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-				},
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the First Hop Security Policy object.`,
-			},
-			"description": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The description of the First Hop Security Policy object.`,
-			},
-			"ip_inspection": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("disabled", "enabled-both", "enabled-ipv4", "enabled-ipv6"),
-				},
-				MarkdownDescription: `The Inspection Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.`,
-			},
-			"name": schema.StringAttribute{
-				Required: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: `The name of the First Hop Security Policy object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The name alias of the First Hop Security Policy object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"router_advertisement": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("disabled", "enabled"),
-				},
-				MarkdownDescription: `Enable Router Advertisement Guard for the First Hop Security Policy object.`,
-			},
-			"source_guard": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("disabled", "enabled-both", "enabled-ipv4", "enabled-ipv6"),
-				},
-				MarkdownDescription: `The Source Guard Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.`,
-			},
-			"route_advertisement_guard_policy": schema.SingleNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseNonNullStateForUnknown(),
-				},
-				Attributes: map[string]schema.Attribute{
-					"annotation": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The annotation of the Route Advertisement Guard Policy object.`,
-					},
-					"description": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The description of the Route Advertisement Guard Policy object.`,
-					},
-					"managed_config_check": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						Validators: []validator.String{
-							stringvalidator.OneOf("no", "yes"),
-						},
-						MarkdownDescription: `Perform a managed configuration check for the Route Advertisement Guard Policy object.`,
-					},
-					"managed_config_flag": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						Validators: []validator.String{
-							stringvalidator.OneOf("no", "yes"),
-						},
-						MarkdownDescription: `The managed configuration flag setting for the Route Advertisement Guard Policy object.`,
-					},
-					"max_hop_limit": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The maximum hop limit for the Route Advertisement Guard Policy object.`,
-					},
-					"max_router_preference": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						Validators: []validator.String{
-							stringvalidator.OneOf("disabled", "high", "low", "medium"),
-						},
-						MarkdownDescription: `The allowed maximum router preference for the Route Advertisement Guard Policy object.`,
-					},
-					"min_hop_limit": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The minimum hop limit for the Route Advertisement Guard Policy object.`,
-					},
-					"name": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The name of the Route Advertisement Guard Policy object.`,
-					},
-					"name_alias": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The name alias of the Route Advertisement Guard Policy object.`,
-					},
-					"other_config_check": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						Validators: []validator.String{
-							stringvalidator.OneOf("no", "yes"),
-						},
-						MarkdownDescription: `Perform other configuration checks for the Route Advertisement Guard Policy object.`,
-					},
-					"other_config_flag": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						Validators: []validator.String{
-							stringvalidator.OneOf("no", "yes"),
-						},
-						MarkdownDescription: `The other configuration flag setting for the Route Advertisement Guard Policy object.`,
-					},
-					"owner_key": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-					},
-					"owner_tag": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-					},
-					"annotations": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-					"tags": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-				},
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.FhsBDPolResourceSchema(globalAnnotation)
 	tflog.Debug(ctx, "End schema of resource: aci_first_hop_security_policy")
 }
 
@@ -653,685 +54,218 @@ func (r *FhsBDPolResource) Configure(ctx context.Context, req resource.Configure
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	r.client = client
+	r.client = aciClient
 	tflog.Debug(ctx, "End configure of resource: aci_first_hop_security_policy")
+}
+
+func (r *FhsBDPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var data models.FhsBDPolRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// A parent reference or naming value may only become known during apply.
+	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		return
+	}
+	if data.Name.IsNull() || data.Name.IsUnknown() {
+		return
+	}
+
+	data.SetIDFromDN(data.BuildDN())
+	if req.State.Raw.IsNull() && !globalAllowExistingOnCreate {
+		CheckDn(ctx, &resp.Diagnostics, r.client, "fhsBDPol", data.ID.ValueString())
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
+	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 }
 
 func (r *FhsBDPolResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Start create of resource: aci_first_hop_security_policy")
-	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *FhsBDPolResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFhsBDPolId(ctx, stateData)
+
+	var data models.FhsBDPolRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	getAndSetFhsBDPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
-	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	// Read existing children before adoption so payload construction can reconcile them.
+	priorState := models.NewFhsBDPolRootModelNull()
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	found, diagnostics := priorState.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if found && !globalAllowExistingOnCreate {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The fhsBDPol object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The fhsBDPol object with DN '%s' already exists.", dn),
 		)
 		return
 	}
 
-	var data *FhsBDPolResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.FhsBDPolModel, true, !globalAllowExistingOnCreate, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFhsBDPolId(ctx, data)
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_first_hop_security_policy with id '%s'", data.Id.ValueString()))
-
-	var fhsRaGuardPolPlan, fhsRaGuardPolState FhsRaGuardPolFhsBDPolResourceModel
-	data.FhsRaGuardPol.As(ctx, &fhsRaGuardPolPlan, basetypes.ObjectAsOptions{})
-	stateData.FhsRaGuardPol.As(ctx, &fhsRaGuardPolState, basetypes.ObjectAsOptions{})
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFhsBDPolResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFhsBDPolResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFhsBDPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, fhsRaGuardPolPlan, fhsRaGuardPolState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	// Retain the created object's DN if the subsequent read fails.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), data.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetFhsBDPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response = getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save data into Terraform state
+	found, diagnostics = data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_first_hop_security_policy resource",
+			fmt.Sprintf("The aci_first_hop_security_policy resource with id '%s' has not been found after creation", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_first_hop_security_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_first_hop_security_policy with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FhsBDPolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of resource: aci_first_hop_security_policy")
-	var data *FhsBDPolResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.FhsBDPolRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_first_hop_security_policy with id '%s'", data.Id.ValueString()))
-
-	getAndSetFhsBDPolAttributes(ctx, &resp.Diagnostics, r.client, data)
-
-	// Save updated data into Terraform state
-	if data.Id.IsNull() {
-		var emptyData *FhsBDPolResourceModel
-		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
-	} else {
-		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Imports initially provide only ID; the response reconstructs the remaining fields.
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, data.ID.ValueString(), data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_first_hop_security_policy with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_first_hop_security_policy with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FhsBDPolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_first_hop_security_policy")
-	var data *FhsBDPolResourceModel
-	var stateData *FhsBDPolResourceModel
 
-	// Read Terraform plan data into the model
+	var data, priorState models.FhsBDPolRootModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
+	resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_first_hop_security_policy with id '%s'", data.Id.ValueString()))
-
-	var fhsRaGuardPolPlan, fhsRaGuardPolState FhsRaGuardPolFhsBDPolResourceModel
-	data.FhsRaGuardPol.As(ctx, &fhsRaGuardPolPlan, basetypes.ObjectAsOptions{})
-	stateData.FhsRaGuardPol.As(ctx, &fhsRaGuardPolState, basetypes.ObjectAsOptions{})
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFhsBDPolResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFhsBDPolResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFhsBDPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, fhsRaGuardPolPlan, fhsRaGuardPolState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.FhsBDPolModel, false, false, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetFhsBDPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save updated data into Terraform state
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_first_hop_security_policy resource",
+			fmt.Sprintf("The aci_first_hop_security_policy resource with id '%s' has not been found after update", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_first_hop_security_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_first_hop_security_policy with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FhsBDPolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Debug(ctx, "Start delete of resource: aci_first_hop_security_policy")
-	var data *FhsBDPolResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.FhsBDPolRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_first_hop_security_policy with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fhsBDPol", data.Id.ValueString())
+	payload, diagnostics := data.BuildDeletePayload(ctx)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.ID.ValueString()), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_first_hop_security_policy with id '%s'", data.Id.ValueString()))
+
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_first_hop_security_policy with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FhsBDPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_first_hop_security_policy")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-
-	var stateData *FhsBDPolResourceModel
-	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_first_hop_security_policy with id '%s'", stateData.Id.ValueString()))
-
-	tflog.Debug(ctx, "End import of state resource: aci_first_hop_security_policy")
-}
-
-func getAndSetFhsBDPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FhsBDPolResourceModel) {
-	childClasses := getChildClassesForGetRequest([]string{"fhsRaGuardPol", "tagAnnotation", "tagTag"})
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
-
-	readData := getEmptyFhsBDPolResourceModel()
-
-	if diags.HasError() {
-		return
-	}
-	if requestData.Search("imdata").Search("fhsBDPol").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("fhsBDPol").Data().([]interface{})
-		if len(classReadInfo) == 1 {
-			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
-			for attributeName, attributeValue := range attributes {
-				if attributeName == "dn" {
-					readData.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFhsBDPolParentDn(ctx, attributeValue.(string), readData)
-				}
-				if attributeName == "annotation" {
-					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "descr" {
-					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ipInspectAdminSt" {
-					readData.IpInspectAdminSt = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "name" {
-					readData.Name = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "nameAlias" {
-					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerKey" {
-					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerTag" {
-					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "raGuardAdminSt" {
-					readData.RaGuardAdminSt = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "srcGuardAdminSt" {
-					readData.SrcGuardAdminSt = basetypes.NewStringValue(attributeValue.(string))
-				}
-			}
-			FhsRaGuardPolFhsBDPolList := make([]FhsRaGuardPolFhsBDPolResourceModel, 0)
-			TagAnnotationFhsBDPolList := make([]TagAnnotationFhsBDPolResourceModel, 0)
-			TagTagFhsBDPolList := make([]TagTagFhsBDPolResourceModel, 0)
-			_, ok := classReadInfo[0].(map[string]interface{})["children"]
-			if ok {
-				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
-				for _, child := range children {
-					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-						if childClassName == "fhsRaGuardPol" {
-							FhsRaGuardPolFhsBDPol := getEmptyFhsRaGuardPolFhsBDPolResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "annotation" {
-									FhsRaGuardPolFhsBDPol.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "descr" {
-									FhsRaGuardPolFhsBDPol.Descr = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "managedConfigCheck" {
-									FhsRaGuardPolFhsBDPol.ManagedConfigCheck = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "managedConfigFlag" {
-									FhsRaGuardPolFhsBDPol.ManagedConfigFlag = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "maxHopLimit" {
-									FhsRaGuardPolFhsBDPol.MaxHopLimit = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "maxRouterPref" {
-									FhsRaGuardPolFhsBDPol.MaxRouterPref = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "minHopLimit" {
-									FhsRaGuardPolFhsBDPol.MinHopLimit = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "name" {
-									FhsRaGuardPolFhsBDPol.Name = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "nameAlias" {
-									FhsRaGuardPolFhsBDPol.NameAlias = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "otherConfigCheck" {
-									FhsRaGuardPolFhsBDPol.OtherConfigCheck = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "otherConfigFlag" {
-									FhsRaGuardPolFhsBDPol.OtherConfigFlag = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "ownerKey" {
-									FhsRaGuardPolFhsBDPol.OwnerKey = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "ownerTag" {
-									FhsRaGuardPolFhsBDPol.OwnerTag = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationFhsRaGuardPolFhsBDPolList := make([]TagAnnotationFhsRaGuardPolFhsBDPolResourceModel, 0)
-							TagTagFhsRaGuardPolFhsBDPolList := make([]TagTagFhsRaGuardPolFhsBDPolResourceModel, 0)
-							childrenOfFhsRaGuardPolFhsBDPol, childrenOfFhsRaGuardPolFhsBDPolExist := childClassDetails.(map[string]interface{})["children"]
-							if childrenOfFhsRaGuardPolFhsBDPolExist {
-								for _, childFhsRaGuardPolFhsBDPol := range childrenOfFhsRaGuardPolFhsBDPol.([]interface{}) {
-									for childClassNameFhsRaGuardPolFhsBDPol, childClassDetailsFhsRaGuardPolFhsBDPol := range childFhsRaGuardPolFhsBDPol.(map[string]interface{}) {
-										if childClassNameFhsRaGuardPolFhsBDPol == "tagAnnotation" {
-											TagAnnotationFhsRaGuardPolFhsBDPol := getEmptyTagAnnotationFhsRaGuardPolFhsBDPolResourceModel()
-											tagAnnotationchildAttributeValue := childClassDetailsFhsRaGuardPolFhsBDPol.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
-												if childAttributeName == "key" {
-													TagAnnotationFhsRaGuardPolFhsBDPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagAnnotationFhsRaGuardPolFhsBDPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagAnnotationFhsRaGuardPolFhsBDPolList = append(TagAnnotationFhsRaGuardPolFhsBDPolList, TagAnnotationFhsRaGuardPolFhsBDPol)
-										}
-										if childClassNameFhsRaGuardPolFhsBDPol == "tagTag" {
-											TagTagFhsRaGuardPolFhsBDPol := getEmptyTagTagFhsRaGuardPolFhsBDPolResourceModel()
-											tagTagchildAttributeValue := childClassDetailsFhsRaGuardPolFhsBDPol.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
-												if childAttributeName == "key" {
-													TagTagFhsRaGuardPolFhsBDPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagTagFhsRaGuardPolFhsBDPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagTagFhsRaGuardPolFhsBDPolList = append(TagTagFhsRaGuardPolFhsBDPolList, TagTagFhsRaGuardPolFhsBDPol)
-										}
-									}
-								}
-							}
-							TagAnnotationFhsRaGuardPolFhsBDPolSet, _ := types.SetValueFrom(ctx, TagAnnotationFhsRaGuardPolFhsBDPolType, TagAnnotationFhsRaGuardPolFhsBDPolList)
-							FhsRaGuardPolFhsBDPol.TagAnnotation = TagAnnotationFhsRaGuardPolFhsBDPolSet
-							TagTagFhsRaGuardPolFhsBDPolSet, _ := types.SetValueFrom(ctx, TagTagFhsRaGuardPolFhsBDPolType, TagTagFhsRaGuardPolFhsBDPolList)
-							FhsRaGuardPolFhsBDPol.TagTag = TagTagFhsRaGuardPolFhsBDPolSet
-							FhsRaGuardPolFhsBDPolList = append(FhsRaGuardPolFhsBDPolList, FhsRaGuardPolFhsBDPol)
-						}
-						if childClassName == "tagAnnotation" {
-							TagAnnotationFhsBDPol := getEmptyTagAnnotationFhsBDPolResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagAnnotationFhsBDPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagAnnotationFhsBDPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationFhsBDPolList = append(TagAnnotationFhsBDPolList, TagAnnotationFhsBDPol)
-						}
-						if childClassName == "tagTag" {
-							TagTagFhsBDPol := getEmptyTagTagFhsBDPolResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagTagFhsBDPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagTagFhsBDPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagTagFhsBDPolList = append(TagTagFhsBDPolList, TagTagFhsBDPol)
-						}
-					}
-				}
-			}
-			if len(FhsRaGuardPolFhsBDPolList) == 1 {
-				fhsRaGuardPolObject, _ := types.ObjectValueFrom(ctx, FhsRaGuardPolFhsBDPolType, FhsRaGuardPolFhsBDPolList[0])
-				readData.FhsRaGuardPol = fhsRaGuardPolObject
-			} else {
-				fhsRaGuardPolObject, _ := types.ObjectValueFrom(ctx, FhsRaGuardPolFhsBDPolType, getEmptyFhsRaGuardPolFhsBDPolResourceModel())
-				readData.FhsRaGuardPol = fhsRaGuardPolObject
-			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFhsBDPolList)
-			readData.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFhsBDPolList)
-			readData.TagTag = tagTagSet
-		} else {
-			diags.AddError(
-				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'fhsBDPol'. Please report this issue to the provider developers.", len(classReadInfo)),
-			)
-		}
-	} else {
-		readData.Id = basetypes.NewStringNull()
-	}
-	*data = *readData
-}
-
-func getFhsBDPolRn(ctx context.Context, data *FhsBDPolResourceModel) string {
-	return fmt.Sprintf("bdpol-%s", data.Name.ValueString())
-}
-
-func setFhsBDPolParentDn(ctx context.Context, dn string, data *FhsBDPolResourceModel) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(dn) - 1; i >= 0; i-- {
-		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(dn[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
-}
-
-func setFhsBDPolId(ctx context.Context, data *FhsBDPolResourceModel) {
-	rn := getFhsBDPolRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-}
-
-func getFhsBDPolFhsRaGuardPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsBDPolResourceModel, fhsRaGuardPolFhsBDPolPlan, fhsRaGuardPolFhsBDPolState FhsRaGuardPolFhsBDPolResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.FhsRaGuardPol.IsNull() && !data.FhsRaGuardPol.IsUnknown() {
-		FhsRaGuardPolFhsBDPolChildren := make([]map[string]interface{}, 0)
-		childMap := NewAciObject()
-		if !IsEmptySingleNestedAttribute(data.FhsRaGuardPol.Attributes()) {
-			if !fhsRaGuardPolFhsBDPolPlan.Annotation.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.Annotation.IsNull() {
-				childMap.Attributes["annotation"] = fhsRaGuardPolFhsBDPolPlan.Annotation.ValueString()
-			} else {
-				childMap.Attributes["annotation"] = globalAnnotation
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.Descr.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.Descr.IsNull() {
-				childMap.Attributes["descr"] = fhsRaGuardPolFhsBDPolPlan.Descr.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.ManagedConfigCheck.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.ManagedConfigCheck.IsNull() {
-				childMap.Attributes["managedConfigCheck"] = fhsRaGuardPolFhsBDPolPlan.ManagedConfigCheck.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.ManagedConfigFlag.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.ManagedConfigFlag.IsNull() {
-				childMap.Attributes["managedConfigFlag"] = fhsRaGuardPolFhsBDPolPlan.ManagedConfigFlag.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.MaxHopLimit.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.MaxHopLimit.IsNull() {
-				childMap.Attributes["maxHopLimit"] = fhsRaGuardPolFhsBDPolPlan.MaxHopLimit.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.MaxRouterPref.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.MaxRouterPref.IsNull() {
-				childMap.Attributes["maxRouterPref"] = fhsRaGuardPolFhsBDPolPlan.MaxRouterPref.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.MinHopLimit.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.MinHopLimit.IsNull() {
-				childMap.Attributes["minHopLimit"] = fhsRaGuardPolFhsBDPolPlan.MinHopLimit.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.Name.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.Name.IsNull() {
-				childMap.Attributes["name"] = fhsRaGuardPolFhsBDPolPlan.Name.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.NameAlias.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.NameAlias.IsNull() {
-				childMap.Attributes["nameAlias"] = fhsRaGuardPolFhsBDPolPlan.NameAlias.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.OtherConfigCheck.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.OtherConfigCheck.IsNull() {
-				childMap.Attributes["otherConfigCheck"] = fhsRaGuardPolFhsBDPolPlan.OtherConfigCheck.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.OtherConfigFlag.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.OtherConfigFlag.IsNull() {
-				childMap.Attributes["otherConfigFlag"] = fhsRaGuardPolFhsBDPolPlan.OtherConfigFlag.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.OwnerKey.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.OwnerKey.IsNull() {
-				childMap.Attributes["ownerKey"] = fhsRaGuardPolFhsBDPolPlan.OwnerKey.ValueString()
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.OwnerTag.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.OwnerTag.IsNull() {
-				childMap.Attributes["ownerTag"] = fhsRaGuardPolFhsBDPolPlan.OwnerTag.ValueString()
-			}
-
-			var tagAnnotationFhsRaGuardPolFhsBDPolPlan, tagAnnotationFhsRaGuardPolFhsBDPolState []TagAnnotationFhsRaGuardPolFhsBDPolResourceModel
-			fhsRaGuardPolFhsBDPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFhsRaGuardPolFhsBDPolPlan, false)
-			if !fhsRaGuardPolFhsBDPolState.TagAnnotation.IsNull() {
-				fhsRaGuardPolFhsBDPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFhsRaGuardPolFhsBDPolState, false)
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.TagAnnotation.IsNull() && !fhsRaGuardPolFhsBDPolPlan.TagAnnotation.IsUnknown() {
-				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-				for _, tagAnnotationFhsRaGuardPolFhsBDPol := range tagAnnotationFhsRaGuardPolFhsBDPolPlan {
-					tagAnnotationFhsRaGuardPolFhsBDPolChildMap := NewAciObject()
-					if !tagAnnotationFhsRaGuardPolFhsBDPol.Key.IsNull() && !tagAnnotationFhsRaGuardPolFhsBDPol.Key.IsUnknown() {
-						tagAnnotationFhsRaGuardPolFhsBDPolChildMap.Attributes["key"] = tagAnnotationFhsRaGuardPolFhsBDPol.Key.ValueString()
-					}
-					if !tagAnnotationFhsRaGuardPolFhsBDPol.Value.IsNull() && !tagAnnotationFhsRaGuardPolFhsBDPol.Value.IsUnknown() {
-						tagAnnotationFhsRaGuardPolFhsBDPolChildMap.Attributes["value"] = tagAnnotationFhsRaGuardPolFhsBDPol.Value.ValueString()
-					}
-					FhsRaGuardPolFhsBDPolChildren = append(FhsRaGuardPolFhsBDPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFhsRaGuardPolFhsBDPolChildMap})
-					tagAnnotationIdentifier := TagAnnotationIdentifier{}
-					tagAnnotationIdentifier.Key = tagAnnotationFhsRaGuardPolFhsBDPol.Key
-					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-				}
-				for _, tagAnnotationFhsRaGuardPolFhsBDPol := range tagAnnotationFhsRaGuardPolFhsBDPolState {
-					delete := true
-					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-						if tagAnnotationIdentifier.Key == tagAnnotationFhsRaGuardPolFhsBDPol.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagAnnotationFhsRaGuardPolFhsBDPolChildMapForDelete := NewAciObject()
-						tagAnnotationFhsRaGuardPolFhsBDPolChildMapForDelete.Attributes["status"] = "deleted"
-						tagAnnotationFhsRaGuardPolFhsBDPolChildMapForDelete.Attributes["key"] = tagAnnotationFhsRaGuardPolFhsBDPol.Key.ValueString()
-						FhsRaGuardPolFhsBDPolChildren = append(FhsRaGuardPolFhsBDPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFhsRaGuardPolFhsBDPolChildMapForDelete})
-					}
-				}
-			}
-
-			var tagTagFhsRaGuardPolFhsBDPolPlan, tagTagFhsRaGuardPolFhsBDPolState []TagTagFhsRaGuardPolFhsBDPolResourceModel
-			fhsRaGuardPolFhsBDPolPlan.TagTag.ElementsAs(ctx, &tagTagFhsRaGuardPolFhsBDPolPlan, false)
-			if !fhsRaGuardPolFhsBDPolState.TagTag.IsNull() {
-				fhsRaGuardPolFhsBDPolState.TagTag.ElementsAs(ctx, &tagTagFhsRaGuardPolFhsBDPolState, false)
-			}
-			if !fhsRaGuardPolFhsBDPolPlan.TagTag.IsNull() && !fhsRaGuardPolFhsBDPolPlan.TagTag.IsUnknown() {
-				tagTagIdentifiers := []TagTagIdentifier{}
-				for _, tagTagFhsRaGuardPolFhsBDPol := range tagTagFhsRaGuardPolFhsBDPolPlan {
-					tagTagFhsRaGuardPolFhsBDPolChildMap := NewAciObject()
-					if !tagTagFhsRaGuardPolFhsBDPol.Key.IsNull() && !tagTagFhsRaGuardPolFhsBDPol.Key.IsUnknown() {
-						tagTagFhsRaGuardPolFhsBDPolChildMap.Attributes["key"] = tagTagFhsRaGuardPolFhsBDPol.Key.ValueString()
-					}
-					if !tagTagFhsRaGuardPolFhsBDPol.Value.IsNull() && !tagTagFhsRaGuardPolFhsBDPol.Value.IsUnknown() {
-						tagTagFhsRaGuardPolFhsBDPolChildMap.Attributes["value"] = tagTagFhsRaGuardPolFhsBDPol.Value.ValueString()
-					}
-					FhsRaGuardPolFhsBDPolChildren = append(FhsRaGuardPolFhsBDPolChildren, map[string]interface{}{"tagTag": tagTagFhsRaGuardPolFhsBDPolChildMap})
-					tagTagIdentifier := TagTagIdentifier{}
-					tagTagIdentifier.Key = tagTagFhsRaGuardPolFhsBDPol.Key
-					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-				}
-				for _, tagTagFhsRaGuardPolFhsBDPol := range tagTagFhsRaGuardPolFhsBDPolState {
-					delete := true
-					for _, tagTagIdentifier := range tagTagIdentifiers {
-						if tagTagIdentifier.Key == tagTagFhsRaGuardPolFhsBDPol.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagTagFhsRaGuardPolFhsBDPolChildMapForDelete := NewAciObject()
-						tagTagFhsRaGuardPolFhsBDPolChildMapForDelete.Attributes["status"] = "deleted"
-						tagTagFhsRaGuardPolFhsBDPolChildMapForDelete.Attributes["key"] = tagTagFhsRaGuardPolFhsBDPol.Key.ValueString()
-						FhsRaGuardPolFhsBDPolChildren = append(FhsRaGuardPolFhsBDPolChildren, map[string]interface{}{"tagTag": tagTagFhsRaGuardPolFhsBDPolChildMapForDelete})
-					}
-				}
-			}
-			childMap.Children = FhsRaGuardPolFhsBDPolChildren
-		} else {
-			childMap.Attributes["status"] = "deleted"
-		}
-		childPayloads = append(childPayloads, map[string]interface{}{"fhsRaGuardPol": childMap})
-	} else {
-		FhsRaGuardPolObject, _ := types.ObjectValueFrom(ctx, FhsRaGuardPolFhsBDPolType, getEmptyFhsRaGuardPolFhsBDPolResourceModel())
-		data.FhsRaGuardPol = FhsRaGuardPolObject
-	}
-
-	return childPayloads
-}
-
-func getFhsBDPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsBDPolResourceModel, tagAnnotationFhsBDPolPlan, tagAnnotationFhsBDPolState []TagAnnotationFhsBDPolResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
-		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotationFhsBDPol := range tagAnnotationFhsBDPolPlan {
-			childMap := NewAciObject()
-			if !tagAnnotationFhsBDPol.Key.IsNull() && !tagAnnotationFhsBDPol.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagAnnotationFhsBDPol.Key.ValueString()
-			}
-			if !tagAnnotationFhsBDPol.Value.IsNull() && !tagAnnotationFhsBDPol.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagAnnotationFhsBDPol.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
-			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotationFhsBDPol.Key
-			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-		}
-		for _, tagAnnotation := range tagAnnotationFhsBDPolState {
-			delete := true
-			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagAnnotationChildMapForDelete := NewAciObject()
-				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
-				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getFhsBDPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsBDPolResourceModel, tagTagFhsBDPolPlan, tagTagFhsBDPolState []TagTagFhsBDPolResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
-		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTagFhsBDPol := range tagTagFhsBDPolPlan {
-			childMap := NewAciObject()
-			if !tagTagFhsBDPol.Key.IsNull() && !tagTagFhsBDPol.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagTagFhsBDPol.Key.ValueString()
-			}
-			if !tagTagFhsBDPol.Value.IsNull() && !tagTagFhsBDPol.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagTagFhsBDPol.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
-			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTagFhsBDPol.Key
-			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-		}
-		for _, tagTag := range tagTagFhsBDPolState {
-			delete := true
-			for _, tagTagIdentifier := range tagTagIdentifiers {
-				if tagTagIdentifier.Key == tagTag.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagTagChildMapForDelete := NewAciObject()
-				tagTagChildMapForDelete.Attributes["status"] = "deleted"
-				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getFhsBDPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FhsBDPolResourceModel, fhsRaGuardPolPlan, fhsRaGuardPolState FhsRaGuardPolFhsBDPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFhsBDPolResourceModel, tagTagPlan, tagTagState []TagTagFhsBDPolResourceModel) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
-
-	if createType && !globalAllowExistingOnCreate {
-		payloadMap["attributes"].(map[string]string)["status"] = "created"
-	}
-	childPayloads := []map[string]interface{}{}
-
-	FhsRaGuardPolchildPayloads := getFhsBDPolFhsRaGuardPolChildPayloads(ctx, diags, data, fhsRaGuardPolPlan, fhsRaGuardPolState)
-	if FhsRaGuardPolchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, FhsRaGuardPolchildPayloads...)
-
-	TagAnnotationchildPayloads := getFhsBDPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
-	if TagAnnotationchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
-
-	TagTagchildPayloads := getFhsBDPolTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
-	if TagTagchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagTagchildPayloads...)
-
-	payloadMap["children"] = childPayloads
-	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
-	}
-	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
-	}
-	if !data.IpInspectAdminSt.IsNull() && !data.IpInspectAdminSt.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ipInspectAdminSt"] = data.IpInspectAdminSt.ValueString()
-	}
-	if !data.Name.IsNull() && !data.Name.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()
-	}
-	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
-	}
-	if !data.OwnerKey.IsNull() && !data.OwnerKey.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerKey"] = data.OwnerKey.ValueString()
-	}
-	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
-	}
-	if !data.RaGuardAdminSt.IsNull() && !data.RaGuardAdminSt.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["raGuardAdminSt"] = data.RaGuardAdminSt.ValueString()
-	}
-	if !data.SrcGuardAdminSt.IsNull() && !data.SrcGuardAdminSt.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["srcGuardAdminSt"] = data.SrcGuardAdminSt.ValueString()
-	}
-	payload, err := json.Marshal(map[string]interface{}{"fhsBDPol": payloadMap})
-	if err != nil {
-		diags.AddError(
-			"Marshalling of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
+	tflog.Debug(ctx, "End import state of resource: aci_first_hop_security_policy")
 }

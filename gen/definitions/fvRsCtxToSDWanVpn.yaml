@@ -1,0 +1,16 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> Policy
+properties:
+  tDn:
+    example_config:
+      minimum:
+      - value: uni/tn-example_tenant/sdwanvpncont/sdwanvpnentry-example_wan_vpn
+resource_name: relation_from_vrf_to_wan_vpn
+test_config:
+  dependencies:
+  - class_name: extdevSDWanVpnEntry
+    reference: uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1
+    reference_type: static
+    role: target

@@ -1,0 +1,13 @@
+documentation:
+  sub_category: Contract
+  ui_locations:
+  - Tenants -> Contracts -> Taboos
+resource_name: taboo_contract
+schema_version: 2
+state_upgrades:
+  1:
+    attributes:
+      parentDn:
+        attribute_name: tenant_dn
+        status: deprecated
+    source: sdkv2

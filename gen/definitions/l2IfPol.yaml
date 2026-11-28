@@ -1,0 +1,37 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> L2 Interface
+exclude_parents:
+- infraInfra
+properties:
+  qinq:
+    attribute_name: q_in_q
+    documentation:
+      description: The QinQ port type of the %s object.
+  vepa:
+    attribute_name: reflective_relay
+    documentation:
+      description: The reflective relay (802.1Qbg) state of the %s object.
+    test_config:
+      create:
+      - config_value: enabled
+  vlanScope:
+    documentation:
+      description: The vlan scope of the %s object.
+    test_config:
+      create:
+      - config_value: portlocal
+resource_name: l2_interface_policy
+rn_prepend: infra
+schema_version: 2
+state_upgrades:
+  1:
+    attributes:
+      qinq:
+        attribute_name: qinq
+        status: deprecated
+      vepa:
+        attribute_name: vepa
+        status: deprecated
+    source: sdkv2

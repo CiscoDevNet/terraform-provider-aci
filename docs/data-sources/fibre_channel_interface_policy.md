@@ -31,7 +31,7 @@ Data source for ACI Fibre Channel Interface Policy
 ```hcl
 
 data "aci_fibre_channel_interface_policy" "example" {
-  name = "test_name"
+  name = "fibre_channel_interface_policy"
 }
 
 ```

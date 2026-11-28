@@ -1,0 +1,7 @@
+properties:
+  tDn: {}
+resource_name_nested: certificate_authority
+test_config:
+  dependencies:
+  - class_name: pkiTP
+    role: target

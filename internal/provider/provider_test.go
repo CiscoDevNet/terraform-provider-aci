@@ -11,19 +11,53 @@ import (
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/aci"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/apicversion"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-mux/tf5to6server"
 	"github.com/hashicorp/terraform-plugin-mux/tf6muxserver"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
+	"github.com/stretchr/testify/assert"
 )
+
+const testAccConfig = `
+variable "apic_version" {
+  type = string
+}
+
+variable "test_prefix" {
+  type = string
+}
+`
+
+var testAccRunner acceptancetest.Runner
+
+func TestMain(m *testing.M) {
+	exitCode := m.Run()
+	// Finalize only in the parent process; unused runners and worker processes have no report to write.
+	if err := testAccRunner.Finish(); err != nil {
+		fmt.Fprintf(os.Stderr, "Write acceptance-test report: %v\n", err)
+		if exitCode == 0 {
+			exitCode = 1
+		}
+	}
+	os.Exit(exitCode)
+}
 
 var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"aci": func() (tfprotov6.ProviderServer, error) {
+		// The harness recreates provider servers for each Terraform command, repeating
+		// client initialization. See gen/docs/test_configuration.md#provider-authentication-limitation.
 		ctx := context.Background()
 
 		upgradedSdkServer, err := tf5to6server.UpgradeServer(
@@ -57,8 +91,11 @@ var testAccProtoV6ProviderFactoriesFunction = map[string]func() (tfprotov6.Provi
 }
 
 var (
-	aciClientTest     *client.Client
-	aciClientTestOnce sync.Once
+	aciClientTest       *client.Client
+	aciClientTestOnce   sync.Once
+	apicVersionTest     string
+	apicVersionTestErr  error
+	apicVersionTestOnce sync.Once
 )
 
 func getACIClientTest(t *testing.T) *client.Client {
@@ -92,49 +129,69 @@ func getACIClientTest(t *testing.T) *client.Client {
 	return aciClientTest
 }
 
+func getAPICVersionTest(t *testing.T) string {
+	t.Helper()
+	aciClient := getACIClientTest(t)
+	// The test client targets one APIC endpoint for the process, so every test
+	// configuration and assertion can reuse the same controller-version lookup.
+	apicVersionTestOnce.Do(func() {
+		infoController, err := aciClient.GetViaURL("/api/node/class/firmwareCtrlrRunning.json")
+		if err != nil {
+			apicVersionTestErr = err
+			return
+		}
+		apicVersionTest = extractControllerVersion(infoController)
+	})
+	if apicVersionTestErr != nil {
+		t.Fatalf("Error fetching APIC controller information: %v", apicVersionTestErr)
+	}
+	return apicVersionTest
+}
+
 func testAccPreCheck(t *testing.T, testType string, testApplicableFromVersion string) {
 	// globalAnnotation is explicitly set here, as the provider initialization in acceptance tests differs from the standard initialization process.
 	setGlobalAnnotation(basetypes.NewStringNull(), "ACI_ANNOTATION")
 
 	if testType == "cloud" {
-		t.Skip("[WARNING] Test skipped because it is not supported on an on-prem APIC")
+		acceptancetest.Skip(t, "This class is not supported on an on-prem APIC")
 	}
 
-	infoController, err := getACIClientTest(t).GetViaURL("/api/node/class/firmwareCtrlrRunning.json")
-	if err != nil {
-		t.Fatalf("Error fetching APIC controller information: %v", err)
-	}
-
-	apicVersion := extractControllerVersion(infoController)
+	apicVersion := getAPICVersionTest(t)
 
 	comparisonResult, err := CompareVersionsRange(apicVersion, testApplicableFromVersion, "inside")
 	if err != nil {
-		t.Skipf("[ERROR] Test skipped because the version '%s' couldn't be checked, error: %s", testApplicableFromVersion, err)
+		acceptancetest.Skip(t, fmt.Sprintf("The supported range %q could not be checked: %s", testApplicableFromVersion, err))
 	} else if !comparisonResult {
-		t.Skipf("[WARNING] Test skipped because the version '%s' is not supported on APIC version: %s", testApplicableFromVersion, apicVersion)
+		acceptancetest.Skip(t, fmt.Sprintf("APIC %s is outside the supported range: %s", apicVersion, testApplicableFromVersion))
 	}
 
 }
 
 func composeAggregateTestCheckFuncWithVersion(t *testing.T, propertyVersion string, operator string, checks ...resource.TestCheckFunc) resource.TestCheckFunc {
+	return composeAggregateTestCheckFuncWithVersionCheck(t, propertyVersion, func(version string) (bool, error) {
+		return CompareVersionsRange(version, propertyVersion, operator)
+	}, checks...)
+}
+
+func composeAggregateTestCheckFuncWithVersionRanges(t *testing.T, ranges []apicversion.VersionRange, checks ...resource.TestCheckFunc) resource.TestCheckFunc {
+	return composeAggregateTestCheckFuncWithVersionCheck(t, fmt.Sprint(ranges), func(version string) (bool, error) {
+		return apicversion.IsVersionInRanges(version, ranges)
+	}, checks...)
+}
+
+func composeAggregateTestCheckFuncWithVersionCheck(t *testing.T, description string, compare func(string) (bool, error), checks ...resource.TestCheckFunc) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources["data.aci_system.version"]
-
-		if !ok {
-			return fmt.Errorf("data source aci_system was not found in the test configuration")
-		}
-
-		apicVersion := rs.Primary.Attributes["version"]
+		apicVersion := getAPICVersionTest(t)
 
 		var result []error
 
-		comparisonResult, err := CompareVersionsRange(apicVersion, propertyVersion, operator)
+		comparisonResult, err := compare(apicVersion)
 		if err != nil {
 			return fmt.Errorf("Failed to compare versions in the test check function: %w", err)
 		}
 
 		if !comparisonResult {
-			t.Logf("[WARNING] Test for checking the resource attribute value skipped due to version incompatibility between Property version: %s and APIC version: %s.", propertyVersion, apicVersion)
+			t.Logf("[WARNING] Test for checking the resource attribute value skipped due to version incompatibility between Property version: %s and APIC version: %s.", description, apicVersion)
 			return nil
 		}
 
@@ -145,6 +202,101 @@ func composeAggregateTestCheckFuncWithVersion(t *testing.T, propertyVersion stri
 
 		}
 		return errors.Join(result...)
+	}
+}
+
+type versionedStateCheck struct {
+	t           *testing.T
+	versions    string
+	apicVersion func() string
+	check       statecheck.StateCheck
+	compare     func(string) (bool, error)
+}
+
+func stateCheckWithVersion(t *testing.T, versions string, check statecheck.StateCheck) statecheck.StateCheck {
+	return versionedStateCheck{
+		t:           t,
+		versions:    versions,
+		apicVersion: func() string { return getAPICVersionTest(t) },
+		check:       check,
+	}
+}
+
+func stateCheckWithVersionRanges(t *testing.T, ranges []apicversion.VersionRange, check statecheck.StateCheck) statecheck.StateCheck {
+	return versionedStateCheck{
+		t: t, versions: fmt.Sprint(ranges), check: check,
+		apicVersion: func() string { return getAPICVersionTest(t) },
+		compare:     func(version string) (bool, error) { return apicversion.IsVersionInRanges(version, ranges) },
+	}
+}
+
+func (c versionedStateCheck) CheckState(ctx context.Context, req statecheck.CheckStateRequest, resp *statecheck.CheckStateResponse) {
+	// Resolve the controller version when the check runs, after the acceptance precheck.
+	apicVersion := c.apicVersion()
+	compare := c.compare
+	if compare == nil {
+		compare = func(version string) (bool, error) { return CompareVersionsRange(version, c.versions, "inside") }
+	}
+	supported, err := compare(apicVersion)
+	if err != nil {
+		resp.Error = fmt.Errorf("failed to compare versions in the state check: %w", err)
+		return
+	}
+	if !supported {
+		c.t.Logf("[WARNING] State check skipped due to version incompatibility between property version: %s and APIC version: %s.", c.versions, apicVersion)
+		return
+	}
+	c.check.CheckState(ctx, req, resp)
+}
+
+func TestStateCheckWithVersion(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		APICVersion string
+		Versions    string
+		Ranges      []apicversion.VersionRange
+		Target      any
+	}
+	testCases := []test.TestCase{
+		{Name: "test_supported_empty_target", Input: input{APICVersion: "6.2(2e)", Versions: "1.0(1e)-", Target: ""}},
+		{Name: "test_supported_resolved_target", Input: input{APICVersion: "6.2(2e)", Versions: "1.0(1e)-", Target: "uni/tn-common/monepg-policy_1"}},
+		{Name: "test_supported_null_target", Input: input{APICVersion: "6.2(2e)", Versions: "1.0(1e)-"}, Expected: "expected non-nil value"},
+		{Name: "test_below_supported_range", Input: input{APICVersion: "2.0(1e)", Versions: "3.0(1k)-"}},
+		{Name: "test_above_supported_range", Input: input{APICVersion: "6.2(2e)", Versions: "1.0(1e)-6.1(1e)"}},
+		{Name: "test_invalid_range", Input: input{APICVersion: "6.2(2e)", Versions: "invalid"}, Expected: "failed to compare versions"},
+		{Name: "test_invalid_apic_version", Input: input{APICVersion: "invalid", Versions: "1.0(1e)-"}, Expected: "failed to compare versions"},
+		{Name: "test_before_hidden_cutoff_requires_value", Input: input{APICVersion: "6.1(5e)", Ranges: []apicversion.VersionRange{{Min: "5.2(1g)", Max: "6.2(1)", MaxExclusive: true}}}, Expected: "expected non-nil value"},
+		{Name: "test_at_hidden_cutoff_skips_value", Input: input{APICVersion: "6.2(1)", Ranges: []apicversion.VersionRange{{Min: "5.2(1g)", Max: "6.2(1)", MaxExclusive: true}}}},
+		{Name: "test_after_hidden_cutoff_skips_value", Input: input{APICVersion: "6.2(2e)", Ranges: []apicversion.VersionRange{{Min: "5.2(1g)", Max: "6.2(1)", MaxExclusive: true}}}},
+		{Name: "test_empty_availability_skips_value", Input: input{APICVersion: "6.2(2e)", Ranges: []apicversion.VersionRange{}}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			check := stateCheckWithVersion(t, value.Versions, statecheck.ExpectKnownValue("data.aci_tenant.test", tfjsonpath.New("relation"), knownvalue.NotNull())).(versionedStateCheck)
+			if value.Ranges != nil {
+				check = stateCheckWithVersionRanges(t, value.Ranges, statecheck.ExpectKnownValue("data.aci_tenant.test", tfjsonpath.New("relation"), knownvalue.NotNull())).(versionedStateCheck)
+			}
+			versionReads := 0
+			check.apicVersion = func() string {
+				versionReads++
+				return value.APICVersion
+			}
+			state := &tfjson.State{Values: &tfjson.StateValues{RootModule: &tfjson.StateModule{Resources: []*tfjson.StateResource{{
+				Address:         "data.aci_tenant.test",
+				AttributeValues: map[string]any{"relation": value.Target},
+			}}}}}
+			var response statecheck.CheckStateResponse
+			check.CheckState(context.Background(), statecheck.CheckStateRequest{State: state}, &response)
+			assert.Equal(t, 1, versionReads)
+			if expected, _ := testCase.Expected.(string); expected != "" {
+				assert.ErrorContains(t, response.Error, expected)
+			} else {
+				assert.NoError(t, response.Error)
+			}
+		})
 	}
 }
 

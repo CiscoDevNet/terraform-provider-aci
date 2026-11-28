@@ -31,7 +31,7 @@ Data source for ACI Tenant
 ```hcl
 
 data "aci_tenant" "example" {
-  name = "test_name"
+  name = "tenant"
 }
 
 ```

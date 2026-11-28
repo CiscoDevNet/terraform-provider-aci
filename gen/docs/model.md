@@ -1,0 +1,986 @@
+# Generated ACI class model contract
+
+This document defines the contract for the generated model of an ACI class.
+Every supported class generates one concrete Terraform-facing model. The
+model is used both when reading Terraform plan/state and when constructing or
+decoding APIC objects.
+
+The model is not a second, plain-Go APIC representation. Terraform framework
+values remain part of the generated model so null, unknown, empty, and
+populated values are preserved throughout the resource lifecycle.
+
+## 1. Model boundaries
+
+The generated pipeline has one canonical class model and two external value
+boundaries:
+
+```text
+DataStore metadata
+    -> generated resource/data-source schemas and class model
+    -> Terraform plan/state decoding
+    -> generated class operations
+    -> APIC request/response
+    -> generated class model
+    -> Terraform state encoding
+```
+
+The generated class model owns:
+
+- schema-backed Terraform attributes;
+- Terraform null, unknown, empty, and populated values;
+- APIC property and attribute mapping;
+- RN construction;
+- DN construction and parsing;
+- APIC payload construction;
+- response decoding;
+- child object composition;
+- child response decoding;
+- model identity and child identity.
+
+Terraform behavior that is not part of the class value remains at the provider
+boundary, split between generated schemas and resource/data-source adapters:
+
+- generated schemas own current attributes, validators, defaults, and plan
+  modifiers;
+- migration schemas add deprecated Terraform aliases separately from class values;
+- adapters own state upgrades and lifecycle orchestration;
+- provider registration;
+- import-state orchestration;
+- REST transport and API error handling.
+
+The generated data-source adapter obtains its configuration through the
+Terraform Plugin Framework. The generated resource adapter obtains
+the plan or state in the same way. Neither adapter manually maps a generic
+property map into the model.
+
+## 2. Concrete generated model
+
+Every supported ACI class generates one concrete model file at
+`internal/provider/models/<className>.go`, matching the class names used by
+`gen/meta` and `gen/definitions`. Generated model files use package `models`.
+No runtime model interface is required.
+
+Implementation status: the active model template emits the shared class
+model, shared root model, null constructors, attribute type maps,
+RN/DN/ID handling, payload construction, deletion, response decoding, a neutral
+class schema definition, top-level schema functions, and version-aware subtree
+class selection. The active resource and data-source templates emit the
+class-backed adapters, including deprecated aliases, frozen attributes, and
+declared state upgrades. Resource identity support remains deferred. The resource
+acceptance-test template exercises the current lifecycle, legacy input forms,
+conflicts, and frozen-field retention/clearing through the same generated models.
+Separate generated unit tests exercise the registered state upgraders.
+
+Only schema-backed attributes belong in the struct. Each field has a matching
+`tfsdk` tag and a Terraform framework type:
+
+```go
+type FvTenantModel struct {
+	Name             types.String `tfsdk:"name"`
+	Descr            types.String `tfsdk:"description"`
+	FvRsTenantMonPol types.Object `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+}
+```
+
+The generated model and resource/data-source schemas are derived from the same
+normalized DataStore metadata. Each model file contains one framework-neutral
+`ClassSchema` definition. Class-independent schema construction, common
+attributes, and validator/plan-modifier selection live in
+`internal/provider/models/helpers/schema.go`. Provider-specific validator and
+plan-modifier implementations live in `internal/validators` and
+`internal/planmodifiers`, respectively.
+Terraform decodes a nested value into `FvTenantModel` and decodes either a
+top-level resource or data source into the same embedded root model:
+
+```go
+type FvTenantRootModel struct {
+	FvTenantModel
+	FvTenantLegacyModelV2
+	ID types.String `tfsdk:"id"`
+}
+
+var plan FvTenantRootModel
+
+resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+```
+
+The embedded value model is reused by resources, data sources, and nested
+children. Resource and data-source schemas use the same attribute names and
+Terraform value types, while their required, optional, computed, default, and
+plan-modifier behavior remains context-specific. Value embedding promotes the
+generated class methods to the shared root model.
+Embedded models must use value embedding, not pointer embedding, and must not
+introduce duplicate `tfsdk` tags.
+
+Terraform Framework struct conversion requires an exact one-to-one match
+between the schema attributes and the target struct's `tfsdk` tags. The shared
+root model must therefore contain every current-schema attribute that
+is not part of the reusable APIC class model. The active template adds `id`
+and, when applicable, `parent_dn`. Generated resource and data-source artifacts
+must retain the same attribute names and value types. Declared migration
+histories add shared legacy aliases or retained unsupported attributes through
+the root model's embedded legacy model. An artifact-specific compatibility
+field belongs to an adapter-specific migration model rather than the shared
+generated root model.
+Null constructors initialize root fields explicitly. Class operations ignore
+`id`; root identity operations use `parent_dn` when constructing or parsing a
+top-level DN, while payload construction ignores both fields.
+
+When an APIC class itself exposes a property named `id`, its generated Go field
+is class-prefixed (for example, `FvEpIpTagID`). Its normalized Terraform tag
+remains `id_attribute` or the class-specific override such as `fabric_id`.
+This keeps the APIC property distinct from the root model's Terraform `ID` field.
+
+The framework matches the `tfsdk` tags to schema attributes. RN, DN, and
+derived IDs remain generated methods. `id` is represented by every generated
+root model. When the normalized class contains the synthetic `parentDn`
+property, the root model exposes it as `ParentDN` with the
+normalized Terraform attribute name. It remains outside the reusable class
+model because it is placement input rather than an APIC payload property.
+
+Every loaded class receives its shared model. Resource and data-source
+artifacts share one root model, which is emitted when either value is present
+in `Class.Artifacts`; a child-only class therefore receives only its shared
+class model. Schema generation emits a neutral class schema definition for every
+class, including child-only classes, because the definition can be embedded by
+a parent artifact.
+
+Per-class definitions without local APIC metadata are loaded separately for
+Terraform-name resolution. They do not enter `DataStore.Classes`, do not use
+`artifacts`, and therefore do not create model or example render jobs. Any
+call site that needs an actual resource or data-source artifact must resolve a
+metadata-backed class from `DataStore.Classes` and check that artifact there.
+
+Resource and data-source schemas use different Terraform Framework concrete
+types. The generated definition stores their shared semantics once and lets
+`modelHelpers.ClassSchema` construct the context-specific attributes:
+
+```go
+func fvTenantSchemaDefinition() modelHelpers.ClassSchema
+
+func FvTenantResourceSchema(defaultAnnotation string) resourceschema.Schema
+func FvTenantDataSourceSchema() datasourceschema.Schema
+```
+
+Top-level schema functions are emitted only for the corresponding artifact.
+The class definition contains separate property and child maps. Properties
+carry their value shape, custom type, configuration flags, valid values,
+replacement behavior, and description. Children carry their parent-owned name,
+cardinality, configuration behavior, description, and a lazy reference to the
+child class definition. The lazy reference prevents package initialization
+dependencies between generated classes.
+
+Required resource properties are rendered according to their schema context.
+Ordinary top-level properties and properties below required singleton children
+remain Terraform `Required` attributes. When a top-level class contains
+read-only properties, its required properties and required properties below
+repeated children are rendered as optional and computed with
+`StringNotNull`; this preserves the established planning behavior for
+computed nested values. An optional singleton child instead owns an object
+validator: `{}` remains valid so the child can be removed, while any non-empty
+object must contain all semantically required child properties. The properties
+inside that optional singleton are optional and computed and do not receive a
+second required-value validator.
+
+`ClassSchema` constructs fresh property, child, and combined attribute maps for
+each context. Resource construction honors `RequiresReplace` only for direct
+properties of a top-level resource. Embedded child classes disable replacement
+behavior, so changing a child identifier does not replace its enclosing
+resource. The outer parent child definition owns whether the child is single or
+repeated and required, optional, or computed.
+
+The neutral annotation property has no schema default. Top-level resource
+construction adds `id` and `parent_dn`, then replaces annotation with the
+provider-resolved static default passed as `defaultAnnotation`.
+
+Custom string behavior used by generated models lives in the static
+`internal/customtypes` package. A semantic-equality property owns one private,
+package-level `SemanticStringType` variable in its generated class file. The
+generator constructs that type directly from the property's normalized
+`ValidValues` map, so a new semantic property does not require another custom
+type implementation. The same configured type creates schema values, model
+nulls, and values decoded from APIC responses.
+
+`SemanticStringValue.ValueString()` retains the raw Terraform or APIC value
+used in payloads. Semantic comparison and RN construction use
+`CanonicalString()`, which maps APIC wire values to their local names. IP
+address normalization and the VMM ARP-learning empty/disabled equivalence remain
+dedicated custom types because their behavior is not a normal valid-value map.
+
+Direct resource properties use `PreserveStringStateForUnknown` or
+`PreserveSetStateForUnknown`. These modifiers retain the established behavior
+where an attribute returned as null remains null when the connected APIC
+version does not support it. Generated resource adapters use these modifiers
+through the model's resource schema.
+
+Property definitions may override the inferred `computed` and
+`requires_replace` flags with explicit `true` or `false`; omission keeps the
+normal inference. Replacement is inferred from metadata `isNaming` or
+`createOnly`. Terraform deprecation is enabled explicitly with `deprecated: true`;
+APIC lifecycle metadata affects documentation and generated test availability
+separately, as described in [templates.md](templates.md#property-lifecycle-and-supported-versions).
+Compatibility overrides preserve VMM Credential password retention and the
+legacy Certificate Authority set behavior. Their reasons and follow-up work are
+recorded in the generated definitions and [change overview](redesign_changes.md).
+
+Each direct child attribute owns planning for its complete subtree. A singleton
+child uses `ReconcileSingletonChild`: an omitted child retains prior state, an
+explicit `{}` remains an all-null deletion request, and a populated child
+reuses prior non-null values only for omitted computed properties. A repeated
+child uses `ReconcileRepeatedChild`: planned and prior elements are matched by
+all class identifiers using custom-type semantic equality where available.
+Set position is never used as identity, and an element with a null or unknown
+identifier is left unreconciled. Properties and children below either
+reconciler do not receive separate state-reading plan modifiers because the
+outer reconciler recursively owns their state handling.
+
+Reusable data-source properties and children are constructed as computed
+attributes. Top-level data-source construction adds `id` and `parent_dn` and
+reconstructs identifying properties as required lookup inputs. A known
+`parent_dn` default makes the resource attribute optional and computed with a
+static default; the equivalent data-source attribute is optional without a
+schema default because its read operation resolves the placement.
+
+Neither `FvTenantModel` nor `FvTenantRootModel` owns a `Schema()` method. The
+generated resource and data-source adapters call their generated top-level
+schema functions. These
+functions add `id`, `parent_dn`, and data-source lookup inputs around attributes
+constructed from the class schema definition. Declared histories also provide
+deprecated aliases, frozen attributes, resource schema versions, and state
+upgraders. Every current-schema attribute added later must have a
+matching field on the root model.
+
+## 3. Terraform value and child rules
+
+Property types are generated from normalized DataStore metadata:
+
+- scalar APIC property -> `types.String` or its generated custom string type;
+- bitmask APIC property -> `types.Set` with `types.String` elements;
+- repeated nested child -> `types.Set` with generated model objects;
+- singleton nested child -> `types.Object` with generated model attributes.
+
+APIC scalar properties remain string-backed even when their values represent
+numbers or booleans, matching both the APIC wire format and the current
+Terraform contract. The current model has no ordered child shape: repeated
+children are APIC objects identified by RN and are represented by `types.Set`.
+If an ordered collection is introduced later, it requires explicit normalized
+metadata and corresponding model, payload, response, and schema support.
+
+The canonical model does not use `[]*ChildModel` or `*ChildModel` fields for
+nested Terraform values. The shared payload helpers materialize concrete child
+models temporarily, reconcile them with prior state, and return the child
+payloads that the generated parent appends to its own payload.
+
+For a singleton child, the generated parent passes the Terraform object and
+the concrete child operations to the shared helper:
+
+```go
+var priorFvRsTenantMonPol *types.Object
+if priorState != nil {
+	priorFvRsTenantMonPol = &priorState.FvRsTenantMonPol
+}
+
+fvRsTenantMonPolPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+	ctx,
+	&diagnostics,
+	m.FvRsTenantMonPol,
+	priorFvRsTenantMonPol,
+	"fvRsTenantMonPol",
+	"FvRsTenantMonPol object defined by relation_to_monitoring_policy cannot be deleted",
+	defaultAnnotation,
+	(*FvRsTenantMonPolModel).BuildPayloadObject,
+	nil,
+)
+if !ok {
+	return nil, diagnostics
+}
+children = append(children, fvRsTenantMonPolPayloads...)
+```
+
+For a repeated child, the helper additionally receives `BuildRN` so desired
+and prior objects can be reconciled by APIC identity:
+
+```go
+var priorTagAnnotation *types.Set
+if priorState != nil {
+	priorTagAnnotation = &priorState.TagAnnotation
+}
+
+tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+	ctx,
+	&diagnostics,
+	m.TagAnnotation,
+	priorTagAnnotation,
+	"tagAnnotation",
+	"TagAnnotation object defined by annotations cannot be deleted",
+	defaultAnnotation,
+	(*TagAnnotationModel).BuildRN,
+	(*TagAnnotationModel).BuildPayloadObject,
+	(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+)
+if !ok {
+	return nil, diagnostics
+}
+children = append(children, tagAnnotationPayloads...)
+```
+
+The value state has defined meanings:
+
+- null -> absent or omitted;
+- unknown -> not resolved during planning;
+- empty -> explicitly resolved as empty;
+- populated -> one or more resolved values.
+
+APIC responses do not produce unknown values. A response value is known or
+null, depending on whether the API returned the corresponding attribute or
+child.
+
+## 4. Class operations
+
+The reusable class model constructs its RN. The root model constructs and
+parses the complete DN and stores the resulting ID:
+
+```go
+func (m *FvTenantModel) BuildRN() string
+func (m *FvTenantRootModel) BuildDN() string
+func (m *FvBDRootModel) ParentDNFromDN(dn string) string
+
+func (m *FvTenantModel) BuildPayloadObject(
+	ctx context.Context,
+	priorState *FvTenantModel,
+	nested bool,
+	defaultAnnotation string,
+) (map[string]any, diag.Diagnostics)
+
+func (m *FvTenantModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any
+
+func (m *FvTenantRootModel) BuildPayload(
+	ctx context.Context,
+	priorState *FvTenantModel,
+	create bool,
+	markCreated bool,
+	defaultAnnotation string,
+) (*container.Container, diag.Diagnostics)
+
+func (m *FvTenantRootModel) BuildDeletePayload(
+	ctx context.Context,
+) (*container.Container, diag.Diagnostics)
+
+func FvTenantModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+	fallbackModel *FvTenantModel,
+) (*FvTenantModel, string, diag.Diagnostics)
+
+func FvTenantModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *FvTenantModel,
+) (FvTenantModel, diag.Diagnostics)
+
+func (m *FvTenantRootModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics)
+
+func (m *FvTenantRootModel) SetIDFromDN(dn string)
+
+func (*FvTenantRootModel) SupportedSubtreeClasses(apicVersion string) []string
+```
+
+Every generated class model registers its APIC class name and raw supported
+version range while the `models` package initializes. The static registry in
+`internal/provider/models/versions.go` is not generator-owned; it is populated
+by the generated model files, including child-only classes. Every generated
+root model exposes its complete recursive APIC subtree class list through
+`SupportedSubtreeClasses`. The method filters that list against the registered
+support ranges using the shared `internal/apicversion` package while preserving
+deterministic class order. Both generated adapter types use this method when
+requesting APIC subtrees.
+
+`FvTenantModelFromResponse` decodes the response envelope and returns the
+class model together with the exact DN returned by APIC. A nil model with no
+error diagnostics means that the expected class was not found. The shared
+root `SetFromResponse` method returns that result as `found` and assigns
+identity to its top-level Terraform fields only when decoding
+succeeds. `FvTenantModelFromObject` is the recursive nested-child decoder and
+operates directly on an APIC class object.
+
+The public class operations remain generated because they define each
+class's property and child mapping. Class-independent mechanics live in the
+hand-written `internal/provider/models/helpers` package:
+
+- `values.go` converts APIC strings and Terraform values;
+- `response.go` validates response containers, resolves cardinality, and
+  materializes nested models;
+- `payload.go` reconciles children and constructs request containers.
+- `schema.go` converts neutral class definitions into resource and data-source
+  schemas, constructs common top-level attributes, and selects reusable
+  validators and plan modifiers.
+
+Custom Terraform behavior primitives are kept in focused internal packages:
+
+- `internal/validators` owns provider-specific schema validators;
+- `internal/planmodifiers` owns provider-specific resource plan modifiers.
+
+Generated methods import this package and call its functions with concrete
+constructors and method expressions. The functions are exported only because
+a Go subdirectory is a separate package; the repository's `internal`
+boundary still keeps them provider-internal. This removes repeated runtime
+logic without adding reflection or a common model interface. These helper
+files are not generated outputs and are therefore not listed in the
+generated-file manifest.
+
+Exported operational helpers consistently receive `context.Context` and a
+pointer to the diagnostics owned by the generated method. Helpers append
+diagnostics directly and only replace destination values after successful
+conversion. This keeps generated call sites stable when helper-level logging
+or diagnostics are added later, while the generated public method remains the
+boundary that returns diagnostics to its caller.
+
+The optional fallback model is the current plan or state embedded in the root
+model. Configurable sensitive attributes, including those below singleton
+children, are restored from this model instead of being decoded from the APIC
+response. Without a fallback their values remain null. This matches the
+existing provider's handling of write-only APIC values and prevents a masked
+response value from replacing the configured secret. Read-only sensitive
+attributes are decoded normally. Configurable sensitive resource properties
+are optional and sensitive. An explicit `computed: true` compatibility override
+preserves VMM Credential password retention when omitted. Their data-source
+projections remain computed and sensitive. A deprecated secret alias retains its
+own configured/state value; an APIC read cannot recover it from another secret
+field. Import verification excludes these unreadable aliases along with the
+corresponding modern secrets.
+
+Identifying attributes are semantically required in top-level resource and
+data-source schemas. Resource schemas normally express this with `Required`.
+When a computed schema context prevents that combination, the attribute is
+optional and computed and `StringNotNull` preserves the required
+configuration behavior. Top-level data-source lookup identifiers remain
+required, while data-source attributes embedded below a parent remain
+computed. `BuildRN` therefore operates on an already resolved writable model
+and does not repeat schema validation for null or unknown identifying values.
+
+## 5. Identity, RN, DN, and ID
+
+### RN
+
+`BuildRN` resolves the class RN format using the model's identity properties.
+It must:
+
+- support named and non-named classes;
+- handle bracketed identity values correctly;
+- use normalized APIC class metadata rather than class-name-specific branches.
+
+RN placeholders are replaced by name rather than by their position in
+`IdentifiedBy`. `IdentifiedBy` is normalized as a deterministic set and its
+order does not define the order of placeholders in `RnFormat`. Plain string
+identifiers use their Terraform string value; custom identifiers use their
+normalized named value so the RN matches the APIC representation.
+
+### DN
+
+The root model's `BuildDN` combines the class placement and generated RN. It
+must support:
+
+- root classes;
+- ordinary parented classes;
+- relation classes;
+- multiple valid parent types.
+
+Classes with a runtime parent read it from the root model:
+
+```go
+func (m *FvBDRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+```
+
+Classes without `parent_dn` use a fixed parent DN derived from the first
+segment of the metadata DN format during generation. Fixed paths added through
+`rn_prepend` remain part of the normalized `RnFormat`:
+
+```go
+func (m *FvTenantRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
+}
+
+func (m *L2IfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
+}
+```
+
+For `l2IfPol`, `BuildRN` returns `infra/l2IfP-{name}`, producing the complete
+DN `uni/infra/l2IfP-{name}` without requiring callers to supply a fixed value.
+
+When `parent_dn` has a schema default, `BuildDN` uses that default if the root
+model value is null or unknown. Required parent DNs without a default are read
+directly from the root model.
+
+Classes with `ParentDnVariants` select each non-default variant using anchored
+patterns generated from the referenced `ParentClass`'s meta `dnFormats`; the
+variant's `rn_prepend` is then inserted between the parent DN and class RN.
+This derives the parent shape through the DataStore and does not duplicate a
+parent-DN format in the class definition. The final direct-placement return
+handles both the canonical default parent and an unmatched parent, matching
+the existing provider fallback.
+
+`BuildDN` does not repeat schema validation or return diagnostics. Top-level
+schemas require the placement inputs needed by the class.
+
+Response decoding preserves the exact returned DN as the root model ID. A root
+model with a runtime parent also exposes `ParentDNFromDN`. It removes the
+suffix constructed from the embedded model's `BuildRN`; parent-DN variants
+test their non-default, metadata-derived suffixes before the direct placement.
+This avoids splitting bracketed RNs whose identifying values can contain `/`.
+
+### ID
+
+The resource ID is the APIC DN. It is computed through `BuildDN` before a
+request and assigned through the root model's `SetIDFromDN` method. It is not
+a class model field. It is represented by the root model when either top-level
+schema exposes an `id` attribute.
+
+An independently supplied ID must not be allowed to disagree with the
+model's computed DN.
+
+Child models expose `BuildRN` but do not expose top-level DN or ID operations.
+Parent payload reconciliation uses the child RN to compare desired children
+with prior state. Complete DN construction belongs to a root model representing
+a resource or data source.
+
+If `parent_dn` is exposed by a top-level schema, it is used as input to
+`BuildDN` and the resulting ID but is not an APIC payload attribute. If it is
+returned by APIC, the root model is populated from the response DN.
+
+Resource root models with parent-DN variants additionally expose
+`BuildPayloadDN()`. A matching wrapped placement returns its container DN for
+Create and Update POST requests, using the existing parent patterns and
+`rn_prepend`. Direct placements return `BuildDN()`. The full object DN remains
+the resource ID and the Read/Delete destination.
+
+## 6. Payload construction
+
+The existing REST helper accepts `*container.Container`, so that remains the
+request boundary for the generated model.
+
+The generated payload must:
+
+- use the APIC class name as the object key;
+- map Terraform model fields to APIC attribute names;
+- omit Terraform-only fields such as `id` and `parent_dn`;
+- omit model-only identity values unless required by the operation;
+- omit null and unresolved values according to normalized property rules;
+- serialize custom property types consistently;
+- append child payloads in deterministic order;
+- recursively include nested children.
+
+`BuildPayload` always emits the full desired object and desired children. It is
+emitted on the root model only when the class has a resource artifact; data
+sources never construct request payloads. The optional `priorState` model is
+used only to detect children that existed in the prior Terraform state but are
+absent from the desired model.
+Those children receive explicit APIC deletion entries because omission from a
+full payload does not itself necessarily delete an APIC child.
+
+The resource adapter translates provider behavior into payload inputs. It
+passes `markCreated = create && !globalAllowExistingOnCreate`; the generated
+model therefore does not depend on provider globals. `create` remains a
+separate input because parent-DN variants can require a wrapper only for a
+create request. `defaultAnnotation` supplies the existing annotation fallback
+for nested children and is not applied to the top-level object.
+
+On create, the resource adapter reads the APIC object before writing and passes
+its class model as the reconciliation baseline. If no object exists, that
+baseline is the null-initialized class model. On update, `priorState` is the
+model decoded from `req.State.Get`.
+
+After a successful Create POST, the adapter saves the known ID before reading
+the object back. If that read fails, Terraform still has the DN needed to track
+and clean up the created object. A successful read replaces this minimal state
+with the complete decoded model.
+
+Set equality alone is insufficient for deletion matching. The generated
+code compares children by their APIC identity, not by slice position. A child
+whose identity remains the same but whose properties changed is part of the
+desired payload, not a remove-and-add operation.
+
+Child value states retain the current provider semantics during payload
+construction:
+
+- null or unknown -> omit the child and do not reconcile its prior value;
+- known empty -> explicitly remove a prior child;
+- populated -> emit the full desired child and recursively reconcile its
+  descendants.
+
+Repeated children are matched to prior children through `BuildRN`. Singleton
+children use their one prior object directly. A requested removal emits the
+child's naming attributes and `status: "deleted"`; removing a class whose
+normalized metadata has `AllowDelete == false` instead returns diagnostics.
+The reusable `BuildNestedDeletePayloadObject` method constructs this nested
+deletion fragment for deletable classes.
+
+`BuildDeletePayload` is generated on deletable root models that have a resource
+artifact and emits the root model's ID together with the APIC delete status. A
+class that APIC does not allow deleting does not expose this method. Reads do
+not construct payloads.
+
+## 7. Nested child composition
+
+Parents contain Terraform values whose element or object shape is represented
+by a generated concrete child model:
+
+```go
+type FvTenantModel struct {
+	FvRsTenantMonPol types.Object `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+}
+```
+
+The parent materializes child values using `Object.As` or `Set.ElementsAs`,
+then calls the child's generated methods. No runtime interface or
+reflection-based dispatch is needed.
+
+Child cardinality comes from normalized class metadata:
+
+- singleton child -> `types.Object`;
+- repeated child -> `types.Set`.
+
+During planning, an omitted direct child reuses prior state. An explicit empty
+singleton remains an all-null object so payload construction can remove it,
+while a configured child recursively reconciles omitted computed values with
+the matching prior child. During response decoding, a missing singleton child
+is a known object whose fields are all null, and a missing repeated child is a
+known empty set. APIC responses never produce unknown values.
+
+Nested payload construction does not calculate child DNs. It composes child
+objects beneath their parent payload and uses each child's `BuildRN` only for
+identity and reconciliation. The same rule applies recursively to
+grandchildren.
+
+Every generated model also has an explicit null initializer:
+
+```go
+func NewFvTenantModelNull() FvTenantModel
+func NewFvTenantRootModelNull() FvTenantRootModel
+```
+
+The root initializer sets `id` and any class-specific root fields such
+as `parent_dn` to Terraform null values and initialize the embedded class
+model using `NewFvTenantModelNull`. Nested object and collection values include
+their generated element type information. Response decoding starts from these
+null models and overwrites only attributes and children returned by APIC.
+
+Each reusable model also exposes `<Class>ModelAttributeTypes()`. Parent models
+use this generated attribute map when constructing null singleton objects and
+repeated child sets, so nested Terraform values always retain the concrete
+child model shape.
+
+## 8. Response decoding
+
+The APIC response is decoded into the same Terraform-facing class model; it
+is not cast directly from generic JSON. `container.Container` wraps generic
+JSON data, so every class receives a generated object decoder. Classes with a
+resource or data-source artifact additionally receive the response-envelope
+decoder. Neither decoder depends on whether the eventual caller is a resource
+or a data source.
+
+For a top-level response, the decoder:
+
+1. locates the expected class below `imdata`;
+2. verifies the expected result count;
+3. reads APIC attributes into Terraform framework values;
+4. preserves the exact response DN as top-level identity;
+5. decodes known child classes recursively;
+6. converts decoded child models to `types.Object` or `types.Set` values.
+
+Conceptually, a top-level resource response is handled as follows:
+
+```go
+func (m *FvTenantRootModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.FvTenantModel
+	model, dn, diags := FvTenantModelFromResponse(ctx, response, &fallbackModel)
+	if diags.HasError() || model == nil {
+		return model != nil, diags
+	}
+
+	m.FvTenantModel = *model
+	m.ID = types.StringValue(dn)
+
+	return true, diags
+}
+```
+
+Resources and data sources use this same sequence. A root model that exposes
+`parent_dn` also assigns the decoded parent DN. Nested decoding operates on the
+child object rather than the response envelope. Child-only classes therefore
+need only the object decoder.
+
+An empty `imdata`, or an `imdata` containing only unrelated classes, is a
+not-found result and must be distinguishable from a malformed response. More
+than one top-level object of the expected class is an error. Unknown APIC
+attributes and unknown child classes are ignored, while malformed known
+attributes and children produce diagnostics without panicking.
+
+Children are inspected only at the current object's direct `children` level;
+each child decoder recursively owns its descendants. A missing singleton is
+decoded as a known empty object. If APIC violates the singleton invariant by
+returning multiple objects, decoding continues with the first object and adds
+both a warning log and warning diagnostic. Repeated children are decoded into
+a known set, including an empty set when no matching objects are returned.
+
+Plain scalar attributes are decoded as strings. Set-valued APIC attributes
+are split on commas; an explicitly returned empty string becomes a known empty
+set. Existing custom string constructors remain responsible for their
+property semantics. To preserve current provider behavior, an explicitly
+returned empty string is decoded as `"none"` only when the property's valid
+values expose `none` as a local name. An absent attribute remains null.
+
+API transport and API error handling remain at the provider boundary. The
+generated data-source adapter owns its data-source-specific not-found
+diagnostic. The generated resource adapter removes a missing object from state
+during Read and reports an error if an object cannot be read back after Create
+or Update.
+
+## 9. Terraform adapter boundary
+
+The generated resource and data-source implementations use their generated
+schemas and shared root model.
+Nested children are decoded into `FvTenantModel`:
+
+```text
+Terraform config/plan/state
+    -> req.Config.Get / req.Plan.Get / req.State.Get
+    -> FvTenantRootModel
+    -> root BuildDN / BuildPayload
+    -> embedded FvTenantModel BuildRN / BuildPayloadObject
+    -> DoRestRequest
+```
+
+After a GET response, both adapters perform the reverse using the same model
+operations:
+
+```text
+DoRestRequest
+    -> ClassModelFromResponse
+    -> FvTenantModel
+    -> root model with ID set from DN
+    -> resp.State.Set
+```
+
+Terraform-only behavior such as plan modifiers and current computed/default
+state values stays in generated schemas and schema helpers. Legacy-alias
+mapping and state upgrades belong to the resource adapter and migration schema
+definition. The root model stores any
+values needed at that boundary, but those values do not become APIC class
+behavior. This must not require a second APIC behavior model or a runtime model
+interface.
+
+### Legacy attributes and state upgrades
+
+Every loaded class with `state_upgrades` generates its declared compatibility
+fields and conversions. Datasource-only classes expose historical output aliases
+without registering resource state upgraders. The latest metadata and normal
+property overrides lead the current model and schema. `state_upgrades` contains
+historical differences, keyed by the saved schema version:
+
+```yaml
+schema_version: 2
+state_upgrades:
+  1:
+    source: sdkv2
+    attributes:
+      relation_fv_rs_tn_deny_rule:
+        type: set_attribute
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+    children:
+      fvRsTenantMonPol:
+        attributes:
+          tnMonEPGPolName:
+            attribute_name: relation_fv_rs_tenant_mon_pol
+            status: deprecated
+```
+
+`attribute_name`, `type`, `element_type`, and `restriction` override the current
+normalized shape only where necessary. Unchanged fields, including Tenant's
+`name`, `name_alias`, `description`, and `annotation`, need no entries. `id` is
+inherited and copied as a string: its former Optional+Computed restriction does
+not require a migration override or a configurable compatibility input.
+
+A renamed historical block also records its complete property membership, using
+explicit historical names even where the names have not changed:
+
+```yaml
+fvRsNodeAtt:
+  attribute_name: relation_fv_rs_node_att
+  attributes:
+    descr:
+      attribute_name: description
+    encap:
+      attribute_name: encap
+    instrImedcy:
+      attribute_name: deployment_immediacy
+    mode:
+      attribute_name: mode
+    tDn:
+      attribute_name: node_dn
+  status: deprecated
+```
+
+This keeps the old block's five fields without introducing newer properties or
+children from the current child model. Unchanged property types still come from
+metadata; this membership rule does not require listing unchanged root fields.
+
+Build the prior decoding view from the current normalized schema and apply the
+version's historical overrides. Attributes missing from older JSON decode to
+null, so newly introduced fields need no introduction-version declarations.
+An orphaned frozen/removed field needs enough explicit information to describe
+its historical type. The migration script imports all declared SDKv2 histories
+from the preserved schema and legacy mappings, including frozen fields, old
+collection types, and nested renames. Netflow's framework history retains its
+explicit type-change declaration. Every resource preserves its published
+`schema_version`, independently of the upgrade map. All declared histories are
+processed without a class allowlist or an extra YAML switch. Normal generation
+does not read the saved schema JSON.
+
+Historical list-to-set changes preserve null and unknown values, remove known
+duplicates from the modern set, and retain the old sorted state-upgrade list.
+Legacy reads keep a configured list's order when it still represents the same
+values. Historical child-set-to-singleton changes reuse the child's current
+member schema and select the first saved child, or null for an unset/empty set,
+matching the published NetFlow upgrader.
+
+Keep the current `FvTenantRootModel` name stable. It embeds `FvTenantModel` and
+`FvTenantLegacyModelV2`, alongside ID and optional ParentDN fields. The legacy
+struct is selected by the current `schema_version` and contains only the
+compatibility fields still exposed by that schema. `HasCurrentLegacyAttributes`
+omits the root compatibility struct when every root alias is removed;
+compatibility wrappers remain when descendants still need them. Historical
+decoder models and registered upgraders remain. Embed retained
+compatibility structs by value so Terraform sees individual attributes. Historical `FvTenantRootModelV1` and
+other source-version models remain separate decoding views; they must retain
+old names and types even after current exposure is removed. Generate one typed
+`UpgradeFromV<n>` method per supported source version, each converting directly
+into the current root model. Current compatibility fields retain their `Legacy`
+Go field prefixes to distinguish them from modern fields.
+
+Framework history can describe changes inside nested objects and sets at any
+depth. The reusable class model owns its active nested compatibility fields,
+using the same `Legacy` field prefix, attribute types, and null constructors.
+Root-only SDKv2 aliases are not copied into child models. Current deprecated
+alias inputs follow the owning class's current property restrictions; historical
+restrictions remain specific to each saved parent schema. Normal response
+decoding remains independent of compatibility population; adapters invoke the
+legacy response function separately with the model captured before decoding.
+Parent histories select their old nested shapes through existing `attributes`
+and `children` differences, without a child-version reference. Historical
+decoding uses typed objects/sets and recursive conversions rather than a new
+struct for every combination of parent and descendant versions.
+
+Type/structure overrides describe state decoding and conversion. They do not
+by themselves add legacy attributes to the current schema. Keep current
+exposure separate from historical shape, using `status` inside the same
+recursive definition:
+
+| Status | Current-schema behavior |
+| --- | --- |
+| `deprecated` | Expose the old input and map it to the current representation. Accept either input form; reject simultaneous explicit configuration of both. |
+| `frozen` | Retain the deprecated configuration/state behavior without an APIC round-trip. |
+| `removed` | Omit the old input from the current schema/model while retaining its historical decoding and conversion information. |
+
+Resolve versions numerically. The latest explicit status per legacy attribute
+path wins; omissions inherit the previous status, and a new alias defaults to
+`deprecated`. Omission must not restore a removed field. Immediate removal is
+allowed. The framework selects one direct-to-current upgrader and does not
+chain versions.
+
+`schema_version` explicitly pins the current resource schema and is independent
+of other resources, provider releases, and APIC versions. Numbers need not be
+consecutive; omission means version zero. The migration script imports the old
+generator's published-version rules once and writes fixed values into the
+canonical definitions. An unchanged SDKv2/framework version remains unchanged
+without an artificial state-upgrade entry. The version covers the whole resource, including reusable children;
+child schemas have no independent version inside their parent. Datasources use
+the applicable compatibility fields but have no resource state upgraders.
+
+Each version entry may declare `source: sdkv2` or `source: framework`.
+Documentation derives the SDKv2 migration warning from these entries. A class
+that only needs a migration notice uses the existing resource documentation
+warnings instead of a dummy state upgrade.
+
+Legacy fields belong at the Terraform root/adapter boundary, outside the APIC
+class model and payload. Named relations convert old DN inputs to names;
+explicit relations keep their full DNs. Modern name attributes accept names
+directly. Preserve existing conversions and null/empty behavior; Tenant's
+published version-1 upgrade converts an unset monitoring relation to an empty
+name, while planning keeps unknown references unknown. State may contain both
+representations; conflicts are checked against explicit configuration.
+
+A required root property with historical names accepts exactly one configured
+name, including the current name. Its reusable child schema stays required;
+only the root compatibility schema allows the legacy alternative.
+
+Root string aliases convert through Terraform values so semantic string types
+retain known, null, and unknown values. Legacy DN collections become child sets
+matched by their identifying property, retaining other planned or prior child
+values. Legacy readback uses APIC's resolved target DNs. Historical nested blocks
+keep their block syntax in both resource and datasource schemas while mapping
+to the same modern child model. When only modern children are configured, the
+legacy block's planned elements contain unknown property values until readback,
+matching the published provider's computed compatibility outputs.
+
+`SetFromLegacyLookup` normalizes deprecated identifier/parent-DN inputs before
+datasource DN construction. Datasource schemas accept either the current name
+or a deprecated lookup name, while other legacy outputs remain computed-only.
+
+`SetFromLegacyConfig` runs only in `ModifyPlan`, including final planning after
+dependency references resolve. Save the converted plan before returning for
+unknown identifiers. After ID is set, `SetLegacyFromState` retains unconfigured
+deprecated outputs only when a candidate with those values and read-only outputs
+copied from prior state equals the entire prior state. Restore read-only values
+only for that unchanged plan; real changes leave them available for refresh.
+Compare typed Terraform values, including
+collections; leave planned values untouched when there is a real change.
+This preserves the existing provider's suppression of unknown-only legacy
+diffs without freezing stale outputs during updates. Create and Update consume
+that plan without repeating
+configuration conversion. `SetFromResponse` decodes only modern fields, ID,
+and ParentDN. Resource and datasource reads, including Create/Update readback,
+then explicitly call `SetLegacyFromResponse` to populate mapped compatibility
+fields and normalize retained frozen values. Modern response decoding can be
+used independently, including when reading children before adoption.
+
+Verification uses the existing definition/class/template tests, generated
+`resource_migration_test.go.tmpl` unit tests for every registered source
+version, and the existing acceptance templates for configuration switching,
+conflicts, and frozen-field retention/clearing. Tests verify decoded old values
+and complete current state rather than requiring an exact historical schema
+snapshot. Compare sets without relying on ordering. Test removal only when an
+actual definition declares removal. Keep the existing legacy test files.
+Migration unit tests require neither APIC nor `TF_ACC=1`.
+
+## 10. Standardization rule
+
+Every class must be representable by the same model contract. Variations are
+encoded as normalized metadata:
+
+- root versus parented;
+- named versus non-named RN;
+- singleton versus repeated child;
+- relation target attributes;
+- custom property conversion;
+- multiple parent types.
+
+Class-name-specific branches are not permitted in the templates or generated
+runtime helpers. If a class cannot be represented by the standard contract,
+generation must produce a diagnostic identifying the unsupported metadata
+shape so the normalization logic or source definition can be corrected.

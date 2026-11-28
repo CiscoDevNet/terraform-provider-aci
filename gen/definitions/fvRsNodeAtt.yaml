@@ -1,0 +1,40 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs -> Static Leafs
+properties:
+  encap:
+    documentation:
+      description: The VLAN encapsulation of the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: vlan-100
+      default:
+      - config_value: vlan-101
+      update:
+      - config_value: vlan-100
+  mode:
+    documentation:
+      description: The static association mode with the path of the %s object.
+  tDn:
+    test_config:
+      datasource_missing:
+      - config_value: topology/pod-2/paths-201/pathep-[eth1/1]
+resource_name: relation_to_static_leaf
+test_config:
+  dependencies:
+  - class_name: fvAEPg
+    dependencies:
+    - class_name: fvAp
+    role: parent
+    target_classes:
+    - fabricNode
+  - class_name: fabricNode
+    reference: topology/pod-1/node-101
+    reference_type: static
+    role: target
+  - class_name: fabricNode
+    reference: topology/pod-1/node-102
+    reference_type: static
+    role: target

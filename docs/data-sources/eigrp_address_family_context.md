@@ -30,9 +30,9 @@ Data source for ACI EIGRP Address Family Context
 
 ```hcl
 
-data "aci_eigrp_address_family_context" "example_tenant" {
+data "aci_eigrp_address_family_context" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "eigrp_address_family_context"
 }
 
 ```
