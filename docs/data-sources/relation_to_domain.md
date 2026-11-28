@@ -61,7 +61,7 @@ data "aci_relation_to_domain" "example" {
 * `ipam_dhcp_override` (ipamDhcpOverride) - (string) The IP address management (IPAM) DHCP override of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
 * `ipam_enabled` (ipamEnabled) - (string) The IP address management (IPAM) enabled status of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
 * `ipam_gateway` (ipamGateway) - (string) The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
-* `lag_policy_name` (lagPolicyName) - (string) The link aggregation group (LAG) policy name of the Relation To Domain object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/lacp_enhanced_lag_policy) with `aci_lacp_enhanced_lag_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/lacp_enhanced_lag_policy) with `data.aci_lacp_enhanced_lag_policy.example.name`. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) and later.
+* `lag_policy_name` (lagPolicyName) - (string) The link aggregation group (LAG) policy name of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) and later.
 * `netflow_direction` (netflowDir) - (string) The NetFlow monitoring direction of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
 * `enable_netflow` (netflowPref) - (string) The NetFlow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `number_of_ports` (numPorts) - (string) The number of ports of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.
@@ -81,15 +81,15 @@ data "aci_relation_to_domain" "example" {
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
     * `standby_uplinks` (standby) - (string) The passive uplink IDs of the Uplink Order Container object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

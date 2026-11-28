@@ -52,9 +52,9 @@ data "aci_vrf_fallback_route" "example" {
 * `description` (descr) - (string) The description of the VRF Fallback Route object.
 * `name` (name) - (string) The name of the VRF Fallback Route object.
 * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

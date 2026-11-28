@@ -49,20 +49,20 @@ data "aci_vmm_uplink_container" "example" {
 * `annotation` (annotation) - (string) The annotation of the VMM Uplink Container object.
 * `name_alias` (nameAlias) - (string) The name alias of the VMM Uplink Container object.
 * `number_of_uplinks` (numOfUplinks) - (string) The number of uplinks in the VMM Uplink Container object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `uplink_policies` - (list) A list of VMM Uplink Policies (ACI object [vmmUplinkP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkP/overview)) which can also be configured using a separate [aci_vmm_uplink_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_uplink_policy) resource.
+* `uplink_policies` - (list) A list of VMM Uplink Policies (ACI object [vmmUplinkP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkP/overview)).
     * `annotation` (annotation) - (string) The annotation of the VMM Uplink Policy object.
     * `name_alias` (nameAlias) - (string) The name alias of the VMM Uplink Policy object.
     * `uplink_id` (uplinkId) - (string) The uplink identifier of the VMM Uplink Policy object.
     * `uplink_name` (uplinkName) - (string) The uplink name of the VMM Uplink Policy object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.

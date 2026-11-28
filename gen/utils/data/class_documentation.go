@@ -74,8 +74,12 @@ type ClassDocumentation struct {
 	DatasourceDescription string
 	// The description used when this class appears as a nested child in a parent resource.
 	DescriptionWhenDefinedAsChild string
+	// The child description for datasource documentation, without alternative configuration guidance.
+	DatasourceDescriptionWhenDefinedAsChild string
 	// Completed target descriptions rendered below a multi-target child relation.
 	RelationTargetDescriptions []string
+	// Datasource relation targets retain the APIC links without configuration guidance.
+	DatasourceRelationTargetDescriptions []string
 	// DN format strings from meta file (e.g., "uni/tn-{name}").
 	DnFormats []string
 	// ImportDnFormat is the actual DN format used by import examples. It follows
@@ -532,6 +536,7 @@ func (d *ClassDocumentation) setDescription(class *Class) {
 func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *DataStore) {
 	genLogger.Debugf("Setting Documentation DescriptionWhenDefinedAsChild for class '%s'.", class.Name.full)
 	d.RelationTargetDescriptions = nil
+	d.DatasourceRelationTargetDescriptions = nil
 
 	nestingType := "list"
 	nestedLabel := utils.Plural(d.Label)
@@ -543,12 +548,13 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 	header := fmt.Sprintf("`%s` - (%s)", class.ResourceNameNested, nestingType)
 	childDescription := fmt.Sprintf("%s (ACI object %s)", nestedLabel, d.ClassName)
 
-	var sentence string
+	var sentence, resourceGuidance string
 	if class.Relation.RelationalClass {
 		if len(class.Relation.ToClasses) > 1 {
 			for _, toClassName := range documentationRelationTargets(class) {
 				toClassFull := toClassName.String()
 				targetDescription := getDevnetObjectDocumentationLink(toClassFull)
+				d.DatasourceRelationTargetDescriptions = append(d.DatasourceRelationTargetDescriptions, targetDescription)
 				if resourceLink := ds.getTerraformRegistryDocumentationLink(toClassFull, ResourceArtifact); resourceLink != "" {
 					targetDescription += fmt.Sprintf(" which can be configured using the %s resource", resourceLink)
 				} else {
@@ -558,6 +564,7 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 			}
 			sentence = fmt.Sprintf("A %s of %s.", nestingType, childDescription)
 			d.DescriptionWhenDefinedAsChild = header + " " + sentence
+			d.DatasourceDescriptionWhenDefinedAsChild = d.DescriptionWhenDefinedAsChild
 			genLogger.Debugf("Successfully set Documentation DescriptionWhenDefinedAsChild for class '%s'. DescriptionWhenDefinedAsChild: %s", class.Name.full, d.DescriptionWhenDefinedAsChild)
 			return
 		}
@@ -574,6 +581,7 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 			}
 		}
 		targets := strings.Join(targetParts, ", ")
+		sentence = fmt.Sprintf("A %s of %s pointing to %s", nestingType, childDescription, targets)
 		// Relation cardinality controls only the nested schema shape. A relation target
 		// remains independently configurable when it has a resource artifact.
 		if len(resourceParts) > 0 && len(resourceParts) == len(class.Relation.ToClasses) {
@@ -581,22 +589,23 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 			if len(resourceParts) > 1 {
 				resourceWord = "resources"
 			}
-			sentence = fmt.Sprintf("A %s of %s pointing to %s which can be configured using the %s %s.", nestingType, childDescription, targets, strings.Join(resourceParts, ", "), resourceWord)
-		} else {
-			sentence = fmt.Sprintf("A %s of %s pointing to %s.", nestingType, childDescription, targets)
+			resourceGuidance = fmt.Sprintf(" which can be configured using the %s %s", strings.Join(resourceParts, ", "), resourceWord)
 		}
-	} else if class.HasResourceArtifact() {
+	} else {
+		sentence = fmt.Sprintf("A %s of %s", nestingType, childDescription)
+	}
+
+	d.DatasourceDescriptionWhenDefinedAsChild = fmt.Sprintf("%s %s.", header, sentence)
+	if !class.Relation.RelationalClass && class.HasResourceArtifact() {
 		registryPath := class.ResourceName
 		if class.ClassDefinition.Documentation.RegistryPath != "" {
 			registryPath = class.ClassDefinition.Documentation.RegistryPath
 		}
 		resourceLink := getTerraformRegistryDocumentationLinkAtPath(class.ResourceName, registryPath, ResourceArtifact)
-		sentence = fmt.Sprintf("A %s of %s which can also be configured using a separate %s resource.", nestingType, childDescription, resourceLink)
-	} else {
-		sentence = fmt.Sprintf("A %s of %s.", nestingType, childDescription)
+		resourceGuidance = fmt.Sprintf(" which can also be configured using a separate %s resource", resourceLink)
 	}
 
-	d.DescriptionWhenDefinedAsChild = header + " " + sentence
+	d.DescriptionWhenDefinedAsChild = fmt.Sprintf("%s %s%s.", header, sentence, resourceGuidance)
 
 	genLogger.Debugf("Successfully set Documentation DescriptionWhenDefinedAsChild for class '%s'. DescriptionWhenDefinedAsChild: %s", class.Name.full, d.DescriptionWhenDefinedAsChild)
 }

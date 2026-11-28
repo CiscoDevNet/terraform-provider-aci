@@ -1174,7 +1174,8 @@ func TestDatasourceDocumentationTemplate(t *testing.T) {
 			Documentation: data.PropertyDocumentation{Description: "The annotation key."},
 		},
 	}
-	annotation.Documentation.DescriptionWhenDefinedAsChild = "`annotations` - (list) A list of Annotations."
+	annotation.Documentation.DescriptionWhenDefinedAsChild = "`annotations` - (list) A list of Annotations which can also be configured using a separate [aci_annotation](https://example.test/annotation) resource."
+	annotation.Documentation.DatasourceDescriptionWhenDefinedAsChild = "`annotations` - (list) A list of Annotations."
 
 	relation := testClass(t, "fvRsTenantMonPol")
 	relation.Children = []*data.ClassName{annotation.Name}
@@ -1187,8 +1188,13 @@ func TestDatasourceDocumentationTemplate(t *testing.T) {
 			Documentation: data.PropertyDocumentation{Description: "The monitoring policy name."},
 		},
 	}
-	relation.Documentation.DescriptionWhenDefinedAsChild = "`relation_to_monitoring_policy` - (map) A map of the monitoring-policy relation."
+	relation.Documentation.DescriptionWhenDefinedAsChild = "`relation_to_monitoring_policy` - (map) A map of the monitoring-policy relation which can be configured using the [aci_monitoring_policy](https://example.test/monitoring_policy) resource."
+	relation.Documentation.DatasourceDescriptionWhenDefinedAsChild = "`relation_to_monitoring_policy` - (map) A map of the monitoring-policy relation."
 	relation.Documentation.RelationTargetDescriptions = []string{
+		"[fvBD](https://example.test/fvBD) which can be configured using the [aci_bridge_domain](https://example.test/bridge_domain) resource",
+		"[fvCtx](https://example.test/fvCtx). Currently there is no resource available to configure this ACI object",
+	}
+	relation.Documentation.DatasourceRelationTargetDescriptions = []string{
 		"[fvBD](https://example.test/fvBD)",
 		"[fvCtx](https://example.test/fvCtx)",
 	}
@@ -1229,6 +1235,13 @@ func TestDatasourceDocumentationTemplate(t *testing.T) {
 		}},
 	}
 
+	for _, documentedClass := range []*data.Class{&class, &relation, &annotation} {
+		for _, property := range documentedClass.Properties {
+			property.Documentation.DatasourceDescription = property.Documentation.Description
+		}
+	}
+	relation.Properties["monitoringPolicyName"].Documentation.Description += " This attribute can be referenced from a [resource](https://example.test/monitoring_policy) with `aci_monitoring_policy.example.name`."
+
 	dataStore := &data.DataStore{Classes: map[string]data.Class{
 		"fvTenant":         class,
 		"fvRsTenantMonPol": relation,
@@ -1241,6 +1254,11 @@ func TestDatasourceDocumentationTemplate(t *testing.T) {
 		t.Fatalf("execute data-source documentation template: %v", err)
 	}
 	contents := rendered.String()
+	for _, guidance := range []string{"which can also be configured using a separate", "which can be configured using", "no resource available to configure", "This attribute can be referenced from"} {
+		if strings.Contains(contents, guidance) {
+			t.Fatalf("rendered data-source documentation includes resource-only configuration guidance %q:\n%s", guidance, contents)
+		}
+	}
 	requiredContents := []string{
 		`page_title: "ACI: aci_tenant"`,
 		"# aci_tenant #\n",

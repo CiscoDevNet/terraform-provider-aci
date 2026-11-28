@@ -273,6 +273,7 @@ func TestSetPropertyDocumentationReferences(t *testing.T) {
 			class.setPropertyDocumentationReferences(&DataStore{Classes: classes, ClassDefinitions: definitions})
 
 			assert.Equal(t, expected, property.Documentation.Description, test.MessageEqual(expected, property.Documentation.Description, testCase.Name))
+			assert.Equal(t, description, property.Documentation.DatasourceDescription, test.MessageEqual(description, property.Documentation.DatasourceDescription, testCase.Name))
 		})
 	}
 }

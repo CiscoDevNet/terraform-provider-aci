@@ -46,15 +46,15 @@ data "aci_relation_from_external_epg_to_route_control_profile" "example" {
   - [aci_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_epg) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
 * `direction` (direction) - (string) The direction on which to apply the Route Map associated with the Route Control Profile.
   - Valid Values: `export`, `import`.
-* `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) with `aci_route_control_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/route_control_profile) with `data.aci_route_control_profile.example.name`.
+* `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object.
 
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation From External EPG To Route Control Profile object.
 * `annotation` (annotation) - (string) The annotation of the Relation From External EPG To Route Control Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

@@ -46,15 +46,15 @@ data "aci_relation_from_vrf_to_eigrp_address_family_context" "example" {
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
 * `address_family` (af) - (string) The type of address family for the Relation From VRF To EIGRP Address Family Context.
   - Valid Values: `ipv4-ucast`, `ipv6-ucast`.
-* `eigrp_address_family_context_name` (tnEigrpCtxAfPolName) - (string) The name of the EIGRP Address Family Context. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/eigrp_address_family_context) with `aci_eigrp_address_family_context.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/eigrp_address_family_context) with `data.aci_eigrp_address_family_context.example.name`.
+* `eigrp_address_family_context_name` (tnEigrpCtxAfPolName) - (string) The name of the EIGRP Address Family Context.
 
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation From VRF To EIGRP Address Family Context object.
 * `annotation` (annotation) - (string) The annotation of the Relation From VRF To EIGRP Address Family Context object. This attribute is supported in ACI versions: 3.2(1l) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

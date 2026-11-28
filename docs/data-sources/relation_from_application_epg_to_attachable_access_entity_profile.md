@@ -43,7 +43,7 @@ data "aci_relation_from_application_epg_to_attachable_access_entity_profile" "ex
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
-* `attachable_access_entity_profile_name` (tnInfraAttEntityPName) - (string) The name of the Attachable Access Entity Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) with `aci_attachable_access_entity_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/attachable_access_entity_profile) with `data.aci_attachable_access_entity_profile.example.name`.
+* `attachable_access_entity_profile_name` (tnInfraAttEntityPName) - (string) The name of the Attachable Access Entity Profile object.
 
 ### Read-Only ###
 
@@ -52,9 +52,9 @@ data "aci_relation_from_application_epg_to_attachable_access_entity_profile" "ex
 * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation From Application EPG To Attachable Access Entity Profile object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
 * `mode` (mode) - (string) The mode of the Relation From Application EPG To Attachable Access Entity Profile object.
 * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

@@ -47,15 +47,15 @@ data "aci_relation_to_netflow_exporter" "example" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_netflow_monitor_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) ([netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview))
-* `netflow_exporter_policy_name` (tnNetflowExporterPolName) - (string) Name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_exporter_policy) with `aci_netflow_exporter_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/netflow_exporter_policy) with `data.aci_netflow_exporter_policy.example.name`.
+* `netflow_exporter_policy_name` (tnNetflowExporterPolName) - (string) Name.
 
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation To NetFlow Exporter object.
 * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object. This attribute is supported in ACI versions: 3.2(1l) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

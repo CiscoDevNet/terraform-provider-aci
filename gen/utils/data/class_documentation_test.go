@@ -1610,8 +1610,10 @@ type setDescriptionWhenDefinedAsChildInput struct {
 }
 
 type setDescriptionWhenDefinedAsChildExpected struct {
-	Description                string
-	RelationTargetDescriptions []string
+	Description                          string
+	DatasourceDescription                string
+	RelationTargetDescriptions           []string
+	DatasourceRelationTargetDescriptions []string
 }
 
 func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
@@ -1632,7 +1634,10 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				Artifacts:          []ArtifactEnum{ResourceArtifact},
 				IsSingleNested:     false,
 			},
-			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`foo` - (list) A list of Foos (ACI object " + fooLink + ") which can also be configured using a separate [aci_foo](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/foo) resource."},
+			Expected: setDescriptionWhenDefinedAsChildExpected{
+				Description:           "`foo` - (list) A list of Foos (ACI object " + fooLink + ") which can also be configured using a separate [aci_foo](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/foo) resource.",
+				DatasourceDescription: "`foo` - (list) A list of Foos (ACI object " + fooLink + ").",
+			},
 		},
 		{
 			Name: "test_non_relational_list_without_resource_artifact",
@@ -1653,7 +1658,10 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				Artifacts:          []ArtifactEnum{ResourceArtifact},
 				IsSingleNested:     true,
 			},
-			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`foo` - (map) A map of Foo (ACI object " + fooLink + ") which can also be configured using a separate [aci_foo](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/foo) resource."},
+			Expected: setDescriptionWhenDefinedAsChildExpected{
+				Description:           "`foo` - (map) A map of Foo (ACI object " + fooLink + ") which can also be configured using a separate [aci_foo](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/foo) resource.",
+				DatasourceDescription: "`foo` - (map) A map of Foo (ACI object " + fooLink + ").",
+			},
 		},
 		{
 			Name: "test_non_relational_map_without_resource_artifact",
@@ -1677,7 +1685,10 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"fvBD": {ResourceName: "bridge_domain", Artifacts: []ArtifactEnum{ResourceArtifact}, Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
 			},
-			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource."},
+			Expected: setDescriptionWhenDefinedAsChildExpected{
+				Description:           "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
+				DatasourceDescription: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ").",
+			},
 		},
 		{
 			Name: "test_relational_map",
@@ -1691,7 +1702,10 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"fvBD": {ResourceName: "bridge_domain", Artifacts: []ArtifactEnum{ResourceArtifact}, Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
 			},
-			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (map) A map of Relation From Foo To BD (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource."},
+			Expected: setDescriptionWhenDefinedAsChildExpected{
+				Description:           "`relation_to_bd` - (map) A map of Relation From Foo To BD (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
+				DatasourceDescription: "`relation_to_bd` - (map) A map of Relation From Foo To BD (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ").",
+			},
 		},
 		{
 			Name: "test_relational_map_without_resource_artifact",
@@ -1731,7 +1745,10 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"monEPGPol": {ResourceName: "monitoring_policy"},
 				},
 			},
-			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_monitoring_policy` - (map) A map of Relation From Foo To Monitoring Policy (ACI object " + fooLink + ") pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource."},
+			Expected: setDescriptionWhenDefinedAsChildExpected{
+				Description:           "`relation_to_monitoring_policy` - (map) A map of Relation From Foo To Monitoring Policy (ACI object " + fooLink + ") pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.",
+				DatasourceDescription: "`relation_to_monitoring_policy` - (map) A map of Relation From Foo To Monitoring Policy (ACI object " + fooLink + ") pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).",
+			},
 		},
 		{
 			Name: "test_relational_toclass_uses_definition_only_resource",
@@ -1744,7 +1761,10 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"fvBD": {ResourceName: "bridge_domain"},
 				},
 			},
-			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource."},
+			Expected: setDescriptionWhenDefinedAsChildExpected{
+				Description:           "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
+				DatasourceDescription: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ").",
+			},
 		},
 		{
 			Name: "test_relational_toclass_without_resource_artifact",
@@ -1772,7 +1792,10 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"fvBD": {ResourceName: "bridge_domain", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
-			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to fvBD (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource."},
+			Expected: setDescriptionWhenDefinedAsChildExpected{
+				Description:           "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to fvBD (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
+				DatasourceDescription: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to fvBD (ACI Object " + bdLink + ").",
+			},
 		},
 		{
 			Name: "test_relational_multi_target_preserves_definition_order",
@@ -1796,6 +1819,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					ctxLink + " which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource",
 					bdLink + ". Currently there is no resource available to configure this ACI object",
 				},
+				DatasourceRelationTargetDescriptions: []string{ctxLink, bdLink},
 			},
 		},
 	}
@@ -1805,6 +1829,9 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 			t.Parallel()
 			input := testCase.Input.(setDescriptionWhenDefinedAsChildInput)
 			expected := testCase.Expected.(setDescriptionWhenDefinedAsChildExpected)
+			if expected.DatasourceDescription == "" {
+				expected.DatasourceDescription = expected.Description
+			}
 
 			class := Class{
 				Name:                             testClassName("fvFoo"),
@@ -1822,7 +1849,9 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 			class.Documentation.setDescriptionWhenDefinedAsChild(&class, ds)
 
 			assert.Equal(t, expected.Description, class.Documentation.DescriptionWhenDefinedAsChild, test.MessageEqual(expected.Description, class.Documentation.DescriptionWhenDefinedAsChild, testCase.Name))
+			assert.Equal(t, expected.DatasourceDescription, class.Documentation.DatasourceDescriptionWhenDefinedAsChild, test.MessageEqual(expected.DatasourceDescription, class.Documentation.DatasourceDescriptionWhenDefinedAsChild, testCase.Name))
 			assert.Equal(t, expected.RelationTargetDescriptions, class.Documentation.RelationTargetDescriptions, test.MessageEqual(expected.RelationTargetDescriptions, class.Documentation.RelationTargetDescriptions, testCase.Name))
+			assert.Equal(t, expected.DatasourceRelationTargetDescriptions, class.Documentation.DatasourceRelationTargetDescriptions, test.MessageEqual(expected.DatasourceRelationTargetDescriptions, class.Documentation.DatasourceRelationTargetDescriptions, testCase.Name))
 		})
 	}
 }

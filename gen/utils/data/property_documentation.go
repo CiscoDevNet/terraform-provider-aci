@@ -28,6 +28,8 @@ type PropertyDocumentation struct {
 	// When applicable, a reference to classes the property points to and which resources/datasources are used for this is included.
 	// When version is higher than the class version, a property specific version is included.
 	Description string
+	// The datasource description omits generated examples for configuring references.
+	DatasourceDescription string
 	// Notes rendered with -> prefix in the property documentation.
 	Notes []string
 	// Warnings rendered with ~> prefix in the property documentation.
@@ -100,7 +102,11 @@ func (c *Class) setPropertyDocumentationReferences(ds *DataStore) {
 	// a class name alone is insufficient evidence that a registry page exists.
 	for _, propertyName := range c.PropertiesAll {
 		property := c.Properties[propertyName]
-		if property == nil || property.Reference == nil || property.Reference.ExampleClass == nil {
+		if property == nil {
+			continue
+		}
+		property.Documentation.DatasourceDescription = property.Documentation.Description
+		if property.Reference == nil || property.Reference.ExampleClass == nil {
 			continue
 		}
 		description := strings.ToLower(property.Documentation.Description)

@@ -46,15 +46,15 @@ data "aci_l3out_redistribute_policy" "example" {
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
 * `source` (src) - (string) The source of the L3Out Redistribute Policy object.
   - Valid Values: `attached-host`, `direct`, `static`.
-* `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) with `aci_route_control_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/route_control_profile) with `data.aci_route_control_profile.example.name`.
+* `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object.
 
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the L3Out Redistribute Policy object.
 * `annotation` (annotation) - (string) The annotation of the L3Out Redistribute Policy object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)).
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

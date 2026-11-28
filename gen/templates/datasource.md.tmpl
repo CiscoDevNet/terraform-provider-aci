@@ -84,7 +84,7 @@ description: |-
         {{- with $class.Documentation.ParentDnNotice }}
   - {{ . }}
         {{- end }}
-      {{- else }}{{ $parentDn.Documentation.Description }}
+      {{- else }}{{ $parentDn.Documentation.DatasourceDescription }}
       {{- end }}
     {{- $validValues := $parentDn.ValidValues.LocalNamesList }}
     {{- if $validValues }}
@@ -100,7 +100,7 @@ description: |-
   {{- end -}}
   {{- range $propertyName := $class.PropertiesAll -}}
     {{- if $class.IsIdentifyingProperty $propertyName -}}
-      {{- $property := index $class.Properties $propertyName }}* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
+      {{- $property := index $class.Properties $propertyName }}* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.DatasourceDescription }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
       {{- $validValues := $property.ValidValues.LocalNamesList }}
       {{- if $validValues }}
   - Valid Values: {{ range $index, $value := $validValues }}{{ if $index }}, {{ end }}`{{ $value }}`{{ end }}.
@@ -140,7 +140,7 @@ description: |-
   - {{ . }}
         {{- end }}
       {{- "\n" }}
-      {{- else }}{{ $parentDn.Documentation.Description }}
+      {{- else }}{{ $parentDn.Documentation.DatasourceDescription }}
       {{- end }}
   {{- $validValues := $parentDn.ValidValues.LocalNamesList }}
   {{- if $validValues }}
@@ -162,7 +162,7 @@ description: |-
 * `id` - (string) The distinguished name (DN) of the {{ $class.Documentation.Label }} object.
 {{ range $propertyName := $class.PropertiesAll -}}
   {{- if and (ne $propertyName "parentDn") (not ($class.IsIdentifyingProperty $propertyName)) -}}
-    {{- $property := index $class.Properties $propertyName }}* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
+    {{- $property := index $class.Properties $propertyName }}* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.DatasourceDescription }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
     {{- range $property.Documentation.Notes }}
   -> {{ . }}
     {{- end }}
@@ -175,14 +175,14 @@ description: |-
 {{ range $nestedClass := $class.NestedDocumentationClasses .DataStore -}}
   {{- $child := $nestedClass.Class -}}
   {{- $childIndent := $nestedClass.Indent 0 -}}
-  {{- $propertyIndent := $nestedClass.Indent 1 }}{{ $childIndent }}* {{ $child.Documentation.DescriptionWhenDefinedAsChild }}{{ with $nestedClass.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}{{ if $child.Documentation.RelationTargetDescriptions }} This relation can point to multiple ACI objects:{{ end }}
-  {{- range $targetDescription := $child.Documentation.RelationTargetDescriptions }}
+  {{- $propertyIndent := $nestedClass.Indent 1 }}{{ $childIndent }}* {{ $child.Documentation.DatasourceDescriptionWhenDefinedAsChild }}{{ with $nestedClass.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}{{ if $child.Documentation.DatasourceRelationTargetDescriptions }} This relation can point to multiple ACI objects:{{ end }}
+  {{- range $targetDescription := $child.Documentation.DatasourceRelationTargetDescriptions }}
 {{ $propertyIndent }}- {{ $targetDescription }}.
   {{- end }}
   {{- range $propertyName := $child.PropertiesAll }}
     {{- if ne $propertyName "parentDn" }}
       {{- $property := index $child.Properties $propertyName }}
-{{ $propertyIndent }}* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
+{{ $propertyIndent }}* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.DatasourceDescription }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
       {{- range $property.Documentation.Notes }}
 {{ $propertyIndent }}  -> {{ . }}
       {{- end }}
